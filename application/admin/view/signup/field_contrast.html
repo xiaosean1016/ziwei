@@ -1,0 +1,81 @@
+{extend name="../application/admin/view/common/base.html"}
+
+{block name="content"}
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4 class="pull-left page-title">模板字段对照表</h4>
+                </div>
+            </div>
+            <!-- end row -->
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <ul class="nav nav-tabs navtab-bg">
+                        <li class="active">
+                            <a href="#common" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-home"></i></span>
+                                <span class="hidden-xs">通用</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#local" data-toggle="tab" aria-expanded="true">
+                                <span class="visible-xs"><i class="fa fa-user"></i></span>
+                                <span class="hidden-xs">本区</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#nonlocal" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-envelope-o"></i></span>
+                                <span class="hidden-xs">外省</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        {volist name="CONTRASTLIST" id="vo"}
+                        <div class="tab-pane {if $key == 'common'}active{/if} " id="{$key}">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>字段名称</th>
+                                    <th>模板标签</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {volist name="vo" id="vvo"}
+                                <tr>
+                                    <td>{$vvo[0]}</td>
+                                    <td>{$vvo[1]}</td>
+                                </tr>
+                                {/volist}
+                                </tbody>
+                            </table>
+                        </div>
+                        {/volist}
+                    </div>
+                </div>
+            </div>
+            <!-- end row -->
+
+
+
+
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}

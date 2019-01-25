@@ -1,0 +1,70 @@
+{extend name="../application/admin/view/common/base.html" /}
+
+{block name="content"}
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">报名表字段</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>字段名称</th>
+                                            <th>文本名称</th>
+                                            <th>所属地区</th>
+                                            <th>是否显示</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {volist name="LIST" id="vo"}
+                                        <tr>
+                                            <td>{$vo.id}</td>
+                                            <td>{$vo.fieldname}</td>
+                                            <td>{$vo.fieldlabel}</td>
+                                            <td>{$vo.signarea}</td>
+                                            <td>{$vo.presence}</td>
+                                        </tr>
+                                        {/volist}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End Row -->
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}
+
+{block name="lead_js"}
+{load file="__admin__/plugins/magnific-popup/dist/jquery.magnific-popup.min.js"}
+{load file="__admin__/plugins/jquery-datatables-editable/jquery.dataTables.js"}
+{load file="__admin__/plugins/datatables/dataTables.bootstrap.js"}
+{load file="__admin__/pages/datatables.editable.init.js"}
+{/block}

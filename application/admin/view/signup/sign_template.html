@@ -1,0 +1,89 @@
+{extend name="../application/admin/view/common/base.html"}
+
+{block name="lead_css"}
+{load file="__admin__/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.css"}
+{load file="__admin__/plugins/summernote/dist/summernote.css"}
+{/block}
+
+{block name="content"}
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+            <input type="hidden" id="type" name="type" value="{$TYPE}">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><h3 class="panel-title">报名表编辑</h3></div>
+                        <div class="panel-body">
+                            <div id="signtemplate" class="summernote">{$TEMPLATEHTML}</div>
+                        </div>
+                        <div class="text-center">
+                            <button id="saveTemplate" type="button" class="btn btn-info waves-effect waves-light m-b-5">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End row -->
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}
+
+{block name="lead_js"}
+{load file="__admin__/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js"}
+{load file="__admin__/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js"}
+
+<!--form validation init-->
+{load file="__admin__/plugins/summernote/dist/summernote.js"}
+{load file="__admin__/plugins/summernote/dist/lang/summernote-zh-CN.js"}
+
+<script>
+    
+    jQuery(document).ready(function(){
+        $('.wysihtml5').wysihtml5();
+
+        $('.summernote').summernote({
+            lang: 'zh-CN',
+            height: 700,                 // set editor height
+            minHeight: null,             // set minimum height of editor
+            maxHeight: null,             // set maximum height of editor
+            focus: true                 // set focus to editable area after initializing summernote
+        });
+
+        // $('.summernote').summernote({
+        //     focus: true                 // set focus to editable area after initializing summernote
+        // });
+
+
+    });
+    
+    
+    $('#saveTemplate').on('click', function () {
+            var markup = $('.summernote').summernote('code');
+        $.ajax({
+            type: "POST",
+            url: '/admin/SignUp/saveTemplate',
+            data: { signcontent: markup, type: $('#type').val()},
+            dataType: "json",
+            success: function(data){
+                if (data.code === 'SUCCESS') {
+                    swal(data.msg);
+                }
+            }
+        });
+    })
+</script>
+{/block}
