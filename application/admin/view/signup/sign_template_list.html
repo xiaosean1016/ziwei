@@ -1,0 +1,71 @@
+{extend name="../application/admin/view/common/base.html"}
+
+{block name="content"}
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4 class="pull-left page-title">模板列表</h4>
+                </div>
+            </div>
+            <!-- end row -->
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>模板名称</th>
+                                                <th>模板类型</th>
+                                                <th>是否启用</th>
+                                                <th>备注</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {volist name="LIST" id="vo"}
+                                                <tr>
+                                                    <td>{$vo.id}</td>
+                                                    <td><a href="/admin/SignUp/signTemplate.html?id={$vo.id}">{$vo.name}</a></td>
+                                                    <td>{if $vo.type eq 'local'}本区{else}外省{/if}</td>
+                                                    <td>{if $vo.isshow eq 1}是{else}否{/if}</td>
+                                                    <td>{$vo.description}</td>
+                                                </tr>
+                                                {/volist}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end row -->
+
+
+
+
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}

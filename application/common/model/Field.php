@@ -15,9 +15,20 @@ class Field extends Model
 {
     protected $pk = 'id';
 
+    public $signArea = [
+        '' => '通用',
+        'local' => '本区',
+        'nonlocal' => '外省'
+    ];
+
     public function getCfgFields($tablename)
     {
         $list = Db::table('zw_field')->where('tablename', $tablename)->select();
+
+        foreach ($list as &$val) {
+            $val['signarea'] = $this->signArea[$val['signarea']];
+        }
+
         return $list;
     }
 
@@ -41,13 +52,25 @@ class Field extends Model
             $data['presence'] = 1;
             $data['fieldtype'] = 'varchar';
             $data['length'] = $length;
-            Db::table('zw_field')->insert($data);
+            $id = Db::table('zw_field')->insertGetId($data);
             Db::execute("alter table {$tablename} add column {$fieldname} varchar(200) COMMENT '{$fieldLabel}'");
 
             Db::commit();
+            return $id;
         } catch (\Exception $e) {
             Db::rollback();
             return false;
         }
+    }
+
+    public function updateCfgField($param)
+    {
+        if ($param) {
+            $id = $param['id'];
+            unset($param['id']);
+            return Db::table('zw_field')->where('id', $id)->update($param);
+        }
+
+        return false;
     }
 }
