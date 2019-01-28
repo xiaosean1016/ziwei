@@ -56,7 +56,6 @@ class Signup extends Base
     {
         $list = model('Field')->getCfgFields('zw_signup');
 
-        $data = ['common', 'local', 'nonlocal'];
         foreach ($list as $val) {
             $vval = [$val['fieldlabel'], "[var.{$val['fieldname']}]"];
             $val['signarea'] = $val['signarea'] ?? 'common';
