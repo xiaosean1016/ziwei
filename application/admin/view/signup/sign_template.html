@@ -25,6 +25,25 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="panel panel-default">
+                        <div class="form-group p-t-10">
+                            <div class="col-sm-2">
+                                <select id="fieldListSelect" class="form-control">
+                                    {volist name="FIELDLIST" id="vo"}
+                                    <optgroup label="{$key}">
+                                        {volist name="vo" id="voo"}
+                                        <option value="{$voo[1]}">{$voo[0]}</option>
+                                        {/volist}
+                                    </optgroup>
+                                    {/volist}
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="selectFieldVar" class="form-control input-sm" placeholder="">
+                            </div>
+                            <div>
+                                <button type="button" onclick="insertVarToTemplate()" class="btn btn-primary waves-effect waves-light m-b-5">插入到模板</button>
+                            </div>
+                        </div>
                         <input type="hidden" name="templateId" id="templateId" value="{$TEMPLATEID}">
                         <div class="panel-body">
                             <div id="signtemplate" class="summernote">{$TEMPLATEHTML}</div>
@@ -76,60 +95,23 @@
         // });
     });
 
-    $(function() {
-        (function($) {
-            $.fn.extend({
-                insertContent : function(myValue, t) {
-                    var $t = $(this)[0];
-                    if (document.selection) { // ie
-                        this.focus();
-                        var sel = document.selection.createRange();
-                        sel.text = myValue;
-                        this.focus();
-                        sel.moveStart('character', -l);
-                        var wee = sel.text.length;
-                        if (arguments.length == 2) {
-                            var l = $t.value.length;
-                            sel.moveEnd("character", wee + t);
-                            t <= 0 ? sel.moveStart("character", wee - 2 * t
-                                - myValue.length) : sel.moveStart(
-                                "character", wee - t - myValue.length);
-                            sel.select();
-                        }
-                    } else if ($t.selectionStart
-                        || $t.selectionStart == '0') {
-                        var startPos = $t.selectionStart;
-                        var endPos = $t.selectionEnd;
-                        var scrollTop = $t.scrollTop;
-                        $t.value = $t.value.substring(0, startPos)
-                            + myValue
-                            + $t.value.substring(endPos,
-                                $t.value.length);
-                        this.focus();
-                        $t.selectionStart = startPos + myValue.length;
-                        $t.selectionEnd = startPos + myValue.length;
-                        $t.scrollTop = scrollTop;
-                        if (arguments.length == 2) {
-                            $t.setSelectionRange(startPos - t,
-                                $t.selectionEnd + t);
-                            this.focus();
-                        }
-                    } else {
-                        this.value += myValue;
-                        this.focus();
-                    }
-                }
-            })
-        })(jQuery);
+    $(function () {
+        $('#fieldListSelect').change();
+    })
+
+    $('#fieldListSelect').on('change', function () {
+        $('#selectFieldVar').val($(this).val());
     });
 
-
+    function insertVarToTemplate() {
+        $('.summernote').summernote('insertText', $('#selectFieldVar').val());
+    }
     
     $('#saveTemplate').on('click', function () {
             var markup = $('.summernote').summernote('code');
         $.ajax({
             type: "POST",
-            url: '/admin/SignUp/saveTemplate',
+            url: '/admin/SignUp/saveTemplateContent',
             data: { signcontent: markup, id: $('#templateId').val()},
             dataType: "json",
             success: function(data){

@@ -36,15 +36,76 @@ class Signup extends Base
         $templateName = Db::name('template')->where('id', $id)->value('name');
 
         $templatePath = __DIR__ . '/../config/signup_' . $id . '.html';
-        $templateHtml = file_get_contents($templatePath);
+        $templateHtml = '';
+        if (file_exists($templatePath)) {
+            $templateHtml = file_get_contents($templatePath);
+        }
+
+        $fieldList = $this->getSignFieldsList();
 
         $this->assign('TEMPLATEID', $id);
         $this->assign('TEMPLATENAME', $templateName);
         $this->assign('TEMPLATEHTML', $templateHtml);
+        $this->assign('FIELDLIST', $fieldList);
         return $this->fetch();
     }
 
+    public function signTemplateList()
+    {
+        return $this->fetch();
+    }
+
+    public function ajax_templateList()
+    {
+        $list = Db::name('template')->select();
+
+        return json($list);
+    }
+
+    public function getTemplateInfo()
+    {
+        $id = Request::instance()->param('id');
+
+        $templateInfo = Db::name('template')->find($id);
+
+        if ($templateInfo) {
+            return json(['code' => 'SUCCESS', 'msg' => $templateInfo]);
+        } else {
+            return json(['code' => 'ERROR', 'msg' => 'ERROR']);
+        }
+    }
+
     public function saveTemplate()
+    {
+        $areaInfo = model('Field')->signArea;
+        $params = Request::instance()->param();
+        $mode = $params['mode'];
+        unset($params['mode']);
+        if ($mode == 'create') {
+            unset($params['id']);
+            $templateId = model('Template')->insertTemplate($params);
+        } else {
+            $updateRes = model('Template')->updateTemplate($params);
+            $templateId = $updateRes ? $params['id'] : 0;
+        }
+
+        $templateInfo = Db::name('template')->find($templateId);
+        if ($templateInfo) {
+            $table = '';
+            $table .= '<td>' . $templateInfo['id'] . '</td>';
+            $table .= '<td>' . $templateInfo['name'] . '</td>';
+            $table .= '<td>' . $areaInfo[$templateInfo['type']] . '</td>';
+            $table .= '<td>' . $templateInfo['isshow'] . '</td>';
+            $table .= '<td>' . $templateInfo['description'] . '</td>';
+
+            return json(['code' => 'SUCCESS', 'msg' => $table, 'id' => $templateId]);
+        } else {
+            return json(['code' => 'ERROR', 'msg' => '保存失败']);
+        }
+
+    }
+
+    public function saveTemplateContent()
     {
         $content = Request::instance()->param('signcontent');
         $id = Request::instance()->param('id');
@@ -53,22 +114,6 @@ class Signup extends Base
         file_put_contents($templatePath, $content);
 
         return json(['code' => 'SUCCESS', 'msg' => '保存成功']);
-    }
-
-    //模板字段参照表
-    public function fieldContrast()
-    {
-        $list = model('Field')->getCfgFields('zw_signup');
-
-        $data = [];
-        foreach ($list as $val) {
-            $vval = [$val['fieldlabel'], "[var.{$val['fieldname']}]"];
-            $val['signarea'] = $val['signarea'] ?? 'common';
-            $data[$val['signarea']][] = $vval;
-        }
-
-        $this->assign('CONTRASTLIST', $data);
-        return $this->fetch();
     }
 
     public function getFieldInfo()
@@ -101,7 +146,6 @@ class Signup extends Base
 
         $fieldInfo = Db::name('field')->find($fieldId);
         if ($fieldInfo) {
-
             $table = '';
             $table .= '<td>' . $fieldInfo['id'] . '</td>';
             $table .= '<td>' . $fieldInfo['fieldname'] . '</td>';
@@ -129,12 +173,18 @@ class Signup extends Base
         return $fields;
     }
 
-    public function signTemplateList()
+    public function getSignFieldsList()
     {
-        $list = Db::name('template')->select();
+        $list = model('Field')->getCfgFields('zw_signup');
 
-        $this->assign('LIST', $list);
-        return $this->fetch();
+        $data = [];
+        foreach ($list as $val) {
+            $vval = [$val['fieldlabel'], "[var.{$val['fieldname']}]"];
+            $val['signarea'] = $val['signarea'] ?? 'common';
+            $data[$val['signarea']][] = $vval;
+        }
+
+        return $data;
     }
 
     public function approve()
