@@ -9,6 +9,7 @@
 namespace app\admin\controller;
 
 use think\Db;
+use think\Exception;
 use think\Request;
 
 class Signup extends Base
@@ -77,32 +78,57 @@ class Signup extends Base
 
     public function saveTemplate()
     {
-        $areaInfo = model('Field')->signArea;
-        $params = Request::instance()->param();
-        $mode = $params['mode'];
-        unset($params['mode']);
-        if ($mode == 'create') {
-            unset($params['id']);
-            $templateId = model('Template')->insertTemplate($params);
-        } else {
-            $updateRes = model('Template')->updateTemplate($params);
-            $templateId = $updateRes ? $params['id'] : 0;
+        try {
+            $areaInfo = model('Field')->signArea;
+            $params = Request::instance()->param();
+            $params['isshow'] = $params['isshow'] == 'true' ? 1 : 0;
+            $mode = $params['mode'];
+            unset($params['mode']);
+            $this->checkTemplateSavePermit($params);
+            if ($mode == 'create') {
+                unset($params['id']);
+                $templateId = model('Template')->insertTemplate($params);
+            } else {
+                $updateRes = model('Template')->updateTemplate($params);
+                $templateId = $updateRes ? $params['id'] : 0;
+            }
+
+            $templateInfo = Db::name('template')->find($templateId);
+            if ($templateInfo) {
+                $table = '';
+                $table .= '<td>' . $templateInfo['id'] . '</td>';
+                $table .= '<td>' . $templateInfo['name'] . '</td>';
+                $table .= '<td>' . $areaInfo[$templateInfo['type']] . '</td>';
+                $table .= '<td>' . $templateInfo['isshow'] . '</td>';
+                $table .= '<td>' . $templateInfo['description'] . '</td>';
+
+                return json(['code' => 'SUCCESS', 'msg' => $table, 'id' => $templateId]);
+            }
+
+            return json(['code' => 'ERROR', 'msg' => 'ERROR']);
+        } catch (\Exception $e) {
+            return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
+        }
+    }
+
+    public function checkTemplateSavePermit($params)
+    {
+        $cond = [];
+        $cond['name'] = $params['name'];
+        if ($params['id']) {
+            $cond['id'] = ['<>', $params['id']];
+        }
+        $res = Db::name('template')->where($cond)->find();
+        if ($res) {
+             throw new Exception('已存在同名模板');
         }
 
-        $templateInfo = Db::name('template')->find($templateId);
-        if ($templateInfo) {
-            $table = '';
-            $table .= '<td>' . $templateInfo['id'] . '</td>';
-            $table .= '<td>' . $templateInfo['name'] . '</td>';
-            $table .= '<td>' . $areaInfo[$templateInfo['type']] . '</td>';
-            $table .= '<td>' . $templateInfo['isshow'] . '</td>';
-            $table .= '<td>' . $templateInfo['description'] . '</td>';
-
-            return json(['code' => 'SUCCESS', 'msg' => $table, 'id' => $templateId]);
-        } else {
-            return json(['code' => 'ERROR', 'msg' => '保存失败']);
+        if ($params['id'] && !$params['isshow']) {
+            $isShow = Db::name('template')->where('id', $params['id'])->value('isshow');
+            if ($isShow) {
+                throw new Exception('同类型模板至少保留显示一个');
+            }
         }
-
     }
 
     public function saveTemplateContent()

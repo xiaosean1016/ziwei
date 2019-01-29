@@ -31,7 +31,6 @@ class Template extends Model
         if ($param) {
             $id = $param['id'];
             unset($param['id']);
-            $param['isshow'] = $param['isshow'] ? 1 : 0;
             //先将同类型其他模板不显示
             if ($param['isshow']) {
                 Db::name('template')->where('type', $param['type'])->update(['isshow' => 0]);
