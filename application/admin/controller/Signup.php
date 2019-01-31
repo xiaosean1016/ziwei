@@ -36,7 +36,7 @@ class Signup extends Base
 
         $templateName = Db::name('template')->where('id', $id)->value('name');
 
-        $templatePath = __DIR__ . '/../config/signup_' . $id . '.html';
+        $templatePath = __DIR__ . '/../../config/signup_' . $id . '.html';
         $templateHtml = '';
         if (file_exists($templatePath)) {
             $templateHtml = file_get_contents($templatePath);
@@ -136,7 +136,7 @@ class Signup extends Base
         $content = Request::instance()->param('signcontent');
         $id = Request::instance()->param('id');
 
-        $templatePath = __DIR__ . '/../config/signup_' . $id . '.html';
+        $templatePath = __DIR__ . '/../../config/signup_' . $id . '.html';
         file_put_contents($templatePath, $content);
 
         return json(['code' => 'SUCCESS', 'msg' => '保存成功']);
@@ -150,6 +150,10 @@ class Signup extends Base
         $fieldInfo = Db::name('field')->find($id);
 
         if ($fieldInfo) {
+            if ($fieldInfo['fieldtype'] == 'select' || $fieldInfo['fieldtype'] == 'multiple') {
+                $pickValArr = Db::name('picklist')->where('fieldid', $id)->column('picktext', 'pickval');
+                $fieldInfo['picklist'] = implode("\n", $pickValArr);
+            }
 //            $fieldInfo['signarea'] = $areaInfo[$fieldInfo['signarea']];
             return json(['code' => 'SUCCESS', 'msg' => $fieldInfo]);
         } else {
@@ -166,6 +170,10 @@ class Signup extends Base
         if ($params['type'] == 'create') {
             $fieldId = model('Field')->insertCfgField($params);
         } else {
+            if ($params['fieldtype'] == 'select' || $params['fieldtype'] == 'multiple') {
+                $pickVal = $params['pickval'];
+                model('Field')->updatePickList($pickVal, $params['id']);
+            }
             $updateRes = model('Field')->updateCfgField($this->getUpdateField($params));
             $fieldId = $updateRes ? $params['id'] : 0;
         }

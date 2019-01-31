@@ -146,6 +146,7 @@ return [
     'view_replace_str'       => [
         '__static__' => think\Url::build('/').'static',
         '__admin__' => think\Url::build('/').'static/admin',
+        '__home__' => think\Url::build('/').'static/home',
     ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',

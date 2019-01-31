@@ -44,16 +44,30 @@ class Field extends Model
             $fieldname = 'cfg_' . $newIndexId;
             $fieldLabel = $param['fieldlabel'];
             $length = $param['length'];
+            $fieldtype = $param['fieldtype'];
 
             $data = [];
             $data['tablename'] = $tablename;
             $data['fieldname'] = $fieldname;
             $data['fieldlabel'] = $fieldLabel;
             $data['presence'] = 1;
-            $data['fieldtype'] = 'varchar';
+            $data['fieldtype'] = $fieldtype;
             $data['length'] = $length;
+
+            $dataFieldType = 'varchar(200)';
+            if ($fieldtype == 'date' || $fieldtype == 'datetime') {
+                $dataFieldType = $fieldtype;
+            } elseif ($fieldtype == 'checkbox') {
+                $dataFieldType = 'tinyint(4)';
+            }
+
             $id = Db::table('zw_field')->insertGetId($data);
-            Db::execute("alter table {$tablename} add column {$fieldname} varchar(200) COMMENT '{$fieldLabel}'");
+            Db::execute("alter table {$tablename} add column {$fieldname} {$dataFieldType} COMMENT '{$fieldLabel}'");
+
+            if ($param['fieldtype'] == 'select' || $param['fieldtype'] == 'multiple') {
+                $pickVal = $param['pickval'];
+                $this->updatePickList($pickVal, $id);
+            }
 
             Db::commit();
             return $id;
@@ -72,5 +86,34 @@ class Field extends Model
         }
 
         return false;
+    }
+
+    public function updatePickList($pickVal, $fieldId)
+    {
+        Db::name('picklist')->where('fieldid', $fieldId)->delete();
+
+        $pickValArr = explode("\n", $pickVal);
+
+        $inertData = [];
+        foreach ($pickValArr as $val) {
+            if ($val) {
+                $inertData[] = [
+                    'fieldid' => $fieldId,
+                    'pickval' => $val,
+                    'picktext' => $val
+                ];
+            }
+        }
+
+        Db::name('picklist')->insertAll($inertData);
+    }
+
+    public function getPickListVal($fieldname, $tablename = 'zw_signup')
+    {
+        $fieldId = Db::name('field')->where('tablename', $tablename)->where('fieldname', $fieldname)->value('id');
+
+        $pickList = Db::name('picklist')->where('fieldid', $fieldId)->column('pickval');
+
+        return $pickList;
     }
 }

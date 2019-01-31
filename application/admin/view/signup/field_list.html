@@ -53,16 +53,26 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">字段类型</label>
                                                     <div class="col-sm-10">
-                                                        <select id="fieldtype" class="form-control">
+                                                        <select id="fieldtype" class="form-control" onchange="changeFieldType(this)">
                                                             <option value="varchar">文本</option>
                                                             <option value="date">日期</option>
+                                                            <option value="datetime">时间</option>
+                                                            <option value="checkbox">复选框</option>
+                                                            <option value="select">下拉框</option>
+                                                            <option value="multiple">多选框</option>
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="form-group">
+                                                <div class="form-group" id="text-length">
                                                     <label class="col-md-2 control-label">文本长度</label>
                                                     <div class="col-md-10">
                                                         <input id="fieldlength" type="text" class="form-control" value="200">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" id="pick-list" style="display: none;">
+                                                    <label class="col-md-2 control-label">选项值（每个选项通过换行区分）</label>
+                                                    <div class="col-md-10">
+                                                        <textarea id="pickval" class="form-control" rows="5"></textarea>
                                                     </div>
                                                 </div>
                                             </form>
@@ -135,9 +145,11 @@
         $('#addFieldBtn').on('click', function () {
             mode = 'create';
             $('#fieldInfoModalLabel').text('新增字段');
+            $('#fieldtype').prop('disabled','');
             $('#fieldlabel').val('');
             $('#fieldarea').val('');
-            $('#fieldtype').val('varchar');
+            $('#fieldtype').val('varchar').change();
+            $('#fieldlength').val('200');
             $('#fieldInfo').modal('show');
         });
 
@@ -145,11 +157,35 @@
             ajaxSaveField();
         });
     })
+    
+    function changeFieldType(obj) {
+        var type = $(obj).val();
+        var textLengthShow = 'none';
+        var pickListShow = 'none';
+
+        switch (type) {
+            case 'varchar':
+                textLengthShow = 'block';
+                break;
+            case 'date':
+            case 'datetime':
+            case 'checkbox':
+                break;
+            case 'select':
+            case 'multiple':
+                pickListShow = 'block';
+                break;
+        }
+
+        $('#text-length').css('display', textLengthShow);
+        $('#pick-list').css('display', pickListShow);
+    }
 
     function bindEditFieldEvent(obj) {
         fieldId = $(obj).attr('data-id');
         mode = 'edit';
         $('#fieldInfoModalLabel').text('编辑字段');
+        $('#fieldtype').prop('disabled','disabled');
         $.ajax({
             type: 'POST',
             url: '/admin/SignUp/getFieldInfo',
@@ -161,7 +197,11 @@
                 } else {
                     $('#fieldlabel').val(data.msg.fieldlabel);
                     $('#fieldarea').val(data.msg.signarea);
-                    $('#fieldtype').val(data.msg.fieldtype);
+                    $('#fieldtype').val(data.msg.fieldtype).change();
+                    $('#fieldlength').val(data.msg.length);
+                    if (data.msg.fieldtype === 'select' || data.msg.fieldtype === 'multiple') {
+                        $('#pickval').val(data.msg.picklist);
+                    }
                     $('#fieldInfo').modal('show');
                 }
             }
@@ -173,11 +213,12 @@
         var snFieldArea = $('#fieldarea').val();
         var snFieldType = $('#fieldtype').val();
         var snFieldLength = $('#fieldlength').val();
+        var pickval = $('#pickval').val();
 
         $.ajax({
             type: 'POST',
             url: '/admin/SignUp/saveField',
-            data: {fieldlabel: snFieldLabel, signarea: snFieldArea, fieldtype: snFieldType, length:snFieldLength, type: mode, id: fieldId},
+            data: {fieldlabel: snFieldLabel, signarea: snFieldArea, fieldtype: snFieldType, length:snFieldLength, type: mode, pickval: pickval, id: fieldId},
             dataType: 'json',
             success: function (data) {
 

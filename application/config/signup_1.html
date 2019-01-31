@@ -1,5 +1,5 @@
 <p style="text-align: center">
-    <b><span style="font-size:16.0pt;font-family:黑体;">上海市徐汇区2019年紫薇实验幼儿园报名表</span></b>
+    <b><span style="font-size:16.0pt;font-family:黑体;">上海市徐汇区2018年紫薇实验幼儿园报名表</span></b>
 </p>
 <p><br></p>
 <table class="table table-bordered" style="width:900px;margin:0 auto;table-layout:fixed;text-align: center;vertical-align:middle">
@@ -13,7 +13,7 @@
         <td>性别</td>
         <td>[var.sex]</td>
         <td>民族</td>
-        <td>[var.nation]</td>
+        <td><p>[var.cfg_2]<br></p></td>
     </tr>
     <tr>
         <td colspan="2">籍贯</td>
@@ -22,16 +22,41 @@
         <td colspan="2">[var.dateofbirth]</td>
     </tr>
     <tr>
-        <td colspan="2">证件种类</td>
-        <td colspan="2">[var.IDtype]</td>
-        <td colspan="4">[var.IDnumber]</td>
+        <td colspan="2">幼儿证件号</td>
+        <td colspan="6">[var.IDnumber]</td>
     </tr>
     <tr>
-        <td colspan="2">户籍地址</td>
+        <td rowspan="3" style="vertical-align:middle">户籍信息</td>
+        <td>街道</td>
+        <td colspan="2">[var.homeplace_street]</td>
+        <td colspan="2">户主关系</td>
+        <td colspan="2">[var.homeplace_relation_owner]</td>
+    </tr>
+    <tr>
+        <td>居委</td>
+        <td colspan="2">[var.homeplace_committee]</td>
+        <td colspan="2">迁入日期</td>
+        <td colspan="2">[var.homeplace_settle_date]</td>
+    </tr>
+    <tr>
+        <td>户籍地址</td>
         <td colspan="6">[var.homeplace_address]</td>
     </tr>
     <tr>
-        <td colspan="2">现住地址</td>
+        <td rowspan="3" style="vertical-align:middle">居住信息</td>
+        <td>街道</td>
+        <td colspan="2">[var.liveplace_street]</td>
+        <td colspan="2">房主关系</td>
+        <td colspan="2">[var.liveplace_relation_owner]</td>
+    </tr>
+    <tr>
+        <td>居委</td>
+        <td colspan="2">[var.liveplace_committee]</td>
+        <td colspan="2">固定电话</td>
+        <td colspan="2">[var.liveplace_telephone]</td>
+    </tr>
+    <tr>
+        <td>现住地址</td>
         <td colspan="6">[var.liveplace_address]</td>
     </tr>
 
@@ -61,14 +86,6 @@
         <td>[var.guardian_sec_education]</td>
         <td colspan="2">[var.guardian_sec_workunit]</td>
         <td colspan="2">[var.guardian_sec_phonenumber]</td>
-    </tr>
-    <tr>
-        <td colspan="2">外省监护人居住证有效期至</td>
-        <td colspan="2">[var.residence_expiration_date]</td>
-        <td>积分是否达标</td>
-        <td>[var.is_integral_reach]</td>
-        <td>社保累计</td>
-        <td>[var.social_security_total]月</td>
     </tr>
     </tbody>
 </table>
