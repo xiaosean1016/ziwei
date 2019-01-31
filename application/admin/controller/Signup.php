@@ -14,11 +14,6 @@ use think\Request;
 
 class Signup extends Base
 {
-    public function signList()
-    {
-
-    }
-
     //字段列表
     public function fieldList()
     {
@@ -224,5 +219,83 @@ class Signup extends Base
     public function approve()
     {
 
+    }
+
+
+    public function getSignListConfigInfo()
+    {
+        $templateId = Request::instance()->param('id');
+        $templateFields = model('Template')->getTemplateFields($templateId);
+        $templateName = Db::name('template')->where('id', $templateId)->value('name');
+
+        $tableFields = Db::name('field')->where('tablename', 'zw_signup')->column('fieldlabel', 'fieldname');
+        $selectFields = Db::name('list_fields')->where('templateid', $templateId)->column('fieldname');
+
+        $fields = [];
+        foreach ($templateFields as $val) {
+            $data = [];
+            if (isset($tableFields[$val])) {
+                $data['val'] = $val;
+                $data['text'] = $tableFields[$val];
+                $data['select'] = in_array($val, $selectFields) ? true : false;
+                $fields[] = $data;
+            }
+        }
+
+        return json(['code' => 'SUCCESS', 'data' => $fields, 'name' => $templateName]);
+    }
+
+    public function saveListFields()
+    {
+        $templateId = Request::instance()->param('id');
+//        $fields = Request::instance()->param('fields');
+        $fields = $_REQUEST['fields'];
+
+        Db::startTrans();
+
+        try {
+            Db::name('list_fields')->where('templateid', $templateId)->delete();
+
+            $data = [];
+            $i = 1;
+            foreach ($fields as $val) {
+                $data[] = [
+                    'templateid' => $templateId,
+                    'fieldname' => $val,
+                    'sequence' => $i
+                ];
+                $i ++;
+            }
+            Db::name('list_fields')->insertAll($data);
+            Db::commit();
+            return json(['code' => 'SUCCESS', 'msg' => '保存成功']);
+        } catch (\Exception $e) {
+            Db::rollback();
+            return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
+        }
+    }
+
+    public function signList()
+    {
+        $this->assign('TEMPLATEID', 1);
+        return $this->fetch();
+    }
+
+    public function getSignList()
+    {
+        $templateId = Request::instance()->param('id');
+
+        $listFields = Db::name('list_fields')->where('templateid', $templateId)->column('fieldname');
+        $tableHeaders = Db::name('field')->where('tablename', 'zw_signup')->where('fieldname', 'IN', $listFields)->column('fieldlabel', 'fieldname');
+
+        $listFields[] = 'createdatetime';
+        $listFields[] = 'status';
+        $tableHeaders['createdatetime'] = '创建时间';
+        $tableHeaders['status'] = '审核状态';
+
+        $tableData = Db::name('signup')->where('templateid', $templateId)->column(implode(',', $listFields), 'id');
+
+        $data = ['table' => $tableData, 'headers' => $tableHeaders];
+        return json(['code' => 'SUCCESS', 'data' => $data]);
     }
 }

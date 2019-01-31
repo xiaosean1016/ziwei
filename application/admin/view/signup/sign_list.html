@@ -1,0 +1,185 @@
+{extend name="../application/admin/view/common/base.html" /}
+
+{block name="lead_css"}
+{load file="__admin__/js/modernizr.min.js"}
+{load file="__admin__/plugins/jquery-multi-select/multi-select.css"}
+{/block}
+
+{block name="content"}
+
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4 class="pull-left page-title">报名列表</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Bordered Table</h3>
+                        </div>
+                        <div class="panel-body">
+
+                            <!-- 配置字段模态框 -->
+                            <div id="configInfo" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="configInfoModalLabel" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title" id="configInfoModalLabel"></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="#" class="form-horizontal">
+                                                <input type="hidden" name="templateId" id="templateId" value="{$TEMPLATEID}">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-3">选择字段</label>
+                                                    <div class="col-md-9">
+                                                        <select multiple="multiple" class="multi-select" id="list_fields" name="list_fields">
+
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">取消</button>
+                                            <button type="button" id="saveFieldsConfig" class="btn btn-primary waves-effect waves-light">保存</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <button onclick="showFieldConfig({$TEMPLATEID})" style="float:right;" class="btn btn-icon waves-effect waves-light btn-default m-b-5"> <i class="fa fa-wrench"></i> </button>
+
+                                    <table class="table table-bordered table-striped" id="signListTable">
+
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="panel-body text-center">
+                                <ul class="pagination m-b-5">
+                                    <li>
+                                        <a href="#" aria-label="Previous">
+                                            <i class="fa fa-angle-left"></i>
+                                        </a>
+                                    </li>
+                                    <li><a href="#">1</a></li>
+                                    <li class="active"><a href="#">2</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li class="disabled"><a href="#">4</a></li>
+                                    <li><a href="#">5</a></li>
+                                    <li>
+                                        <a href="#" aria-label="Next">
+                                            <i class="fa fa-angle-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div> <!-- panel-body -->
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- row -->
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}
+
+{block name="lead_js"}
+{load file="__admin__/plugins/magnific-popup/dist/jquery.magnific-popup.min.js"}
+{load file="__admin__/plugins/jquery-datatables-editable/jquery.dataTables.js"}
+{load file="__admin__/plugins/datatables/dataTables.bootstrap.js"}
+{load file="__admin__/pages/datatables.editable.init.js"}
+{load file="__admin__/plugins/jquery-multi-select/jquery.multi-select.js"}
+
+<script>
+
+    $(function () {
+        renderList(1);
+    })
+
+    function showFieldConfig(id) {
+        $.ajax({
+            type: 'POST',
+            url: 'getSignListConfigInfo',
+            data: {id: id},
+            dataType: 'json',
+            success: function (data) {
+                var optionHtml = '',
+                    options = data.data;
+                for (var i = 0; i < options.length; i ++) {
+                    var select = options[i].select ? 'selected' : '';
+                    optionHtml += '<option ' + select + ' value="' + options[i].val + '">';
+                    optionHtml += options[i].text;
+                    optionHtml += '</option>';
+                }
+                $('#list_fields').html(optionHtml);
+                $('#list_fields').multiSelect();
+                $('#configInfoModalLabel').text(data.name + '-列表字段配置');
+                $('#configInfo').modal('show');
+            }
+        })
+    }
+
+    $('#saveFieldsConfig').on('click', function () {
+        var fields = $('#list_fields').val();
+        var templateId = $('#templateId').val();
+
+        $.ajax({
+            type: 'POST',
+            url: 'saveListFields',
+            data: {fields: fields, id: templateId},
+            dataType: 'json',
+            success: function (data) {
+                swal(data.msg);
+            }
+        })
+    })
+
+    function renderList(id) {
+        $.ajax({
+            type: 'POST',
+            url: 'getSignList',
+            data: {id: id},
+            dataType: 'json',
+            success: function (res) {
+                var data = res.data;
+                var table = '';
+                table += '<tr>';
+                for (key in data.headers) {
+                    table += '<th>' + data.headers[key] + '</th>';
+                }
+                table += '</tr>';
+                for (var i = 0; i < data.table.length; i ++) {
+                    table += '<tr>';
+                    table += '</tr>';
+                }
+
+                $('#signListTable').html(table);
+            }
+        })
+    }
+
+</script>
+{/block}

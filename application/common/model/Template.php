@@ -40,4 +40,19 @@ class Template extends Model
 
         return false;
     }
+
+    //获取模板所包含的字段
+    public function getTemplateFields($id)
+    {
+        $templatePath = __DIR__ . '/../../config/signup_' . $id . '.html';
+        $templateHtml = '';
+        if (file_exists($templatePath)) {
+            $templateHtml = file_get_contents($templatePath);
+        }
+
+        preg_match_all('/\[var\.(.*)\]/', $templateHtml, $match);
+        $fields = $match[1];
+
+        return $fields;
+    }
 }
