@@ -173,6 +173,9 @@
                 table += '</tr>';
                 for (var i = 0; i < data.table.length; i ++) {
                     table += '<tr>';
+                    for (key2 in data.headers) {
+                        table += '<td>' + data.table[i][key2] + '</td>';
+                    }
                     table += '</tr>';
                 }
 

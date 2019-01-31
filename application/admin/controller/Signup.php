@@ -277,7 +277,7 @@ class Signup extends Base
 
     public function signList()
     {
-        $this->assign('TEMPLATEID', 1);
+        $this->assign('TEMPLATEID', 2);
         return $this->fetch();
     }
 
@@ -295,7 +295,7 @@ class Signup extends Base
 
         $tableData = Db::name('signup')->where('templateid', $templateId)->column(implode(',', $listFields), 'id');
 
-        $data = ['table' => $tableData, 'headers' => $tableHeaders];
+        $data = ['table' => array_values($tableData), 'headers' => $tableHeaders];
         return json(['code' => 'SUCCESS', 'data' => $data]);
     }
 }
