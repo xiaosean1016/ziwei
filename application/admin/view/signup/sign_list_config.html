@@ -1,0 +1,86 @@
+{extend name="../application/admin/view/common/base.html" /}
+
+{block name="lead_css"}
+{load file="__admin__/plugins/jquery-multi-select/multi-select.css"}
+{/block}
+
+{block name="content"}
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><h3 class="panel-title">{$TEMPLATENAME}-列表字段配置</h3></div>
+                        <div class="panel-body">
+
+                            <form action="#" class="form-horizontal">
+                                <input type="hidden" name="templateId" id="templateId" value="{$TEMPLATEID}">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">选择字段</label>
+                                    <div class="col-md-9">
+                                        <select multiple="multiple" class="multi-select" id="list_fields" name="list_fields">
+                                            {volist name="FIELDS" id="vo"}
+                                            <option {eq name="vo.select" value="true"}selected{/eq} value="{$vo.val}">{$vo.text}</option>
+                                            {/volist}
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div> <!-- panel-body -->
+                        <div class="text-center">
+                            <button id="saveFields" type="button" class="btn btn-success waves-effect waves-light m-b-5">保存</button>
+                        </div>
+                    </div> <!-- panel -->
+                </div> <!-- col -->
+            </div> <!-- End row -->
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}
+
+{block name="lead_js"}
+
+{load file="__admin__/plugins/jquery-multi-select/jquery.multi-select.js"}
+
+<script>
+    $(function() {
+        //multiselect start
+        $('#list_fields').multiSelect();
+
+        $('#saveFields').on('click', function () {
+            var fields = $('#list_fields').val();
+            var templateId = $('#templateId').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/admin/SignUp/saveListFields',
+                data: {fields: fields, id: templateId},
+                dataType: 'json',
+                success: function (data) {
+                    swal(data.msg);
+                }
+            })
+        })
+
+
+    });
+</script>
+{/block}

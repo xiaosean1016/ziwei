@@ -1,0 +1,246 @@
+{extend name="../application/admin/view/common/base.html" /}
+
+{block name="content"}
+
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4 class="pull-left page-title">报名表字段</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <button id="addFieldBtn" class="btn btn-primary waves-effect waves-light" data-toggle="modal" >新增字段 <i class="fa fa-plus"></i></button>
+                        </div>
+
+                        <div class="panel-body">
+
+                            <div id="fieldInfo" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="fieldInfoModalLabel" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title" id="fieldInfoModalLabel"></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form class="form-horizontal" role="form">
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label">字段名称</label>
+                                                    <div class="col-md-10">
+                                                        <input id="fieldlabel" type="text" class="form-control" value="">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">字段适应范围</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="fieldarea" class="form-control">
+                                                            <option value="">通用</option>
+                                                            <option value="local">本区</option>
+                                                            <option value="nonlocal">外省</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">字段类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="fieldtype" class="form-control" onchange="changeFieldType(this)">
+                                                            <option value="varchar">文本</option>
+                                                            <option value="date">日期</option>
+                                                            <option value="datetime">时间</option>
+                                                            <option value="checkbox">复选框</option>
+                                                            <option value="select">下拉框</option>
+                                                            <option value="multiple">多选框</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" id="text-length">
+                                                    <label class="col-md-2 control-label">文本长度</label>
+                                                    <div class="col-md-10">
+                                                        <input id="fieldlength" type="text" class="form-control" value="200">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" id="pick-list" style="display: none;">
+                                                    <label class="col-md-2 control-label">选项值（每个选项通过换行区分）</label>
+                                                    <div class="col-md-10">
+                                                        <textarea id="pickval" class="form-control" rows="5"></textarea>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">取消</button>
+                                            <button type="button" id="saveFieldBtn" class="btn btn-primary waves-effect waves-light">保存</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <table class="table table-hover" id="field-list-table">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>字段名称</th>
+                                            <th>文本名称</th>
+                                            <th>所属地区</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {volist name="LIST" id="vo"}
+                                        <tr id="tr-{$vo.id}">
+                                            <td>{$vo.id}</td>
+                                            <td>{$vo.fieldname}</td>
+                                            <td>{$vo.fieldlabel}</td>
+                                            <td>{$vo.signarea}</td>
+                                            <td>
+                                                <button onclick="bindEditFieldEvent(this)" data-id="{$vo.id}" class="btn edit-btn btn-icon waves-effect waves-light btn-success m-b-5"> <i class="md md-border-color"></i> </button>
+                                            </td>
+                                        </tr>
+                                        {/volist}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End Row -->
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}
+
+{block name="lead_js"}
+{load file="__admin__/plugins/magnific-popup/dist/jquery.magnific-popup.min.js"}
+{load file="__admin__/plugins/jquery-datatables-editable/jquery.dataTables.js"}
+{load file="__admin__/plugins/datatables/dataTables.bootstrap.js"}
+{load file="__admin__/pages/datatables.editable.init.js"}
+
+<script>
+    var fieldId = '';
+    var mode = '';
+
+    $(function () {
+        $('#addFieldBtn').on('click', function () {
+            mode = 'create';
+            $('#fieldInfoModalLabel').text('新增字段');
+            $('#fieldtype').prop('disabled','');
+            $('#fieldlabel').val('');
+            $('#fieldarea').val('');
+            $('#fieldtype').val('varchar').change();
+            $('#fieldlength').val('200');
+            $('#fieldInfo').modal('show');
+        });
+
+        $('#saveFieldBtn').on('click', function () {
+            ajaxSaveField();
+        });
+    })
+    
+    function changeFieldType(obj) {
+        var type = $(obj).val();
+        var textLengthShow = 'none';
+        var pickListShow = 'none';
+
+        switch (type) {
+            case 'varchar':
+                textLengthShow = 'block';
+                break;
+            case 'date':
+            case 'datetime':
+            case 'checkbox':
+                break;
+            case 'select':
+            case 'multiple':
+                pickListShow = 'block';
+                break;
+        }
+
+        $('#text-length').css('display', textLengthShow);
+        $('#pick-list').css('display', pickListShow);
+    }
+
+    function bindEditFieldEvent(obj) {
+        fieldId = $(obj).attr('data-id');
+        mode = 'edit';
+        $('#fieldInfoModalLabel').text('编辑字段');
+        $('#fieldtype').prop('disabled','disabled');
+        $.ajax({
+            type: 'POST',
+            url: '/admin/SignUp/getFieldInfo',
+            data: {id: fieldId},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code === 'ERROR') {
+                    swal(data.msg);
+                } else {
+                    $('#fieldlabel').val(data.msg.fieldlabel);
+                    $('#fieldarea').val(data.msg.signarea);
+                    $('#fieldtype').val(data.msg.fieldtype).change();
+                    $('#fieldlength').val(data.msg.length);
+                    if (data.msg.fieldtype === 'select' || data.msg.fieldtype === 'multiple') {
+                        $('#pickval').val(data.msg.picklist);
+                    }
+                    $('#fieldInfo').modal('show');
+                }
+            }
+        })
+    }
+
+    function ajaxSaveField() {
+        var snFieldLabel = $('#fieldlabel').val();
+        var snFieldArea = $('#fieldarea').val();
+        var snFieldType = $('#fieldtype').val();
+        var snFieldLength = $('#fieldlength').val();
+        var pickval = $('#pickval').val();
+
+        $.ajax({
+            type: 'POST',
+            url: '/admin/SignUp/saveField',
+            data: {fieldlabel: snFieldLabel, signarea: snFieldArea, fieldtype: snFieldType, length:snFieldLength, type: mode, pickval: pickval, id: fieldId},
+            dataType: 'json',
+            success: function (data) {
+
+                if (data.code === 'ERROR') {
+                    swal(data.msg);
+                    return false;
+                } else {
+                    $('#fieldInfo').modal('hide');
+                    var tdHtml = '';
+                    tdHtml += data.msg;
+                    tdHtml += '<td>';
+                    tdHtml += '<button onclick="bindEditFieldEvent(this)" data-id="' + data.id + '" class="btn edit-btn btn-icon waves-effect waves-light btn-success m-b-5"> <i class="md md-border-color"></i> </button>';
+                    tdHtml += '</td>';
+                    if (mode === 'create') {
+                        $('#field-list-table').append('<tr>' + tdHtml + '</tr>');
+                    } else if (mode === 'edit') {
+                        $('tr[id="tr-' + fieldId + '"]').html(tdHtml);
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+{/block}

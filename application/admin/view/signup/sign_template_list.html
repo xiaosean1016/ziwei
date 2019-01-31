@@ -1,0 +1,226 @@
+{extend name="../application/admin/view/common/base.html"}
+
+{block name="content"}
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4 class="pull-left page-title">模板列表</h4>
+                </div>
+            </div>
+            <!-- end row -->
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            <button id="addTemplateBtn" class="btn btn-primary waves-effect waves-light" data-toggle="modal" >新增模板 <i class="fa fa-plus"></i></button>
+                        </div>
+
+                        <div class="panel-body">
+
+                            <div id="templateInfo" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="templateInfoModalLabel" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title" id="templateInfoModalLabel"></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form class="form-horizontal" role="form">
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label">模板名称</label>
+                                                    <div class="col-md-10">
+                                                        <input id="temp-name" type="text" class="form-control" value="">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">模板类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="temp-type" class="form-control">
+                                                            <option value="local">本区</option>
+                                                            <option value="nonlocal">外省</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">是否启用</label>
+                                                    <div class="col-sm-10">
+                                                        <div class="checkbox checkbox-primary">
+                                                            <input id="temp-is-show" type="checkbox">
+                                                            <label for="temp-is-show">
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label">备注</label>
+                                                    <div class="col-md-10">
+                                                        <textarea id="temp-description" class="form-control" rows="3"></textarea>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">取消</button>
+                                            <button type="button" id="saveTemplateBtn" class="btn btn-primary waves-effect waves-light">保存</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="table-responsive">
+                                        <table class="table" id="template-list-table">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>模板名称</th>
+                                                <th>模板类型</th>
+                                                <th>是否启用</th>
+                                                <th>备注</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end row -->
+
+
+
+
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}
+
+{block name="lead_js"}
+{load file="__admin__/plugins/magnific-popup/dist/jquery.magnific-popup.min.js"}
+{load file="__admin__/plugins/jquery-datatables-editable/jquery.dataTables.js"}
+{load file="__admin__/plugins/datatables/dataTables.bootstrap.js"}
+{load file="__admin__/pages/datatables.editable.init.js"}
+
+<script>
+    var templateId = '',
+        mode = '';
+
+    $(function () {
+        $('#addTemplateBtn').on('click', function () {
+            mode = 'create';
+            $('#templateInfoModalLabel').text('新增模板');
+            $('#temp-name').val('');
+            $('#temp-type').val('');
+            $('#temp-is-show').prop('checked', true);
+            $('#temp-description').val('');
+            $('#templateInfo').modal('show');
+        });
+
+        $('#saveTemplateBtn').on('click', function () {
+            ajaxSaveTemplate();
+        });
+
+        renderList();
+    });
+
+    function renderList() {
+        $.ajax({
+            type: 'POST',
+            url: '/admin/SignUp/ajax_templateList',
+            data: {},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code === 'ERROR') {
+                    swal(data.msg);
+                } else {
+                    var trHtml = '';
+                    var res = data;
+                    for (var i = 0; i < res.length; i++) {
+                        trHtml += '<tr>';
+                        trHtml += '<td>' + res[i].id +'</td>';
+                        trHtml += '<td><a href="/admin/SignUp/signTemplate.html?id=' + res[i].id + '"> ' + res[i].name + ' </a></td>';
+                        trHtml += '<td>' + (res[i].type === 'local' ? '本区' : '外省') + '</td>';
+                        trHtml += '<td>' + (res[i].isshow == '1' ? '是' : '否') + '</td>';
+                        trHtml += '<td>' + res[i].description + '</td>';
+                        trHtml += '<td><button onclick="bindEditTemplateEvent(this)" data-id="' + res[i].id + '" class="btn edit-btn btn-icon waves-effect waves-light btn-success m-b-5"> <i class="md md-border-color"></i> </button></td>';
+                        trHtml += '</tr>';
+                    }
+                    $('#template-list-table tbody').html(trHtml);
+                }
+            }
+        })
+    }
+
+    function bindEditTemplateEvent(obj) {
+        templateId = $(obj).attr('data-id');
+        mode = 'edit';
+        $('#templateInfoModalLabel').text('编辑模板');
+        $.ajax({
+            type: 'POST',
+            url: '/admin/SignUp/getTemplateInfo',
+            data: {id: templateId},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code === 'ERROR') {
+                    swal(data.msg);
+                } else {
+                    $('#temp-name').val(data.msg.name);
+                    $('#temp-type').val(data.msg.type);
+                    $('#temp-is-show').prop('checked', data.msg.isshow);
+                    $('#temp-description').val(data.msg.description);
+                    $('#templateInfo').modal('show');
+                }
+            }
+        })
+    }
+
+    function ajaxSaveTemplate() {
+        var snTemplateName = $('#temp-name').val();
+        var snTemplateType = $('#temp-type').val();
+        var snTemplateShow = $('#temp-is-show').prop('checked');
+        var snTemplateDesc = $('#temp-description').val();
+
+        $.ajax({
+            type: 'POST',
+            url: '/admin/SignUp/saveTemplate',
+            data: {name: snTemplateName, type: snTemplateType, isshow: snTemplateShow, description:snTemplateDesc, mode: mode, id: templateId},
+            dataType: 'json',
+            success: function (data) {
+
+                if (data.code === 'ERROR') {
+                    swal(data.msg);
+                    return false;
+                } else {
+                    $('#templateInfo').modal('hide');
+                    renderList();
+                }
+            }
+        });
+    }
+</script>
+
+{/block}

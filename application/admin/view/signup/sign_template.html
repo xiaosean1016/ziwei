@@ -1,0 +1,125 @@
+{extend name="../application/admin/view/common/base.html"}
+
+{block name="lead_css"}
+{load file="__admin__/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.css"}
+{load file="__admin__/plugins/summernote/dist/summernote.css"}
+{/block}
+
+{block name="content"}
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4 class="pull-left page-title">{$TEMPLATENAME}编辑</h4>
+                </div>
+            </div>
+            <!-- end row -->
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="form-group p-t-10">
+                            <div class="col-sm-2">
+                                <select id="fieldListSelect" class="form-control">
+                                    {volist name="FIELDLIST" id="vo"}
+                                    <optgroup label="{$key}">
+                                        {volist name="vo" id="voo"}
+                                        <option value="{$voo[1]}">{$voo[0]}</option>
+                                        {/volist}
+                                    </optgroup>
+                                    {/volist}
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" id="selectFieldVar" class="form-control input-sm" placeholder="">
+                            </div>
+                            <div>
+                                <button type="button" onclick="insertVarToTemplate()" class="btn btn-primary waves-effect waves-light m-b-5">插入到模板</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="templateId" id="templateId" value="{$TEMPLATEID}">
+                        <div class="panel-body">
+                            <div id="signtemplate" class="summernote">{$TEMPLATEHTML}</div>
+                        </div>
+                        <div class="text-center">
+                            <button id="saveTemplate" type="button" class="btn btn-info waves-effect waves-light m-b-5">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End row -->
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}
+
+{block name="lead_js"}
+{load file="__admin__/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js"}
+{load file="__admin__/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js"}
+
+<!--form validation init-->
+{load file="__admin__/plugins/summernote/dist/summernote.js"}
+{load file="__admin__/plugins/summernote/dist/lang/summernote-zh-CN.js"}
+
+<script>
+    
+    jQuery(document).ready(function(){
+        $('.wysihtml5').wysihtml5();
+
+        $('.summernote').summernote({
+            lang: 'zh-CN',
+            height: 700,                 // set editor height
+            minHeight: null,             // set minimum height of editor
+            maxHeight: null,             // set maximum height of editor
+            focus: true                 // set focus to editable area after initializing summernote
+        });
+
+        // $('.summernote').summernote({
+        //     focus: true                 // set focus to editable area after initializing summernote
+        // });
+    });
+
+    $(function () {
+        $('#fieldListSelect').change();
+    })
+
+    $('#fieldListSelect').on('change', function () {
+        $('#selectFieldVar').val($(this).val());
+    });
+
+    function insertVarToTemplate() {
+        $('.summernote').summernote('insertText', $('#selectFieldVar').val());
+    }
+    
+    $('#saveTemplate').on('click', function () {
+            var markup = $('.summernote').summernote('code');
+        $.ajax({
+            type: "POST",
+            url: '/admin/SignUp/saveTemplateContent',
+            data: { signcontent: markup, id: $('#templateId').val()},
+            dataType: "json",
+            success: function(data){
+                if (data.code === 'SUCCESS') {
+                    swal(data.msg);
+                }
+            }
+        });
+    })
+</script>
+{/block}
