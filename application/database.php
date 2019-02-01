@@ -13,13 +13,13 @@ return [
     // 数据库类型
     'type'            => 'mysql',
     // 服务器地址
-    'hostname'        => '127.0.0.1',
+    'hostname'        => '192.168.100.122',
     // 数据库名
     'database'        => 'ziwei',
     // 用户名
-    'username'        => 'root',
+    'username'        => 'ziwei',
     // 密码
-    'password'        => '',
+    'password'        => 'ziwei123456',
     // 端口
     'hostport'        => '',
     // 连接dsn
