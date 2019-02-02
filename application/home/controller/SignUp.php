@@ -83,8 +83,5 @@ class Signup extends Base
         } catch (\Exception $e) {
             return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
         }
-
-
-
     }
 }

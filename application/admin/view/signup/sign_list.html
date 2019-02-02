@@ -39,7 +39,6 @@
                                         </div>
                                         <div class="modal-body">
                                             <form action="#" class="form-horizontal">
-                                                <input type="hidden" name="templateId" id="templateId" value="{$TEMPLATEID}">
                                                 <div class="form-group">
                                                     <label class="control-label col-md-3">选择字段</label>
                                                     <div class="col-md-9">
@@ -58,35 +57,54 @@
                                 </div><!-- /.modal-dialog -->
                             </div>
 
+                            <!-- 显示详情模态框 -->
+                            <div id="signDetailInfo" class="modal fade in bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="signDetailInfoModalLabel" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title" id="signDetailInfoModalLabel"></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="signDetailContent" style="width: 820px">
+
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">取消</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-12 col-sm-12 col-xs-12">
-                                    <button onclick="showFieldConfig({$TEMPLATEID})" style="float:right;" class="btn btn-icon waves-effect waves-light btn-default m-b-5"> <i class="fa fa-wrench"></i> </button>
+                                    <div class="col-md-2">
+                                        <select onchange="changeTemplate()" id="TemplateSel" class="form-control">
+                                            {volist name="TEMPLATELIST" id="vo"}
+                                            <option value="{$key}">{$vo}</option>
+                                            {/volist}
+                                        </select>
+                                    </div>
+                                    <div id="approveStatusTab" class="portfolioFilter" style="float: left;margin-left: 10px">
+                                        <a data-status="waiting" class="current" style="line-height: 34px;">待审核（<span></span>）</a>
+                                        <a data-status="passed" class="" style="line-height: 34px;">已通过（<span></span>）</a>
+                                        <a data-status="refused" class="" style="line-height: 34px;">已拒绝（<span></span>）</a>
+                                    </div>
+                                    <button onclick="showFieldConfig()" style="float:right;" class="btn btn-icon waves-effect waves-light btn-default m-b-5"> <i class="fa fa-wrench"></i> </button>
+                                    <div class="clearfix"></div>
+                                    <div class="m-t-20">
+                                        <table class="table table-bordered table-striped" id="signListTable">
 
-                                    <table class="table table-bordered table-striped" id="signListTable">
-
-                                    </table>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="panel-body text-center">
-                                <ul class="pagination m-b-5">
-                                    <li>
-                                        <a href="#" aria-label="Previous">
-                                            <i class="fa fa-angle-left"></i>
-                                        </a>
-                                    </li>
-                                    <li><a href="#">1</a></li>
-                                    <li class="active"><a href="#">2</a></li>
-                                    <li><a href="#">3</a></li>
-                                    <li class="disabled"><a href="#">4</a></li>
-                                    <li><a href="#">5</a></li>
-                                    <li>
-                                        <a href="#" aria-label="Next">
-                                            <i class="fa fa-angle-right"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div> <!-- panel-body -->
+                            <!-- paginate start -->
+                            <div class="panel-body text-center" id="PageTab">
+                            </div>
+                            <!-- paginate end -->
                         </div>
                     </div>
                 </div>
@@ -114,16 +132,28 @@
 {load file="__admin__/plugins/jquery-multi-select/jquery.multi-select.js"}
 
 <script>
+    var templateId = $('#TemplateSel').val();
+    var approveStatus = 'waiting';
+    var listPage = 1;
 
     $(function () {
-        renderList(1);
+        renderList();
+
+        $('#approveStatusTab a').on('click', function () {
+            approveStatus = $(this).attr('data-status');
+            listPage = 1;
+            $('#approveStatusTab a').removeClass('current');
+            $(this).addClass('current');
+            renderList();
+        })
     })
 
-    function showFieldConfig(id) {
+    //显示列表字段设置模态框
+    function showFieldConfig() {
         $.ajax({
             type: 'POST',
             url: 'getSignListConfigInfo',
-            data: {id: id},
+            data: {id: templateId},
             dataType: 'json',
             success: function (data) {
                 var optionHtml = '',
@@ -142,9 +172,14 @@
         })
     }
 
+    //分页跳转
+    function pageTo(page) {
+        listPage = page;
+        renderList();
+    }
+
     $('#saveFieldsConfig').on('click', function () {
         var fields = $('#list_fields').val();
-        var templateId = $('#templateId').val();
 
         $.ajax({
             type: 'POST',
@@ -152,16 +187,22 @@
             data: {fields: fields, id: templateId},
             dataType: 'json',
             success: function (data) {
-                swal(data.msg);
+                if (data.code === 'SUCCESS') {
+                    $('#configInfo').modal('hide');
+                    renderList();
+                } else {
+                    swal(data.msg);
+                }
             }
         })
     })
 
-    function renderList(id) {
+    //绘制列表
+    function renderList() {
         $.ajax({
             type: 'POST',
             url: 'getSignList',
-            data: {id: id},
+            data: {id: templateId, status: approveStatus, page: listPage},
             dataType: 'json',
             success: function (res) {
                 var data = res.data;
@@ -170,16 +211,86 @@
                 for (key in data.headers) {
                     table += '<th>' + data.headers[key] + '</th>';
                 }
+                if (approveStatus === 'waiting') {
+                    table += '<th>操作</th>';
+                }
                 table += '</tr>';
                 for (var i = 0; i < data.table.length; i ++) {
+                    var signId = data.table[i]['id'];
                     table += '<tr>';
                     for (key2 in data.headers) {
                         table += '<td>' + data.table[i][key2] + '</td>';
+                    }
+                    if (approveStatus === 'waiting') {
+                        table += '<td data-id="' + signId + '" style="width: 210px">';
+                        table += '<button onclick="showDetail(this)" type="button" class="btn btn-info waves-effect waves-light m-b-5">详情</button>';
+                        table += '<button onclick="approveSign(this,\'passed\')" type="button" class="m-l-10 btn btn-success waves-effect waves-light m-b-5">通过</button>';
+                        table += '<button onclick="approveSign(this,\'refused\')" type="button" class="m-l-10 btn btn-danger waves-effect waves-light m-b-5">拒绝</button>';
+                        table += '</td>';
                     }
                     table += '</tr>';
                 }
 
                 $('#signListTable').html(table);
+                $('#PageTab').html(data.page);
+                
+                changeStatusNum(data.num);
+            }
+        })
+    }
+
+    //修改不同审批状态对应的数量
+    function changeStatusNum(data) {
+        $('#approveStatusTab a').each(function () {
+            var data_status = $(this).attr('data-status');
+            var status_num = 0;
+            if (data[data_status] > 0) {
+                status_num = data[data_status];
+            }
+            $(this).find('span').text(status_num);
+        })
+    }
+
+    //切换模板
+    function changeTemplate() {
+        templateId = $('#TemplateSel').val();
+        listPage = 1;
+        renderList();
+    }
+
+    //审核
+    function approveSign(obj, approveResult) {
+        var id = $(obj).parent().attr('data-id');
+
+        $.ajax({
+            type: 'POST',
+            url: 'approveSign',
+            data: {id: id, approveRes: approveResult, templateId: templateId},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code === 'SUCCESS') {
+                    changeStatusNum(data.num);
+                    $(obj).parent().parent().remove();
+                }
+            }
+        })
+    }
+
+    //查看详情
+    function showDetail(obj) {
+        var id = $(obj).parent().attr('data-id');
+        
+        $.ajax({
+            type: 'POST',
+            url: 'showSignDetail',
+            data: {id: id},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code === 'SUCCESS') {
+                    $('#signDetailContent').html(data.html);
+                    $('#signDetailInfoModalLabel').text(data.title + '报名内容详情');
+                    $('#signDetailInfo').modal('show');
+                }
             }
         })
     }

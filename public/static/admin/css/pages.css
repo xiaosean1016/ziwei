@@ -664,6 +664,7 @@ button.confirm {
   color: #333333;
   padding: 5px 10px;
   transition: all 0.3s ease-out;
+  cursor: pointer;
 }
 .portfolioFilter a:hover {
   background-color: #33b86c;

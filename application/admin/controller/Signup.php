@@ -216,12 +216,7 @@ class Signup extends Base
         return $data;
     }
 
-    public function approve()
-    {
-
-    }
-
-
+    //获取模板对应列表配置字段
     public function getSignListConfigInfo()
     {
         $templateId = Request::instance()->param('id');
@@ -245,6 +240,7 @@ class Signup extends Base
         return json(['code' => 'SUCCESS', 'data' => $fields, 'name' => $templateName]);
     }
 
+    //保存列表配置字段
     public function saveListFields()
     {
         $templateId = Request::instance()->param('id');
@@ -277,25 +273,76 @@ class Signup extends Base
 
     public function signList()
     {
-        $this->assign('TEMPLATEID', 2);
+        $tempalteList = Db::name('template')->column('name','id');
+
+        $this->assign('TEMPLATELIST', $tempalteList);
+//        $this->assign('TEMPLATEID', key($tempalteList));
         return $this->fetch();
     }
 
     public function getSignList()
     {
         $templateId = Request::instance()->param('id');
+        $approveStatus = Request::instance()->param('status', 'waiting');
+//        $page = Request::instance()->param('page', 1);
 
         $listFields = Db::name('list_fields')->where('templateid', $templateId)->column('fieldname');
         $tableHeaders = Db::name('field')->where('tablename', 'zw_signup')->where('fieldname', 'IN', $listFields)->column('fieldlabel', 'fieldname');
 
         $listFields[] = 'createdatetime';
-        $listFields[] = 'status';
+        $listFields[] = 'id';
         $tableHeaders['createdatetime'] = '创建时间';
-        $tableHeaders['status'] = '审核状态';
+        $tableHeaders['id'] = 'ID';
 
-        $tableData = Db::name('signup')->where('templateid', $templateId)->column(implode(',', $listFields), 'id');
+//        $tableData = Db::name('signup')->field(implode(',', $listFields))->where('templateid', $templateId)->where('status', $approveStatus)->order('createdatetime desc')->limit(10)->page($page)->select();
+        $tableData = Db::name('signup')->field(implode(',', $listFields))->where('templateid', $templateId)->where('status', $approveStatus)->order('createdatetime desc,id desc')->paginate(10);
+        $statusNum = Db::name('signup')->where('templateid', $templateId)->where('status', 'not null')->group('status')->column('count(*) count', 'status');
 
-        $data = ['table' => array_values($tableData), 'headers' => $tableHeaders];
+        $data = ['table' => $tableData->items(), 'headers' => $tableHeaders, 'page' => $tableData->render(), 'num' => $statusNum];
         return json(['code' => 'SUCCESS', 'data' => $data]);
+    }
+
+    //报名表单详情
+    public function showSignDetail()
+    {
+        $signId = Request::instance()->param('id');
+        $templateId = Db::name('signup')->where('id', $signId)->value('templateid');
+
+        $templatePath = __DIR__ . '/../../config/signup_' . $templateId . '.html';
+
+        $templateHtml = '';
+        if (file_exists($templatePath)) {
+            $templateHtml = file_get_contents($templatePath);
+        }
+        $templateFields = model('Template')->getTemplateFields($templateId);
+
+        $fieldsValue = Db::name('signup')->field($templateFields)->find($signId);
+
+        $replaceData = [];
+        foreach ($templateFields as $key => $val) {
+            $from = "[var.{$val}]";
+
+            $replaceData[$from] = $fieldsValue[$val];
+        }
+
+        $templateHtml = strtr($templateHtml, $replaceData);
+
+        return json(['code' => 'SUCCESS', 'title' => $fieldsValue['name'] , 'html' => $templateHtml]);
+    }
+
+    //报名审核
+    public function approveSign()
+    {
+        $signId = Request::instance()->param('id');
+        $templateId = Request::instance()->param('templateId');
+        $status = Request::instance()->param('approveRes');
+
+        if (in_array($status, ['waiting', 'passed', 'refused'])) {
+            Db::name('signup')->where('id', $signId)->update(['status' => $status]);
+        }
+
+        $statusNum = Db::name('signup')->where('templateid', $templateId)->where('status', 'not null')->group('status')->column('count(*) count', 'status');
+
+        return json(['code' => 'SUCCESS', 'msg' => '修改成功', 'num' => $statusNum]);
     }
 }
