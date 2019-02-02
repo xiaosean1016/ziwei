@@ -81,16 +81,10 @@
                         </div>
                         <div class="user-info">
                             <div class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Xiao Sean <span class="caret"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="javascript:void(0)"><i class="md md-face-unlock"></i> Profile<div class="ripple-wrapper"></div></a></li>
-                                    <li><a href="javascript:void(0)"><i class="md md-settings"></i> Settings</a></li>
-                                    <li><a href="javascript:void(0)"><i class="md md-lock"></i> Lock screen</a></li>
-                                    <li><a href="javascript:void(0)"><i class="md md-settings-power"></i> Logout</a></li>
-                                </ul>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{$Think.session.real_name}</a>
                             </div>
 
-                            <p class="text-muted m-0">Administrator</p>
+                            <p class="text-muted m-0">{$Think.session.admin_name}</p>
                         </div>
                     </div>
                     <!--- Divider -->
@@ -129,6 +123,10 @@
                                     <li><a href="gallery.html">Gallery </a></li>
                                     <li><a href="pricing.html">Pricing Table </a></li>
                                 </ul>
+                            </li>
+
+                            <li>
+                                <a href="/admin/login/logout.html" class="waves-effect"><i class="md md-cancel"></i><span> 退出登录 </span></a>
                             </li>
                         </ul>
                         <div class="clearfix"></div>
