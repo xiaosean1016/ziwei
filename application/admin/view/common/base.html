@@ -98,11 +98,11 @@
                         <ul>
 
                             <li class="has_sub">
-                                <a href="#" class="waves-effect waves-light"><i class="md md-people"></i><span> 报名管理 </span><span class="pull-right"><i class="md md-add"></i></span></a>
+                                <a data-controller="signup" href="#" class="waves-effect waves-light"><i class="md md-people"></i><span> 报名管理 </span><span class="pull-right"><i class="md md-add"></i></span></a>
                                 <ul class="list-unstyled">
-                                    <li><a href="/admin/signup/fieldlist.html">表单字段</a></li>
-                                    <li><a href="/admin/signup/signtemplateList.html">报名模板</a></li>
-                                    <li><a href="/admin/signup/signlist.html">报名列表</a></li>
+                                    <li data-action="signlist"><a href="/admin/signup/signlist.html">报名列表</a></li>
+                                    <li data-action="signtemplatelist"><a href="/admin/signup/signtemplatelist.html">报名表模板</a></li>
+                                    <li data-action="fieldlist"><a href="/admin/signup/fieldlist.html">表单字段</a></li>
                                 </ul>
                             </li>
 
@@ -202,12 +202,30 @@
         {load file="__admin__/pages/jquery.todo.js"}
 
         <script type="text/javascript">
+            var controller_name = '{$CONTROLLER_NAME}';
+            var action_name = '{$ACTION_NAME}';
             jQuery(document).ready(function($) {
                 $('.counter').counterUp({
                     delay: 100,
                     time: 1200
                 });
+
+                reviseTab();
             });
+
+            function reviseTab() {
+                $('#sidebar-menu .waves-effect').each(function () {
+                    if (controller_name === $(this).attr('data-controller')) {
+                        $(this).addClass('active').click();
+                    }
+                });
+
+                $('#sidebar-menu ul li').each(function () {
+                    if (action_name === $(this).attr('data-action')) {
+                        $(this).addClass('active');
+                    }
+                })
+            }
         </script>
 
 

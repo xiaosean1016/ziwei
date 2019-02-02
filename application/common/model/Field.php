@@ -23,7 +23,7 @@ class Field extends Model
 
     public function getCfgFields($tablename)
     {
-        $list = Db::table('zw_field')->where('tablename', $tablename)->select();
+        $list = Db::name('field')->where('tablename', $tablename)->select();
 
         foreach ($list as &$val) {
             $val['signarea'] = $this->signArea[$val['signarea']];
@@ -82,7 +82,7 @@ class Field extends Model
         if ($param) {
             $id = $param['id'];
             unset($param['id']);
-            return Db::table('zw_field')->where('id', $id)->update($param);
+            return Db::name('field')->where('id', $id)->update($param);
         }
 
         return false;
