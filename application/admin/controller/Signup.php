@@ -293,6 +293,12 @@ class Signup extends Base
         $listFields[] = 'id';
         $tableHeaders['createdatetime'] = '创建时间';
         $tableHeaders['id'] = 'ID';
+        if ($approveStatus != 'waiting') {
+            $listFields[] = 'issentmsg';
+            $listFields[] = 'msgcontent';
+            $tableHeaders['issentmsg'] = '发送状态';
+            $tableHeaders['msgcontent'] = '通知内容';
+        }
 
 //        $tableData = Db::name('signup')->field(implode(',', $listFields))->where('templateid', $templateId)->where('status', $approveStatus)->order('createdatetime desc')->limit(10)->page($page)->select();
         $tableData = Db::name('signup')->field(implode(',', $listFields))->where('templateid', $templateId)->where('status', $approveStatus)->order('createdatetime desc,id desc')->paginate(10);
@@ -338,11 +344,30 @@ class Signup extends Base
         $status = Request::instance()->param('approveRes');
 
         if (in_array($status, ['waiting', 'passed', 'refused'])) {
-            Db::name('signup')->where('id', $signId)->update(['status' => $status]);
+            $data['status'] = $status;
+            $data['approvedatetime'] = date('Y-m-d H:i:s', time());
+            Db::name('signup')->where('id', $signId)->update($data);
         }
 
         $statusNum = Db::name('signup')->where('templateid', $templateId)->where('status', 'not null')->group('status')->column('count(*) count', 'status');
 
         return json(['code' => 'SUCCESS', 'msg' => '修改成功', 'num' => $statusNum]);
+    }
+
+    //发送通知
+    public function sendMessage()
+    {
+        $ids = Request::instance()->param('ids');
+        $msgContent = Request::instance()->param('content');
+
+        if ($ids) {
+            $data['msgcontent'] = $msgContent;
+            $data['issentmsg'] = 1;
+            $updateRes = Db::name('signup')->where('id', 'in', $ids)->update($data);
+            if ($updateRes) {
+                return json(['code' => 'SUCCESS', 'msg' => '发送成功']);
+            }
+        }
+        return json(['code' => 'ERROR', 'msg' => '无数据']);
     }
 }

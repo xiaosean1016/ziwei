@@ -6,6 +6,11 @@
 {/block}
 
 {block name="content"}
+<style>
+    #signListTable td {
+        line-height: 34px;
+    }
+</style>
 
 <!-- ============================================================== -->
 <!-- Start right Content here -->
@@ -77,6 +82,29 @@
                                 </div><!-- /.modal-dialog -->
                             </div>
 
+                            <!-- 发送通知模态框 -->
+                            <div id="sendMessageInfo" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="sendMessageModalLabel" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title" id="sendMessageModalLabel">发送通知</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="#" class="form-horizontal">
+                                                <div class="form-group">
+                                                    <textarea id="msgContentText" class="form-control" rows="5"></textarea>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">取消</button>
+                                            <button type="button" id="sendMessageBtn" class="btn btn-primary waves-effect waves-light">发送</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-12 col-sm-12 col-xs-12">
                                     <div class="col-md-2">
@@ -93,7 +121,10 @@
                                     </div>
                                     <button onclick="showFieldConfig()" style="float:right;" class="btn btn-icon waves-effect waves-light btn-default m-b-5"> <i class="fa fa-wrench"></i> </button>
                                     <div class="clearfix"></div>
-                                    <div class="m-t-20">
+                                    <div class="m-t-10" id="multiSendMessage" style="display: none;">
+                                        <button onclick="showSendMessage()" type="button" class="btn btn-default btn-custom waves-effect m-b-5">批量发送通知</button>
+                                    </div>
+                                    <div class="m-t-10">
                                         <table class="table table-bordered table-striped" id="signListTable">
 
                                         </table>
@@ -145,6 +176,32 @@
             $('#approveStatusTab a').removeClass('current');
             $(this).addClass('current');
             renderList();
+        });
+
+        //复选框绑定事件
+        $(document).on('click', '#signListTable tr td input[type="checkbox"]', function () {
+            var checkAllStatus = true;
+            $('#signListTable tr td input[type="checkbox"]').each(function () {
+                if (!$(this).prop('checked')) {
+                    checkAllStatus = false;
+                    return false;
+                }
+            });
+            $('#selectAllBox').prop('checked', checkAllStatus);
+        });
+        
+        //全选事件
+        $(document).on('click', '#selectAllBox', function () {
+            var checkStatus = $(this).prop('checked');
+
+            $('#signListTable tr td input[type="checkbox"]').each(function () {
+                $(this).prop('checked',checkStatus);
+            });
+        });
+
+        //发送通知事件绑定
+        $('#sendMessageBtn').on('click',function () {
+            sendMessage();
         })
     })
 
@@ -195,7 +252,7 @@
                 }
             }
         })
-    })
+    });
 
     //绘制列表
     function renderList() {
@@ -208,31 +265,49 @@
                 var data = res.data;
                 var table = '';
                 table += '<tr>';
+                if (approveStatus !== 'waiting') {
+                    table += '<th><input type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="selectAllBox"></th>';
+                }
                 for (key in data.headers) {
                     table += '<th>' + data.headers[key] + '</th>';
                 }
                 if (approveStatus === 'waiting') {
-                    table += '<th>操作</th>';
+                    table += '<th width="210px">操作</th>';
+                } else {
+                    table += '<th width="140px">操作</th>';
                 }
                 table += '</tr>';
                 for (var i = 0; i < data.table.length; i ++) {
                     var signId = data.table[i]['id'];
-                    table += '<tr>';
+                    table += '<tr data-id="' + signId + '">';
+                    if (approveStatus !== 'waiting') {
+                        table += '<td><input type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="sign_' + signId + '"></td>';
+                    }
                     for (key2 in data.headers) {
                         table += '<td>' + data.table[i][key2] + '</td>';
                     }
+
+                    table += '<td>';
+                    table += '<button onclick="showDetail(this)" type="button" class="btn btn-info waves-effect waves-light m-b-5">详情</button>';
                     if (approveStatus === 'waiting') {
-                        table += '<td data-id="' + signId + '" style="width: 210px">';
-                        table += '<button onclick="showDetail(this)" type="button" class="btn btn-info waves-effect waves-light m-b-5">详情</button>';
-                        table += '<button onclick="approveSign(this,\'passed\')" type="button" class="m-l-10 btn btn-success waves-effect waves-light m-b-5">通过</button>';
+                        table += '<button onclick="approveSign(this,\'passed\')" type="button" class="m-l-10 btn btn-primary waves-effect waves-light m-b-5">通过</button>';
                         table += '<button onclick="approveSign(this,\'refused\')" type="button" class="m-l-10 btn btn-danger waves-effect waves-light m-b-5">拒绝</button>';
-                        table += '</td>';
+                    } else {
+                        table += '<button onclick="approveSign(this,\'waiting\')" type="button" class="m-l-10 btn btn-success waves-effect waves-light m-b-5">移出</button>';
                     }
+                    table += '</td>';
+
                     table += '</tr>';
                 }
 
                 $('#signListTable').html(table);
                 $('#PageTab').html(data.page);
+
+                if (approveStatus === 'waiting') {
+                    $('#multiSendMessage').hide();
+                } else {
+                    $('#multiSendMessage').show();
+                }
                 
                 changeStatusNum(data.num);
             }
@@ -260,7 +335,7 @@
 
     //审核
     function approveSign(obj, approveResult) {
-        var id = $(obj).parent().attr('data-id');
+        var id = $(obj).parent().parent().attr('data-id');
 
         $.ajax({
             type: 'POST',
@@ -278,7 +353,7 @@
 
     //查看详情
     function showDetail(obj) {
-        var id = $(obj).parent().attr('data-id');
+        var id = $(obj).parent().parent().attr('data-id');
         
         $.ajax({
             type: 'POST',
@@ -290,6 +365,41 @@
                     $('#signDetailContent').html(data.html);
                     $('#signDetailInfoModalLabel').text(data.title + '报名内容详情');
                     $('#signDetailInfo').modal('show');
+                }
+            }
+        })
+    }
+
+    //获取已勾选的id
+    function getCheckedIds() {
+        var ids = [];
+        $('#signListTable tr td input[type="checkbox"]').each(function () {
+            if ($(this).prop('checked')) {
+                ids.push($(this).parent().parent().attr('data-id'));
+            }
+        });
+        return ids;
+    }
+
+    function showSendMessage() {
+        $('#sendMessageInfo').modal('show');
+    }
+
+    function sendMessage() {
+        var ids = getCheckedIds();
+        var content = $('#msgContentText').val();
+
+        $.ajax({
+            type: 'POST',
+            url: 'sendMessage',
+            data: {'ids': ids.join(','), 'content': content},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code === 'SUCCESS') {
+                    $('#sendMessageInfo').modal('hide');
+                    renderList();
+                } else {
+                    swal(data.msg);
                 }
             }
         })

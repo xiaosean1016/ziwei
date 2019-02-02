@@ -43,7 +43,7 @@ class Signup extends Base
             } elseif ($val == 'checkbox') {
                 $html = '<input type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="' . $key . '" name="' . $key . '">';
             } elseif ($val == 'select' || $val == 'multiple') {
-                $pickList = model('Field')->getPickListVal('sourcearea');
+                $pickList = model('Field')->getPickListVal($key);
                 $html = '<select id=' . $key . ' name=' . $key . ' ' . ($val == 'multiple' ? 'multiple="multiple"' : '') . ' class="form-control">';
                 foreach ($pickList as $v) {
                     $html .= '<option value="' . $v . '">' . $v . '</option>';
@@ -68,7 +68,7 @@ class Signup extends Base
         $fields = model('Template')->getTemplateFields($id);
         $param = Request::instance()->only($fields);
         $param['createdatetime'] = date('Y-m-d H:i:s', time());
-        $param['status'] = 'wait';
+        $param['status'] = 'waiting';
         $param['templateid'] = $id;
         $param['userid'] = 1;
 
