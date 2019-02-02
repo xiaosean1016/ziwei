@@ -77,7 +77,10 @@
         {load file="__admin__/plugins/sweetalert/dist/sweetalert.min.js"}
 
         <script>
-
+            var error_msg = '{$ERROR_MESSAGE}';
+            if (error_msg) {
+                swal(error_msg);
+            }
         </script>
 	</body>
 </html>
