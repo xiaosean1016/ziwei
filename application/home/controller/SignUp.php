@@ -37,9 +37,9 @@ class Signup extends Base
             if ($val == 'varchar') {
                 $html = '<input class="form-control" type="text" name="' . $key . '" id="' . $key . '" value="">';
             } elseif ($val == 'date') {
-                $html = '<input type="text" placeholder="yyyy-mm-dd" data-mask="9999-99-99" class="form-control">';
+                $html = '<input type="text" name="' . $key . '" id="' . $key . '" placeholder="yyyy-mm-dd" data-mask="9999-99-99" class="form-control">';
             } elseif ($val == 'datetime') {
-                $html = '<input type="text" placeholder="yyyy-mm-dd HH:ii:ss" data-mask="9999-99-99 99:99:99" class="form-control">';
+                $html = '<input type="text" name="' . $key . '" id="' . $key . '" placeholder="yyyy-mm-dd HH:ii:ss" data-mask="9999-99-99 99:99:99" class="form-control">';
             } elseif ($val == 'checkbox') {
                 $html = '<input type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="' . $key . '" name="' . $key . '">';
             } elseif ($val == 'select' || $val == 'multiple') {

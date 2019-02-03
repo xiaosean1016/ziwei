@@ -321,7 +321,13 @@ class Signup extends Base
         $tableData = Db::name('signup')->field(implode(',', $listFields))->where('templateid', $templateId)->where('status', $approveStatus)->order('createdatetime desc,id desc')->paginate(10);
         $statusNum = Db::name('signup')->where('templateid', $templateId)->where('status', 'not null')->group('status')->column('count(*) count', 'status');
 
-        $data = ['table' => $tableData->items(), 'headers' => $tableHeaders, 'page' => $tableData->render(), 'num' => $statusNum];
+        $listData = array_map(function ($item) {
+           return array_map(function($val) {
+                return $val ? $val : '';
+            }, $item);
+        },$tableData->items());
+
+        $data = ['table' => $listData, 'headers' => $tableHeaders, 'page' => $tableData->render(), 'num' => $statusNum];
         return json(['code' => 'SUCCESS', 'data' => $data]);
     }
 
