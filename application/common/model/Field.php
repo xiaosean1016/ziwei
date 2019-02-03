@@ -147,6 +147,9 @@ class Field extends Model
                 if ($k == 'issentmsg') {
                     $v = $v ? '已通知' : '未通知';
                 }
+//                if ($k == 'status') {
+//                    $statusView = ['waiting' => '审核中', 'passed' => '已通过', 'refused' => '已拒绝'];
+//                }
             }
         }
         $fieldsVal = $singleD ? $fieldsVal[0] : $fieldsVal;

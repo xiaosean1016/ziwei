@@ -12,15 +12,83 @@ use think\Db;
 use think\Exception;
 use think\Model;
 use think\Request;
+use think\Session;
 
 class Signup extends Base
 {
+    public function selectProcess()
+    {
+        $list = Db::name('template')->where('isshow', 1)->column('id', 'type');
+
+        $this->assign('LIST', $list);
+        return $this->fetch();
+    }
+
     public function createView()
     {
         $id = Request::instance()->get('id');
 
 //        $templateName = Db::name('template')->where('id', $id)->value('name');
 
+        $templateHtml = $this->getTemplateHtml($id);
+
+        $this->assign('TEMPLATEID', $id);
+        $this->assign('TEMPLATEHTML', $templateHtml);
+        return $this->fetch();
+    }
+
+    public function save()
+    {
+        $id = Request::instance()->param('id');
+        $fields = model('Template')->getTemplateFields($id);
+        $param = Request::instance()->only($fields);
+        $param['createdatetime'] = date('Y-m-d H:i:s', time());
+        $param['status'] = 'waiting';
+        $param['templateid'] = $id;
+        $param['userid'] = 1;
+
+        try {
+            $signId = Db::name('signup')->insertGetId($param);
+
+            if ($signId) {
+                return json(['code' => 'SUCCESS', 'msg' => '提交成功']);
+            } else {
+                return json(['code' => 'ERROR', 'msg' => '提交失败']);
+            }
+        } catch (\Exception $e) {
+            return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
+        }
+    }
+
+    public function editSave() {
+        $id = Request::instance()->param('id');
+
+        //todo 判断id是否为用户所属
+        $templateId = Db::name('signup')->where('id', $id)->value('templateid');
+        $fields = model('Template')->getTemplateFields($templateId);
+        $param = Request::instance()->only($fields);
+
+        try {
+            Db::name('signup')->where('id', $id)->update($param);
+            return json(['code' => 'SUCCESS', 'msg' => '修改成功']);
+        } catch (\Exception $e) {
+            return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
+        }
+    }
+
+    public function submitResult()
+    {
+        $userId = Session::get('user_id');
+        $userId = 2;
+
+        $list = Db::name('signup')->field('id,createdatetime,status')->where('userid', $userId)->select();
+
+        $this->assign('LIST', $list);
+        return $this->fetch();
+    }
+
+    public function getTemplateHtml($id)
+    {
         $templatePath = __DIR__ . '/../../config/signup_' . $id . '.html';
 
         $templateHtml = '';
@@ -57,31 +125,31 @@ class Signup extends Base
 //        $templateHtml = preg_replace('/\[var\.(.*)\]/i', $replaceInput, $templateHtml);
         $templateHtml = strtr($templateHtml, $replaceData);
 
-        $this->assign('TEMPLATEID', $id);
+        return $templateHtml;
+    }
+
+    public function editView()
+    {
+        $id = Request::instance()->param('id');
+
+        $templateId = Db::name('signup')->where('id', $id)->value('templateid');
+
+        $templateHtml = $this->getTemplateHtml($templateId);
+
+        $this->assign('SIGNID', $id);
         $this->assign('TEMPLATEHTML', $templateHtml);
         return $this->fetch();
     }
 
-    public function save()
+    public function getEditValue()
     {
         $id = Request::instance()->param('id');
-        $fields = model('Template')->getTemplateFields($id);
-        $param = Request::instance()->only($fields);
-        $param['createdatetime'] = date('Y-m-d H:i:s', time());
-        $param['status'] = 'waiting';
-        $param['templateid'] = $id;
-        $param['userid'] = 1;
 
-        try {
-            $signId = Db::name('signup')->insertGetId($param);
+        $templateId = Db::name('signup')->where('id', $id)->value('templateid');
+        $templateFields = model('Template')->getTemplateFields($templateId);
 
-            if ($signId) {
-                return json(['code' => 'SUCCESS', 'msg' => '提交成功']);
-            } else {
-                return json(['code' => 'ERROR', 'msg' => '提交失败']);
-            }
-        } catch (\Exception $e) {
-            return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
-        }
+        $list = Db::name('signup')->field($templateFields)->where('id', $id)->find();
+
+        return json(['code' => 'SUCCESS', 'data' => $list]);
     }
 }

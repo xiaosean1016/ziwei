@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title></title>
+	<!-- bootstrap css -->
+	{load file="__home__/css/bootstrap.min.css"}
+	{load file="__home__/css/core.css"}
+	{load file="__admin__/css/components.css"}
+	{load file="__home__/css/style.css"}
+	<!--响应式特性 css-->
+	{load file="__home__/css/bootstrap-responsive.min.css"}
+	<!-- jquery -->
+	{load file="__home__/js/jquery-1.8.3.min.js"}
+	<!-- bootstrap.js -->
+	{load file="__home__/js/bootstrap.min.js"}
+    {load file="__admin__/plugins/bootstrap-inputmask/bootstrap-inputmask.min.js"}
+</head>
+<body>
+<style></style>
+	<div class="row-fluid" id="header">	
+		<div class="span8 offset2">				
+			<h1 class="font">上海市徐汇区紫薇实验幼儿园</h1>
+			<p class="lead">按照要求填写报名表</p>
+		</div>			
+    </div>
+
+	<div class="row-fluid" id="main">
+		<div class="span8 offset2">	
+			<form id="signForm" class="form-horizontal ">
+                <input type="hidden" name="id" value="{$SIGNID}">
+
+				{$TEMPLATEHTML}
+
+			</form>
+			<div class="text-center">
+				<button id="submitForm" class="btn btn-info waves-effect waves-light m-l-10">提交</button>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="row-fluid" id="footer">	
+		<div class="span8 offset2">				
+			<p>©2006 - 2019 紫薇幼儿园</p>
+		</div>			
+    </div>
+
+	<script>
+        function form_serialize (form) {
+            if (!form || form.nodeName !== "FORM") {
+                return;
+            }
+            var i, j, q = [];
+            for (i = form.elements.length - 1; i >= 0; i = i - 1) {
+                if (form.elements[i].name === "") {
+                    continue;
+                }
+                switch (form.elements[i].nodeName) {
+                    case 'INPUT':
+                        switch (form.elements[i].type) {
+                            case 'text':
+                            case 'tel':
+                            case 'email':
+                            case 'hidden':
+                            case 'password':
+                            case 'button':
+                            case 'reset':
+                            case 'submit':
+                                q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                                break;
+                            case 'checkbox':
+                            case 'radio':
+                                if (form.elements[i].checked) {
+                                    q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                                }
+                                break;
+                        }
+                        break;
+                    case 'file':
+                        break;
+                    case 'TEXTAREA':
+                        q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                        break;
+                    case 'SELECT':
+                        switch (form.elements[i].type) {
+                            case 'select-one':
+                                q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                                break;
+                            case 'select-multiple':
+                                var options = [];
+                                for (j = form.elements[i].options.length - 1; j >= 0; j = j - 1) {
+                                    if (form.elements[i].options[j].selected) {
+                                        options.push(encodeURIComponent(form.elements[i].options[j].value));
+                                    }
+                                }
+                                q.push(form.elements[i].name + "=" + options);
+                                break;
+                        }
+                        break;
+                    case 'BUTTON':
+                        switch (form.elements[i].type) {
+                            case 'reset':
+                            case 'submit':
+                            case 'button':
+                                q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                                break;
+                        }
+                        break;
+                }
+            }
+            return q.join("&");
+        }
+
+		$(function () {
+		    editValues({$SIGNID});
+
+			$('#submitForm').on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/home/SignUp/editSave',
+                    data: form_serialize(document.getElementById('signForm')),
+                    dateType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                    }
+                });
+            })
+        });
+
+		function editValues(id) {
+			$.ajax({
+				type: 'POST',
+				url: 'getEditValue',
+				data: {id: id},
+				dataType: 'json',
+				success: function (res) {
+				    var data = res.data;
+					for (key in data) {
+						$('#signForm input[name="' + key + '"]').val(data[key]);
+					}
+                }
+			})
+        }
+		
+	</script>
+	
+</body>
+</html>
