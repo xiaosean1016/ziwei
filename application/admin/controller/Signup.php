@@ -321,11 +321,7 @@ class Signup extends Base
         $tableData = Db::name('signup')->field(implode(',', $listFields))->where('templateid', $templateId)->where('status', $approveStatus)->order('createdatetime desc,id desc')->paginate(10);
         $statusNum = Db::name('signup')->where('templateid', $templateId)->where('status', 'not null')->group('status')->column('count(*) count', 'status');
 
-        $listData = array_map(function ($item) {
-           return array_map(function($val) {
-                return $val ? $val : '';
-            }, $item);
-        },$tableData->items());
+        $listData = model('Field')->getFieldsShowValues($tableData->items());
 
         $data = ['table' => $listData, 'headers' => $tableHeaders, 'page' => $tableData->render(), 'num' => $statusNum];
         return json(['code' => 'SUCCESS', 'data' => $data]);
@@ -346,7 +342,7 @@ class Signup extends Base
         $templateFields = model('Template')->getTemplateFields($templateId);
 
         $fieldsValue = Db::name('signup')->field($templateFields)->find($signId);
-
+        $fieldsValue = model('Field')->getFieldsShowValues($fieldsValue);
         $replaceData = [];
         foreach ($templateFields as $key => $val) {
             $from = "[var.{$val}]";
