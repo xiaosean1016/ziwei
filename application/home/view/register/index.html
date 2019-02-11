@@ -33,7 +33,15 @@
         
     </head>
     <body>
-
+        <style>
+            .error_span {
+                color: #ef5350;
+                padding-left: 16px;
+            }
+            .error_input {
+                border-color: #ef5350;
+            }
+        </style>
 
         <div class="wrapper-page">
             <div class="panel panel-color panel-primary panel-pages">
@@ -47,27 +55,27 @@
                 <form class="form-horizontal m-t-20" action="index.html">
                     <div class="form-group">
                         <div class="col-xs-12">
-                            <input class="form-control input-lg" type="tel" required="" placeholder="手机号">
+                            <input class="form-control input-lg" type="tel" name="phone" required="" placeholder="手机号">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="col-xs-12">
-                            <input class="form-control input-lg" type="password" required="" placeholder="密码">
+                            <input class="form-control input-lg" type="password" name="password" required="" placeholder="密码">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="input-group col-xs-12" style="padding: 0 10px">
-                            <input class="form-control input-lg" type="text" required="" placeholder="图形验证码">
-                            <div class="input-group-btn"><img style="width: 120px;height: 46px;" src="{:captcha_src()}" alt="captcha" /></div>
+                            <input class="form-control input-lg" type="text" name="captcha_code" required="" placeholder="图形验证码">
+                            <div class="input-group-btn" id="captchaDiv"><img onclick="javascript:this.src='{:captcha_src()}'" style="width: 120px;height: 46px;cursor: pointer" src="{:captcha_src()}" alt="captcha" /></div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="input-group col-xs-12" style="padding: 0 10px">
-                            <input class="form-control input-lg" type="text" required="" placeholder="短信验证码">
-                            <span class="input-group-btn"> <button type="button" style="font-size: 13px;line-height: 24px" class="btn btn-lg btn-primary waves-effect waves-light">获取验证码</button> </span>
+                            <input class="form-control input-lg" type="text" name="verify_code" required="" placeholder="短信验证码">
+                            <span class="input-group-btn"> <button id="sendVerifyCodeBtn" type="button" style="width: 120px;height: 46px;font-size: 13px;line-height: 24px" class="btn btn-lg btn-primary waves-effect waves-light">获取验证码</button> </span>
                         </div>
                     </div>
 
@@ -86,7 +94,7 @@
                     
                     <div class="form-group text-center m-t-40">
                         <div class="col-xs-12">
-                            <button class="btn btn-primary waves-effect waves-light btn-lg w-lg" type="submit">注册</button>
+                            <button id="submitForm" class="btn btn-primary waves-effect waves-light btn-lg w-lg" type="button">注册</button>
                         </div>
                     </div>
 
@@ -119,5 +127,76 @@
         {load file="__admin__/js/jquery.scrollTo.min.js"}
 
         {load file="__admin__/js/jquery.app.js"}
+
+        <script>
+            $(function () {
+                $('#submitForm').on('click', function () {
+                    var phone = $('input[name="phone"]').val();
+                    var password = $('input[name="password"]').val();
+                    var verify_code = $('input[name="verify_code"]').val();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: 'register/submitRegister',
+                        data: {phone: phone, password: password, verifyCode: verify_code},
+                        dataType: 'json',
+                        success: function (data) {
+                            alert('注册成功');
+                        }
+                    })
+                });
+
+                $('#sendVerifyCodeBtn').on('click', function () {
+                    var phone = $('input[name="phone"]').val();
+                    var password = $('input[name="password"]').val();
+                    var captcha_code = $('input[name="captcha_code"]').val();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: 'register/sendVerifyCode',
+                        data: {phone: phone, password: password, captcha_code: captcha_code},
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code === 'ERROR') {
+                                var msg = data.msg;
+                                var msgObj = msg.split('$$');
+                                if (msgObj[1]) {
+                                    showError(msgObj[0], msgObj[1]);
+                                }
+                            } else {
+                                alert('验证码已发送');
+                            }
+                        }
+                    })
+                });
+
+                $('input').on('focus', function () {
+                    var field = $(this).prop('name');
+                    hideError(field);
+                });
+            });
+
+            function showError(msg, field) {
+                var fieldObj = $('input[name="' + field + '"]');
+                if (fieldObj) {
+                    fieldObj.addClass('error_input');
+                    fieldObj.parent().parent().append('<span class="error_span">' + msg + '</span>');
+                    
+                    if (field === 'captcha_code') {
+                        $('#captchaDiv img').click();
+                    }
+                }
+            }
+
+            function hideError(field) {
+                var fieldObj = $('input[name="' + field + '"]');
+                if (fieldObj) {
+                    fieldObj.removeClass('error_input');
+                    fieldObj.parent().parent().find('.error_span').text('').hide();
+                }
+            }
+
+
+        </script>
 	</body>
 </html>

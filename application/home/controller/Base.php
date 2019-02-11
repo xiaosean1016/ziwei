@@ -15,9 +15,10 @@ class base extends Controller
 {
     protected function _initialize()
     {
-//        $admin = Session::get(LOGIN_ADMIN);
-//        if (!$admin) {
-//            $this->redirect('Login/login');
-//        }
+        $user = Session::get('user_name');
+
+        if (!$user) {
+            $this->redirect('/home/login');
+        }
     }
 }
