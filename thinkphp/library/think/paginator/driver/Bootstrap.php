@@ -28,11 +28,9 @@ class Bootstrap extends Paginator
             return $this->getDisabledTextWrapper($text);
         }
 
-        $url = $this->url(
-            $this->currentPage() - 1
-        );
+        $page = $this->currentPage() - 1;
 
-        return $this->getPageLinkWrapper($url, $text);
+        return $this->getPageLinkWrapper($page, $text);
     }
 
     /**
@@ -46,9 +44,9 @@ class Bootstrap extends Paginator
             return $this->getDisabledTextWrapper($text);
         }
 
-        $url = $this->url($this->currentPage() + 1);
+        $page = $this->currentPage() + 1;
 
-        return $this->getPageLinkWrapper($url, $text);
+        return $this->getPageLinkWrapper($page, $text);
     }
 
     /**
@@ -117,7 +115,7 @@ class Bootstrap extends Paginator
                 );
             } else {
                 return sprintf(
-                    '<ul class="pagination">%s %s %s</ul>',
+                    '<ul class="pagination m-b-5">%s %s %s</ul>',
                     $this->getPreviousButton(),
                     $this->getLinks(),
                     $this->getNextButton()
@@ -129,13 +127,13 @@ class Bootstrap extends Paginator
     /**
      * 生成一个可点击的按钮
      *
-     * @param  string $url
-     * @param  int    $page
+     * @param  int $page
+     * @param  string $text
      * @return string
      */
-    protected function getAvailablePageWrapper($url, $page)
+    protected function getAvailablePageWrapper($page, $text)
     {
-        return '<li><a href="' . htmlentities($url) . '">' . $page . '</a></li>';
+        return '<li><a onclick="pageTo(' . $page . ')">' . $text . '</a></li>';
     }
 
     /**
@@ -181,7 +179,7 @@ class Bootstrap extends Paginator
         $html = '';
 
         foreach ($urls as $page => $url) {
-            $html .= $this->getPageLinkWrapper($url, $page);
+            $html .= $this->getPageLinkWrapper($page, $page);
         }
 
         return $html;
@@ -190,16 +188,16 @@ class Bootstrap extends Paginator
     /**
      * 生成普通页码按钮
      *
-     * @param  string $url
-     * @param  int    $page
+     * @param  int $page
+     * @param  string $text
      * @return string
      */
-    protected function getPageLinkWrapper($url, $page)
+    protected function getPageLinkWrapper($page, $text)
     {
         if ($page == $this->currentPage()) {
             return $this->getActivePageWrapper($page);
         }
 
-        return $this->getAvailablePageWrapper($url, $page);
+        return $this->getAvailablePageWrapper($page, $text);
     }
 }
