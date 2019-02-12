@@ -240,7 +240,7 @@ return [
 
     //分页配置
     'paginate'               => [
-        'type'      => 'bootstrap',
+        'type'      => 'ziwei',
         'var_page'  => 'page',
         'list_rows' => 10,
     ],
