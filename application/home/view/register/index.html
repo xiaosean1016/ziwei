@@ -41,6 +41,10 @@
             .error_input {
                 border-color: #ef5350;
             }
+            .btn_disabled {
+                background: #808080 !important;
+                border: none !important;
+            }
         </style>
 
         <div class="wrapper-page">
@@ -129,6 +133,9 @@
         {load file="__admin__/js/jquery.app.js"}
 
         <script>
+            var timeRunning = false;
+            var timeCount = 90;
+
             $(function () {
                 $('#submitForm').on('click', function () {
                     var phone = $('input[name="phone"]').val();
@@ -141,7 +148,15 @@
                         data: {phone: phone, password: password, verifyCode: verify_code},
                         dataType: 'json',
                         success: function (data) {
-                            alert('注册成功');
+                            if (data.code === 'ERROR') {
+                                var msg = data.msg;
+                                var msgObj = msg.split('$$');
+                                if (msgObj[1]) {
+                                    showError(msgObj[0], msgObj[1]);
+                                }
+                            } else {
+                                window.location.href = '/home/login?phone=' + phone;
+                            }
                         }
                     })
                 });
@@ -164,7 +179,8 @@
                                     showError(msgObj[0], msgObj[1]);
                                 }
                             } else {
-                                alert('验证码发送成功');
+                                timeRunning = true;
+                                countDown();
                             }
                         }
                     })
@@ -179,6 +195,7 @@
             function showError(msg, field) {
                 var fieldObj = $('input[name="' + field + '"]');
                 if (fieldObj) {
+                    hideError(field);
                     fieldObj.addClass('error_input');
                     fieldObj.parent().parent().append('<span class="error_span">' + msg + '</span>');
                     
@@ -193,6 +210,24 @@
                 if (fieldObj) {
                     fieldObj.removeClass('error_input');
                     fieldObj.parent().parent().find('.error_span').text('').hide();
+                }
+            }
+
+            function countDown() {
+                if (!timeRunning) {
+                    $('#sendVerifyCodeBtn').text('发送验证码');
+                }
+                if (timeCount >= 1) {
+                    timeRunning = true;
+                    $('#sendVerifyCodeBtn').text('重新发送（' + timeCount + 's）').prop('disabled',true).addClass('btn_disabled');
+                    timeCount -= 1;
+                    setTimeout(function() {
+                        countDown();
+                    }, 1000);
+                } else {
+                    timeRunning = false;
+                    $('#sendVerifyCodeBtn').text('发送验证码').prop('disabled',false).removeClass('btn_disabled');
+                    timeCount = 90;
                 }
             }
 

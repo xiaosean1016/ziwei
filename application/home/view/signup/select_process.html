@@ -42,7 +42,7 @@
 
 			</form>
 			<div class="text-center">
-				<button id="submitProcess" class="btn btn-info disabled waves-effect waves-light m-l-10">下一步</button>
+				<button id="submitProcess" disabled class="btn btn-info disabled waves-effect waves-light m-l-10">下一步</button>
 			</div>
 		</div>
 	</div>
@@ -56,8 +56,8 @@
 
 	<script>
 		$('#selectProcess :radio').on('click', function () {
-			$('#submitProcess').removeClass('disabled');
-        })
+			$('#submitProcess').removeClass('disabled').prop('disabled', false);
+        });
 
 		$('#submitProcess').on('click', function () {
 		    var id = $('input[name="process"]').val();

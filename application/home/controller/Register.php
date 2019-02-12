@@ -27,8 +27,8 @@ class Register extends Controller
         $param = Request::instance()->param();
         try {
             $this->checkForm($param);
-
-            return rand(0,9999);
+            $this->sendSmsCode($param['phone']);
+            return json(['code' => 'SUCCESS', 'msg' => '发送成功']);
         } catch (\Exception $e) {
             return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
         }
@@ -50,7 +50,7 @@ class Register extends Controller
         }
 
         if (isset($param['verifyCode'])) {
-            $this->verifyCodeCheck($param['verifyCode']);
+            $this->verifyCodeCheck($param['phone'], $param['verifyCode']);
         }
     }
 
@@ -82,14 +82,18 @@ class Register extends Controller
     public function captchaCodeCheck($captcha)
     {
         if (!captcha_check($captcha)){
-            throw new Exception('验证码输入错误$$captcha_code');
+            throw new Exception('图片验证码输入错误$$captcha_code');
         }
     }
 
     //验证短信验证码
-    public function verifyCodeCheck($verifyCode)
+    public function verifyCodeCheck($receiver, $verifyCode)
     {
+        $res = model('VerifyCode')->checkNewVerifyCode('register', $receiver, $verifyCode);
 
+        if (!$res) {
+            throw new Exception('短信验证码输入错误$$verify_code');
+        }
     }
 
     //注册
@@ -108,4 +112,27 @@ class Register extends Controller
         }
     }
 
+    public function sendSmsCode($receiver)
+    {
+        $verifyModel = model('VerifyCode');
+        $dateTime = date('Y-m-d H:i:s', time());
+
+        if ($verifyModel->checkSendTimes('register', $receiver)) {
+            throw new Exception('验证码发送过于频繁$$verify_code');
+        }
+
+        $code = rand(0, 9999);
+        $ip = Request::instance()->ip();
+        $id = model('VerifyCode')->insertVerifyCode('register', $receiver, $code, $ip);
+
+        if (!$id) {
+            throw new Exception('insert错误');
+        }
+
+//        $result = sendMsg($receiver, $code);
+        $result = 1;
+        if ($result) {
+            $verifyModel->updateData($id, ['senddatetime' => $dateTime]);
+        }
+    }
 }
