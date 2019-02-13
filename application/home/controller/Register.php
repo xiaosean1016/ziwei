@@ -29,8 +29,10 @@ class Register extends Controller
         $param = Request::instance()->param();
         try {
             $this->checkForm($param);
-            $this->sendSmsCode($param['phone']);
-            return json(['code' => 'SUCCESS', 'msg' => '发送成功']);
+            $code = $this->sendSmsCode($param['phone']);
+            //todo sean actual msg
+//            return json(['code' => 'SUCCESS', 'msg' => '发送成功']);
+            return json(['code' => 'SUCCESS', 'msg' => $code]);
         } catch (\Exception $e) {
             return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
         }
@@ -131,10 +133,13 @@ class Register extends Controller
             throw new Exception('insert错误');
         }
 
+        //todo sean send SMS
 //        $result = sendMsg($receiver, $code);
         $result = 1;
         if ($result) {
             $verifyModel->updateData($id, ['senddatetime' => $dateTime]);
         }
+
+        return $code;
     }
 }
