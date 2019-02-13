@@ -40,6 +40,7 @@ class Login extends Controller
                 throw new Exception('密码错误');
             }
 
+            Session::set('user_id', $userRes['id']);
             Session::set('user_name', $userRes['username']);
 
             return json(['code' => 'SUCCESS', 'msg' => '登录成功']);

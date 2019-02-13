@@ -79,7 +79,6 @@ class Signup extends Base
     public function submitResult()
     {
         $userId = Session::get('user_id');
-        $userId = 2;
 
         $list = Db::name('signup')->field('id,createdatetime,status')->where('userid', $userId)->select();
 
