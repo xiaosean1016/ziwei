@@ -35,4 +35,12 @@ class User extends Model
     {
         Db::name('user')->where('phone', $phone)->update($data);
     }
+
+    public function updatePassword($data)
+    {
+        $phone = $data['phone'];
+        $password = password_hash($data['password'], PASSWORD_DEFAULT);;
+
+        return Db::name('user')->where('phone', $phone)->update(['password' => $password]);
+    }
 }

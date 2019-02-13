@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: youdone-dev
- * Date: 2019/2/11
- * Time: 9:31
+ * Date: 2019/2/13
+ * Time: 9:46
  */
 
 namespace app\home\controller;
@@ -14,9 +14,9 @@ use think\Db;
 use think\Exception;
 use think\Request;
 
-class Register extends Controller
+class RetrievePassword extends Controller
 {
-    private $verifyCodeUsage = 'register';
+    private $verifyCodeUsage = 'retrivepassword';
 
     public function index()
     {
@@ -67,8 +67,8 @@ class Register extends Controller
             throw new Exception('手机号码格式不正确$$phone');
         }
 
-        if(Db::name('user')->where('phone', $phone)->find()) {
-            throw new Exception('该手机账号已被注册$$phone');
+        if(!Db::name('user')->where('phone', $phone)->find()) {
+            throw new Exception('账号不存在，请重新确认$$phone');
         }
     }
 
@@ -98,17 +98,17 @@ class Register extends Controller
         }
     }
 
-    //注册
-    public function submitRegister()
+    //提交
+    public function submitRetrievePassword()
     {
         $param = Request::instance()->only(['phone', 'password', 'verifyCode']);
 
         try {
             $this->checkForm($param);
-            if (model('User')->insertUser($param)) {
-                return json(['code' => 'SUCCESS', 'msg' => '注册成功']);
+            if (model('User')->updatePassword($param)) {
+                return json(['code' => 'SUCCESS', 'msg' => '修改成功']);
             }
-            return json(['code' => 'ERROR', 'msg' => '注册失败']);
+            return json(['code' => 'ERROR', 'msg' => '修改失败']);
         } catch (\Exception $e) {
             return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
         }
@@ -119,7 +119,7 @@ class Register extends Controller
         $verifyModel = model('VerifyCode');
         $dateTime = date('Y-m-d H:i:s', time());
 
-        if ($verifyModel->checkSendTimes('register', $receiver)) {
+        if ($verifyModel->checkSendTimes($this->verifyCodeUsage, $receiver)) {
             throw new Exception('验证码发送过于频繁$$verify_code');
         }
 
