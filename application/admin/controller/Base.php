@@ -10,6 +10,7 @@ namespace app\admin\controller;
 
 use think\Controller;
 use think\Session;
+use think\Request;
 
 class base extends Controller
 {
@@ -21,5 +22,11 @@ class base extends Controller
         if (!$admin) {
             $this->redirect('/admin/login');
         }
+    }
+
+    public function assignRouteInfo()
+    {
+        $this->assign('CONTROLLER_NAME', strtolower(Request::instance()->controller()));
+        $this->assign('ACTION_NAME', strtolower(Request::instance()->action()));
     }
 }

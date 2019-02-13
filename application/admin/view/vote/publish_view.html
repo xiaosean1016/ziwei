@@ -1,10 +1,231 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{extend name="../application/admin/view/common/base.html" /}
+
+{block name="lead_css"}
+{load file="__admin__/js/modernizr.min.js"}
+{load file="__admin__/plugins/jquery-multi-select/multi-select.css"}
+{load file="__admin__/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css"}
+{load file="__admin__/plugins/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css"}
+{load file="__admin__/plugins/webuploader/webuploader.css"}
+{/block}
+
+{block name="content"}
+<style>
+
+</style>
+
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4 class="pull-left page-title">发布投票活动</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-10">
+                    <form class="form-horizontal" role="form">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">活动简介</h3>
+                            </div>
+                            <div class="panel-body">
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">活动名称</label>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" value="" placeholder="后台管理、用户可见">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">开始时间</label>
+                                        <div class="col-md-2">
+                                            <input type="text" class="form-control form_datetime" name="startTime" value="" >
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">结束时间</label>
+                                        <div class="col-md-2">
+                                            <input type="text" class="form-control form_datetime" name="stopTime" value="" >
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">投票规则</label>
+                                        <div class="col-md-10">
+                                            <div class="radio radio-info radio-inline">
+                                                <input type="radio" id="inlineRadio1" value="single" name="voteRule" checked="checked">
+                                                <label for="inlineRadio1"> 单选 </label>
+                                            </div>
+                                            <div class="radio radio-inline">
+                                                <input type="radio" id="inlineRadio2" value="multi" name="voteRule">
+                                                <label for="inlineRadio2"> 多选 </label>
+                                            </div>
+                                            <div class="radio radio-inline" id="maxNumInput" >
+                                                最多选择
+                                                <input disabled class="form-control" style="width: 50px;display: inline" type="text" value="" name="vertical-spin">
+                                                项
+                                            </div>
+                                        </div>
+                                    </div>
+
+                            </div> <!-- panel-body -->
+
+                            <div class="panel-heading">
+                                <h3 class="panel-title">选项内容</h3>
+                            </div>
+                            <div class="panel-body">
+                                <!--上传图片建议尺寸：300像素*300像素，其他尺寸会影响页面效果，格式png、jpeg、jpg，大小不超过1M-->
+                                <div class="option-item" id="optionItem_0">
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">
+                                            选项1
+                                        </label>
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" value="" name="optionName" placeholder="选项名称">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">
+                                        </label>
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" value="" name="optionDescription" placeholder="选项描述">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">
+                                        </label>
+                                        <div class="radio-inline">
+                                            <label>票数限制</label>
+                                        </div>
+                                        <div class="radio radio-info radio-inline">
+                                            <input type="radio" id="optionBallot1" value="single" name="optionBallot" checked="checked">
+                                            <label for="optionBallot1"> 无限制 </label>
+                                        </div>
+                                        <div class="radio radio-inline">
+                                            <input type="radio" id="optionBallot2" value="multi" name="optionBallot">
+                                            <label for="optionBallot2"> 限制 </label>
+                                        </div>
+                                        <div class="radio radio-inline" id="MaxBallotNum" >
+                                            最多得
+                                            <input disabled class="form-control" style="width: 50px;display: inline" type="text" value="" name="vertical-spin">
+                                            票
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">
+                                        </label>
+                                        <div id="uploader" class="wu-example">
+                                            <!--用来存放文件信息-->
+                                            <div id="thelist" class="uploader-list"></div>
+                                            <div class="btns">
+                                                <div class="picker">选择文件</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- option-item -->
+                            </div> <!-- panel-body -->
+                        </div> <!-- panel -->
+
+
+                        <div class="panel panel-default">
+
+                        </div> <!-- panel -->
+                    </form>
+                </div> <!-- col -->
+            </div>
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}
+
+{block name="lead_js"}
+{load file="__admin__/plugins/magnific-popup/dist/jquery.magnific-popup.min.js"}
+{load file="__admin__/plugins/jquery-datatables-editable/jquery.dataTables.js"}
+{load file="__admin__/plugins/datatables/dataTables.bootstrap.js"}
+{load file="__admin__/pages/datatables.editable.init.js"}
+{load file="__admin__/plugins/jquery-multi-select/jquery.multi-select.js"}
+{load file="__admin__/plugins/bootstrap-inputmask/bootstrap-inputmask.min.js"}
+
+{load file="__admin__/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"}
+{load file="__admin__/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"}
+
+{load file="__admin__/plugins/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js"}
+{load file="__admin__/plugins/webuploader/webuploader.js"}
+
+<script>
+    var uploadPick = '';
+
+    $(function () {
+        $('.picker').on('click', function () {
+            uploadPick = $(this);
+        });
+
+        var uploader = WebUploader.create({
+            auto: true,
+            swf: '__admin__/webuploader/Uploader.swf',
+            server: 'fileUpload',
+            pick: '.picker',
+            chunked: false,           //是否切片
+            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            resize: false,
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+
+        // 当有文件添加进来的时候
+        uploader.on( 'fileQueued', function( file ) {
+            var $li = $(
+                '<div id="' + file.id + '" class="file-item thumbnail">' +
+                '<img>' +
+                '<div class="info">' + file.name + '</div>' +
+                '</div>'
+                ),
+                $img = $li.find('img');
+
+
+            // $list为容器jQuery实例
+            uploadPick.append( $li );
+
+            // 创建缩略图
+            uploader.makeThumb( file, function( error, src ) {
+                if ( error ) {
+                    $img.replaceWith('<span>不能预览</span>');
+                    return;
+                }
+
+                $img.attr( 'src', src );
+            }, 395, 200 );
+        });
+    });
+
+    $(".form_datetime").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        autoclose: true,
+        todayBtn: true,
+        language: 'zh-CN'
+    });
+
+    $(".vertical-spin").TouchSpin({
+        verticalbuttons: false,
+        verticalupclass: 'ion-plus-round',
+        verticaldownclass: 'ion-minus-round'
+    });
+
+</script>
+{/block}
