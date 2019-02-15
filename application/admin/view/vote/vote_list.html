@@ -117,12 +117,12 @@
                 for (var i = 0; i < data.table.length; i ++) {
                     table += '<tr data-id="' + data.table[i]['id'] + '">';
                     table += '<td>' + (i + 1) + '</td>';
-                    table += '<td>' + data.table[i]['votename'] + '</td>';
+                    table += '<td><a href="/admin/vote/detailView?id=' + data.table[i]['id'] + '">' + data.table[i]['votename'] + '</a></td>';
                     table += '<td>' + data.table[i]['createdatetime'] + '</td>';
                     table += '<td>' + data.table[i]['status'] + '</td>';
-                    table += '<td>';
+                    table += '<td width="180">';
                     table += '<button onclick="editVote(this)" type="button" class="m-l-10 btn btn-primary waves-effect waves-light m-b-5">编辑</button>';
-                    table += '<button onclick="deleteVote(this)" type="button" class="m-l-10 btn btn-primary waves-effect waves-light m-b-5">删除</button>';
+                    table += '<button onclick="deleteVote(this)" type="button" class="m-l-10 btn btn-danger waves-effect waves-light m-b-5">删除</button>';
                     table += '</td>';
                     table += '</tr>';
                 }
@@ -133,12 +133,47 @@
         })
     }
 
-    function editVote() {
+    function editVote(obj) {
+        var id = $(obj).parent().parent().attr('data-id');
+        if (!id) return false;
 
+        window.location.href = '/admin/vote/editView?id=' + id;
+    }
+
+    //分页跳转
+    function pageTo(page) {
+        listPage = page;
+        renderList();
     }
     
-    function deleteVote() {
-        
+    function deleteVote(obj) {
+        var id = $(obj).parent().parent().attr('data-id');
+
+        swal({
+            title: "",
+            text: "删除后将无法找回，确认删除？",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "确认",
+            cancelButtonText: "取消",
+            closeOnConfirm: false
+        }, function(){
+            $.ajax({
+                type: 'POST',
+                url: 'deleteVote',
+                data: {id: id},
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code === 'SUCCESS') {
+                        renderList();
+                        swal('删除成功', '', 'success');
+                    } else {
+                        swal('删除失败');
+                    }
+                }
+            })
+        });
     }
 
 </script>

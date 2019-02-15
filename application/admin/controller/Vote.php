@@ -38,11 +38,32 @@ class Vote extends Base
             $cond = 1;
         }
 
-        $listFields = ['votename', 'createdatetime', 'status'];
+        $listFields = ['id', 'votename', 'createdatetime', 'status'];
         $tableData = Db::name('vote')->field(implode(',', $listFields))->where($cond)->order('createdatetime desc,id desc')->paginate(10);
-
-        $data = ['table' => $tableData->items(), 'page' => $tableData->render()];
+        $listData = $this->getShowValues($tableData->items());
+        $data = ['table' => $listData, 'page' => $tableData->render()];
         return json(['code' => 'SUCCESS', 'data' => $data]);
+    }
+
+    public function getShowValues($items)
+    {
+        $replaceData = [
+            'status' => [
+                'preparing' => '草稿',
+                'progressing' => '进行中',
+                'ending' => '已结束'
+            ],
+        ];
+
+        foreach ($items as &$val) {
+            foreach ($val as $k => &$v) {
+                if (in_array($k, array_keys($replaceData)) && isset($replaceData[$k][$v])) {
+                    $v = $replaceData[$k][$v];
+                }
+            }
+        }
+
+        return $items;
     }
 
     //选项列表
@@ -60,6 +81,8 @@ class Vote extends Base
     //新增投票活动
     public function publishView()
     {
+        $this->assign('DATA', '');
+        $this->assign('VOTEID', '');
         $this->assign('MODE', 'create');
         return $this->fetch();
     }
@@ -68,10 +91,13 @@ class Vote extends Base
     public function detailView()
     {
         $id = request()->param('id');
-
         $voteInfo = model('vote')->getVoteInfo($id);
+
         $this->assign('DATA', $voteInfo);
-        return $this->fetch();
+        $this->assign('VOTEID', $id);
+        $this->assign('MODE', 'detail');
+
+        return $this->fetch('publish_view');
     }
 
     //编辑投票活动
@@ -154,7 +180,7 @@ class Vote extends Base
             Db::commit();
 
             return json(['code' => 'SUCCESS', 'msg' => '保存成功']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Db::rollback();
             return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
         }
@@ -163,7 +189,19 @@ class Vote extends Base
     //删除投票活动
     public function deleteVote()
     {
+        $id = request()->param('id');
 
+        try {
+            Db::startTrans();
+            Db::name('vote')->where('id', $id)->delete();
+            Db::name('vote_option')->where('voteid', $id)->delete();
+            Db::commit();
+
+            return json(['code' => 'SUCCESS', 'msg' => '删除成功']);
+        } catch (Exception $e) {
+            Db::rollback();
+            return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
+        }
     }
 
     //投票统计数据

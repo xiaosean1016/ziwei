@@ -17,7 +17,7 @@ class Vote extends Model
     {
         $voteInfo = Db::name('vote')->where('id', $id)->find();
 
-        $optionInfo = Db::name('vote_option')->where('id', $id)->select();
+        $optionInfo = Db::name('vote_option')->where('voteid', $id)->select();
 
         $info = $voteInfo;
         $info['option'] = $optionInfo;

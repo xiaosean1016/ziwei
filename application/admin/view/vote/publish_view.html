@@ -36,7 +36,7 @@
 
             <div class="row">
                 <div class="col-sm-12">
-                    <h4 class="pull-left page-title">发布投票活动</h4>
+                    <h4 id="voteTitle" class="pull-left page-title">发布投票活动</h4>
                 </div>
             </div>
 
@@ -120,8 +120,8 @@
                             <input type="hidden" name="voteid" value="{$VOTEID}">
                             <!-- 底部按钮 -->
                             <div class="panel-body text-center col-md-10">
-                                <button onclick="submitForm('preparing')" type="button" class="btn btn-default waves-effect m-b-5 m-r-10">保存草稿</button>
-                                <button onclick="submitForm('progressing')" type="button" class="btn btn-info waves-effect m-b-5 m-l-10">发布投票</button>
+                                <button id="saveBtn" onclick="submitForm('preparing')" type="button" class="btn btn-default waves-effect m-b-5 m-r-10">保存草稿</button>
+                                <button id="publishBtn" onclick="submitForm('progressing')" type="button" class="btn btn-info waves-effect m-b-5 m-l-10">发布投票</button>
                             </div> <!-- panel-body -->
                         </div> <!-- panel -->
 
@@ -160,6 +160,8 @@
     var uploadPick = '';
     var optionIndex = 0;
     var subConIndex = 0;
+    var voteId = $('input[name="voteid"]').val();
+    var mode = $('input[name="mode"]').val();
 
     $(function () {
         $('.picker').on('click', function () {
@@ -169,13 +171,20 @@
         $('#addOptionBtn').on('click', function () {
             addOption();
         });
-
-        $('#addOptionBtn').click();
         
         $('#addSubConBtn').on('click', function () {
             addSubCon();
-        })
+        });
+
+        pageInit();
     });
+
+    function pageInit() {
+        //新增页面，默认增加一条空选项
+        if (mode === 'create') $('#addOptionBtn').click();
+        voteRuleInit();
+        renderEditViewData();
+    }
 
     $(".form_datetime").datetimepicker({
         format: 'yyyy-mm-dd hh:ii',
@@ -229,26 +238,15 @@
         var $list = $('#thelist_' + id);
         // 当有文件添加进来的时候
         uploader.on( 'fileQueued', function( file ) {
-            var $li = $(
-                '<div id="' + file.id + '" class="file-item thumbnail">' +
-                '<img>' +
-                '<div class="info">' + file.name + '<a onclick="removeImg(' + id + ')">删除</a>'+ '</div>' +
-                '</div>'
-                ),
-                $img = $li.find('img');
-
-
-            // $list为容器jQuery实例
-            $list.append( $li );
 
             // 创建缩略图
             uploader.makeThumb( file, function( error, src ) {
+                fillImg($list, file.id, id, src);
                 if ( error ) {
-                    $img.replaceWith('<span>不能预览</span>');
+                    $($list).find('img').replaceWith('<span>不能预览</span>');
                     return;
                 }
 
-                $img.attr( 'src', src );
             }, 395, 200 );
         });
 
@@ -269,6 +267,18 @@
         //     alert(1)
         //     uploader.removeFile(file.id);
         // })
+    }
+
+    function fillImg(listObj, fileId, id, src) {
+        var imgHtml = '';
+        imgHtml += '<div id="' + fileId + '" class="file-item thumbnail">';
+        imgHtml += '<img width="395px" height="200px" src="' + src + '">';
+        imgHtml += '<div class="info">';
+        imgHtml += '<a class="removeImgClass" onclick="removeImg(' + id + ')">删除</a>';
+        imgHtml += '</div>';
+        imgHtml += '</div>';
+
+        $(listObj).append( imgHtml );
     }
 
     //新增元素绑定事件
@@ -497,6 +507,85 @@
         $('.optionDesc').each(function (index) {
             $(this).text('选项' + (index + 1));
         })
+    }
+
+    function voteRuleInit() {
+        $('input[name="voteRule"]').change(function () {
+            if ($(this).val() === 'multi') {
+                $('input[name="maxSelectNum"]').prop('disabled', false);
+            } else {
+                $('input[name="maxSelectNum"]').prop('disabled', true);
+            }
+        })
+    }
+    
+    function renderEditViewData() {
+        if (!voteId || mode === 'create') return false;
+        // var data = JSON.parse('{$DATA|json_encode}');
+        var data = {$DATA | json_encode};
+        var optionNum = data.option.length;
+
+        console.log(data);
+
+        $('#voteTitle').text(data.votename + '-' + (mode === 'edit' ? '编辑' : '详情'));
+        $('input[name="voteName"]').val(data.votename);
+        $('input[name="startTime"]').val(data.startdatetime);
+        $('input[name="stopTime"]').val(data.stopdatetime);
+        
+        if (data.votemaxballot > 1) {
+            $('input[name="voteRule"]').eq(1).prop('checked', true);
+            $('input[name="maxSelectNum"]').prop('disabled', false).val(data.votemaxballot);
+        }
+
+        //选项内容渲染
+        for (var i = 1; i <= optionNum; i ++) {
+            addOption();
+            $('input[name="optionName_' + i + '"]').val(data.option[i-1].optionname);
+            $('input[name="optionDescription_' + i + '"]').val(data.option[i-1].description);
+            if (data.option[i-1].maxusers > 0) {
+                $('input[name="optionBallot_' + i + '"]').eq(1).prop('checked', true);
+                $('input[name="maxBallot_' + i + '"]').prop('disabled', false).val(data.option[i-1].maxusers);
+            }
+            if (data.option[i-1].optionimg) {
+                fillImg($('#thelist_' + i), 'fileId_' + i, i, '__upload__/' + data.option[i-1].optionimg);
+                $('#picker_' + i).hide();
+            }
+        }
+
+        //提交内容渲染
+        if (data.submitfield) {
+            var subConObj = JSON.parse(data.submitfield);
+            var subConNum = subConObj.length;
+            if (subConNum) {
+                for (var j = 1; j <= subConNum; j ++) {
+                    addSubCon();
+                    $('input[name="fieldLabel_' + j + '"]').val(subConObj[j-1].name);
+                    if (subConObj[j-1].required === '0') {
+                        $('input[name="isRequired_' + j + '"]').eq(1).prop('checked', true);
+                    }
+                    $('select[name="fieldType_' + j + '"]').val(subConObj[j-1].type).change();
+                    $('textarea[name="pickVal_' + j + '"]').val(subConObj[j-1].options);
+                }
+            }
+        }
+
+        //底部按钮处理
+        if (data.status === 'progressing') {
+            $('#saveBtn').remove();
+            $('#publishBtn').text('保存修改');
+        }
+        if (mode === 'detail') {
+            noModifyMode();
+        }
+    }
+    
+    function noModifyMode() {
+        $('input,textarea,select').prop('readonly', true).prop('disabled', true);
+        $('#addOptionBtn,#addSubConBtn,div[id^=picker_]').hide();
+        $('.remove-option-item,.removeImgClass').hide();
+
+        $('#saveBtn').remove();
+        $('#publishBtn').remove();
     }
 
 </script>
