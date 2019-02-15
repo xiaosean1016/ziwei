@@ -134,6 +134,7 @@ class Vote extends Base
             //主表字段保存
             $voteData = [];
             $voteData['votename'] = $param['voteName'];
+            $voteData['description'] = $param['voteDescription'];
             $voteData['startdatetime'] = $param['startTime'];
             $voteData['stopdatetime'] = $param['stopTime'];
             $voteData['votemaxballot'] = max($param['maxSelectNum'], 1);
