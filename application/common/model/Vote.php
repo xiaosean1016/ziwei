@@ -8,8 +8,19 @@
 
 namespace app\common\model;
 
+use think\Db;
+use think\Model;
 
-class Vote
+class Vote extends Model
 {
+    public function getVoteInfo($id)
+    {
+        $voteInfo = Db::name('vote')->where('id', $id)->find();
 
+        $optionInfo = Db::name('vote_option')->where('id', $id)->select();
+
+        $info = $voteInfo;
+        $info['option'] = $optionInfo;
+        return $info;
+    }
 }

@@ -10,7 +10,20 @@
 
 {block name="content"}
 <style>
+    .wu-example {
+        display: inline-block;
+    }
 
+    .remove-option-item {
+        width: 20px;
+        height: 20px;
+        color: #ff4550;
+        font-size: 18px;
+        position: absolute;
+        top: 40%;
+        right: 28%;
+        cursor: pointer;
+    }
 </style>
 
 <!-- ============================================================== -->
@@ -29,111 +42,89 @@
 
             <div class="row">
                 <div class="col-sm-10">
-                    <form class="form-horizontal" role="form">
+                    <form class="form-horizontal" role="form" id="voteForm">
                         <div class="panel panel-default">
+                            <!-- 主体内容 -->
                             <div class="panel-heading">
                                 <h3 class="panel-title">活动简介</h3>
                             </div>
                             <div class="panel-body">
-                                    <div class="form-group">
-                                        <label class="col-md-2 control-label">活动名称</label>
-                                        <div class="col-md-6">
-                                            <input type="text" class="form-control" value="" placeholder="后台管理、用户可见">
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">活动名称</label>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" name="voteName" value="" placeholder="后台管理、用户可见">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">开始时间</label>
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control form_datetime" name="startTime" value="" >
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">结束时间</label>
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control form_datetime" name="stopTime" value="" >
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">投票规则</label>
+                                    <div class="col-md-10">
+                                        <div class="radio radio-info radio-inline">
+                                            <input type="radio" id="inlineRadio1" value="single" name="voteRule" checked="checked">
+                                            <label for="inlineRadio1"> 单选 </label>
+                                        </div>
+                                        <div class="radio radio-inline">
+                                            <input type="radio" id="inlineRadio2" value="multi" name="voteRule">
+                                            <label for="inlineRadio2"> 多选 </label>
+                                        </div>
+                                        <div class="radio radio-inline" >
+                                            最多选择
+                                            <input disabled class="form-control" style="width: 50px;display: inline" type="text" value="" name="maxSelectNum">
+                                            项
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="col-md-2 control-label">开始时间</label>
-                                        <div class="col-md-2">
-                                            <input type="text" class="form-control form_datetime" name="startTime" value="" >
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-2 control-label">结束时间</label>
-                                        <div class="col-md-2">
-                                            <input type="text" class="form-control form_datetime" name="stopTime" value="" >
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-2 control-label">投票规则</label>
-                                        <div class="col-md-10">
-                                            <div class="radio radio-info radio-inline">
-                                                <input type="radio" id="inlineRadio1" value="single" name="voteRule" checked="checked">
-                                                <label for="inlineRadio1"> 单选 </label>
-                                            </div>
-                                            <div class="radio radio-inline">
-                                                <input type="radio" id="inlineRadio2" value="multi" name="voteRule">
-                                                <label for="inlineRadio2"> 多选 </label>
-                                            </div>
-                                            <div class="radio radio-inline" id="maxNumInput" >
-                                                最多选择
-                                                <input disabled class="form-control" style="width: 50px;display: inline" type="text" value="" name="vertical-spin">
-                                                项
-                                            </div>
-                                        </div>
-                                    </div>
-
+                                </div>
                             </div> <!-- panel-body -->
 
+                            <!-- 选项内容 -->
                             <div class="panel-heading">
                                 <h3 class="panel-title">选项内容</h3>
                             </div>
                             <div class="panel-body">
+                                <div id="optionsDiv">
+
+                                </div>
+                                <button id="addOptionBtn" type="button" class="btn btn-primary waves-effect waves-light m-b-5">增加选项</button>
                                 <!--上传图片建议尺寸：300像素*300像素，其他尺寸会影响页面效果，格式png、jpeg、jpg，大小不超过1M-->
-                                <div class="option-item" id="optionItem_0">
-                                    <div class="form-group">
-                                        <label class="col-md-2 control-label">
-                                            选项1
-                                        </label>
-                                        <div class="col-md-5">
-                                            <input type="text" class="form-control" value="" name="optionName" placeholder="选项名称">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-2 control-label">
-                                        </label>
-                                        <div class="col-md-5">
-                                            <input type="text" class="form-control" value="" name="optionDescription" placeholder="选项描述">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-2 control-label">
-                                        </label>
-                                        <div class="radio-inline">
-                                            <label>票数限制</label>
-                                        </div>
-                                        <div class="radio radio-info radio-inline">
-                                            <input type="radio" id="optionBallot1" value="single" name="optionBallot" checked="checked">
-                                            <label for="optionBallot1"> 无限制 </label>
-                                        </div>
-                                        <div class="radio radio-inline">
-                                            <input type="radio" id="optionBallot2" value="multi" name="optionBallot">
-                                            <label for="optionBallot2"> 限制 </label>
-                                        </div>
-                                        <div class="radio radio-inline" id="MaxBallotNum" >
-                                            最多得
-                                            <input disabled class="form-control" style="width: 50px;display: inline" type="text" value="" name="vertical-spin">
-                                            票
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-2 control-label">
-                                        </label>
-                                        <div id="uploader" class="wu-example">
-                                            <!--用来存放文件信息-->
-                                            <div id="thelist" class="uploader-list"></div>
-                                            <div class="btns">
-                                                <div class="picker">选择文件</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div><!-- option-item -->
+
+                            </div> <!-- panel-body -->
+
+                            <!-- 提交内容 -->
+                            <div class="panel-heading">
+                                <h3 class="panel-title">提交内容（选填）</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="subConDiv">
+
+                                </div>
+                                <button id="addSubConBtn" type="button" class="btn btn-primary waves-effect waves-light m-b-5">增加内容项</button>
+                                <!--上传图片建议尺寸：300像素*300像素，其他尺寸会影响页面效果，格式png、jpeg、jpg，大小不超过1M-->
+
+                            </div> <!-- panel-body -->
+
+                            <input type="hidden" name="optionCount" value="">
+                            <input type="hidden" name="subConCount" value="">
+                            <input type="hidden" name="voteStatus" value="">
+                            <input type="hidden" name="mode" value="{$MODE}">
+                            <input type="hidden" name="voteid" value="{$VOTEID}">
+                            <!-- 底部按钮 -->
+                            <div class="panel-body text-center col-md-10">
+                                <button onclick="submitForm('preparing')" type="button" class="btn btn-default waves-effect m-b-5 m-r-10">保存草稿</button>
+                                <button onclick="submitForm('progressing')" type="button" class="btn btn-info waves-effect m-b-5 m-l-10">发布投票</button>
                             </div> <!-- panel-body -->
                         </div> <!-- panel -->
 
-
-                        <div class="panel panel-default">
-
-                        </div> <!-- panel -->
                     </form>
                 </div> <!-- col -->
             </div>
@@ -167,17 +158,65 @@
 
 <script>
     var uploadPick = '';
+    var optionIndex = 0;
+    var subConIndex = 0;
 
     $(function () {
         $('.picker').on('click', function () {
             uploadPick = $(this);
         });
 
+        $('#addOptionBtn').on('click', function () {
+            addOption();
+        });
+
+        $('#addOptionBtn').click();
+        
+        $('#addSubConBtn').on('click', function () {
+            addSubCon();
+        })
+    });
+
+    $(".form_datetime").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        autoclose: true,
+        todayBtn: true,
+        language: 'zh-CN'
+    });
+
+    //表单提交
+    function submitForm(status) {
+        $('input[name="optionCount"]').val(optionIndex);
+        $('input[name="subConCount"]').val(subConIndex);
+        $('input[name="voteStatus"]').val(status);
+
+        $.ajax({
+            type: 'POST',
+            url: '/admin/vote/saveVote',
+            data: form_serialize(document.getElementById('voteForm')),
+            dateType: 'json',
+            success: function (data) {
+                if (data.code === 'SUCCESS') {
+                    swal({
+                        title: "保存成功",
+                        showCancelButton: false,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "确认",
+                    }, function(){
+                        window.location.href = '/admin/vote/voteList';
+                    });
+                }
+            }
+        });
+    }
+
+    //实例化上传文件方法
+    function uploadInit(id) {
         var uploader = WebUploader.create({
             auto: true,
             swf: '__admin__/webuploader/Uploader.swf',
             server: 'fileUpload',
-            pick: '.picker',
+            pick: '#picker_' + id,
             chunked: false,           //是否切片
             // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
             resize: false,
@@ -187,20 +226,20 @@
                 mimeTypes: 'image/*'
             }
         });
-
+        var $list = $('#thelist_' + id);
         // 当有文件添加进来的时候
         uploader.on( 'fileQueued', function( file ) {
             var $li = $(
                 '<div id="' + file.id + '" class="file-item thumbnail">' +
                 '<img>' +
-                '<div class="info">' + file.name + '</div>' +
+                '<div class="info">' + file.name + '<a onclick="removeImg(' + id + ')">删除</a>'+ '</div>' +
                 '</div>'
                 ),
                 $img = $li.find('img');
 
 
             // $list为容器jQuery实例
-            uploadPick.append( $li );
+            $list.append( $li );
 
             // 创建缩略图
             uploader.makeThumb( file, function( error, src ) {
@@ -212,20 +251,253 @@
                 $img.attr( 'src', src );
             }, 395, 200 );
         });
-    });
 
-    $(".form_datetime").datetimepicker({
-        format: 'yyyy-mm-dd hh:ii',
-        autoclose: true,
-        todayBtn: true,
-        language: 'zh-CN'
-    });
+        uploader.on( 'uploadSuccess', function( file, response ) {
+            if (response.code === 'SUCCESS' && response.name) {
+                $('input[name="uploadImg_' + id + '"]').val(response.name);
+                $('#picker_' + id).hide();
+            } else {
+                alert('上传失败');
+            }
+        });
 
-    $(".vertical-spin").TouchSpin({
-        verticalbuttons: false,
-        verticalupclass: 'ion-plus-round',
-        verticaldownclass: 'ion-minus-round'
-    });
+        uploader.on( 'uploadComplete', function( file ) {
+            uploader.removeFile(file);
+        });
+
+        // $('#removeImgBtn_' + id).on('click', '.remove_this', function (file) {
+        //     alert(1)
+        //     uploader.removeFile(file.id);
+        // })
+    }
+
+    //新增元素绑定事件
+    function elementInit(optionIndex) {
+        $('input[name="optionBallot_'+optionIndex+'"]').change(function () {
+            if ($(this).val() === 'limit') {
+                $('input[name="maxBallot_' + optionIndex + '"]').prop('disabled', false);
+            } else {
+                $('input[name="maxBallot_' + optionIndex + '"]').prop('disabled', true);
+            }
+        })
+    }
+
+    function removeImg(id) {
+        $('#thelist_' + id).empty();
+        $('input[name="uploadImg_' + id + '"]').val('');
+        $('#picker_' + id).show();
+    }
+
+    //增加选项
+    function addOption() {
+        optionIndex ++;
+        $('#optionsDiv').append(getOptionHtml(optionIndex));
+        resortOptionAsc();
+        uploadInit(optionIndex);
+        elementInit(optionIndex);
+    }
+
+    function removeOption(id) {
+        if ($('.option-item').length <= 1) return false;
+        $('#optionItem_' + id).remove();
+        resortOptionAsc();
+    }
+
+    function removeSubCon(id) {
+        $('#subConItem_' + id).remove();
+    }
+
+    //增加提交内容
+    function addSubCon() {
+        subConIndex ++;
+        $('#subConDiv').append(getSubConHtml(subConIndex));
+    }
+
+    //获取新增选项内容html
+    function getOptionHtml(id) {
+        var html = '';
+        html += '<div class="option-item" style="position: relative;" id="optionItem_' + id + '">';
+        html += '<div onclick="removeOption(' + id + ')" class="remove-option-item md md-highlight-remove"><i class=""></i></div>';
+        html += '<div class="form-group">';
+        html += '<label class="col-md-2 control-label optionDesc">';
+        html += '选项' + id;
+        html += '</label>';
+        html += '<div class="col-md-5">';
+        html += '<input type="text" class="form-control" value="" name="optionName_' + id + '" placeholder="选项名称">';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label class="col-md-2 control-label">';
+        html += '</label>';
+        html += '<div class="col-md-5">';
+        html += '<input type="text" class="form-control" value="" name="optionDescription_' + id + '" placeholder="选项描述">';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label class="col-md-2 control-label">';
+        html += '</label>';
+        html += '<div class="radio-inline">';
+        html += '<label>票数限制</label>';
+        html += '</div>';
+        html += '<div class="radio radio-info radio-inline">';
+        html += '<input type="radio" id="optionBallot_' + id + '_1" value="unlimited" name="optionBallot_' + id + '" checked="checked">';
+        html += '<label for="optionBallot_' + id + '_1"> 无限制 </label>';
+        html += '</div>';
+        html += '<div class="radio radio-inline">';
+        html += '<input type="radio" id="optionBallot_' + id + '_2" value="limit" name="optionBallot_' + id + '">';
+        html += '<label for="optionBallot_' + id + '_2"> 限制 </label>';
+        html += '</div>';
+        html += '<div class="radio radio-inline" >';
+        html += '最多得 <input disabled class="form-control" style="width: 50px;display: inline" type="text" value="" name="maxBallot_' + id + '"> 票';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label class="col-md-2 control-label">';
+        html += '</label>';
+        html += '<div id="uploader_' + id + '" class="wu-example">';
+        html += '<input type="hidden" name="uploadImg_' + id + '">';
+        html += '<div id="thelist_' + id + '" class="uploader-list"></div>';
+        html += '<div class="btns">';
+        html += '<div id="picker_' + id + '">选择文件</div>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+        html += '<hr>';
+        html += '</div>';
+
+        return html;
+    }
+
+    //获取新增提交内容选项html
+    function getSubConHtml(id) {
+        var html = '';
+        html += '<div class="subCon-item" style="position: relative" id="subConItem_' + id + '">';
+        html += '<div onclick="removeSubCon(' + id + ')" class="remove-option-item md md-highlight-remove"><i class=""></i></div>';
+        html += '<div class="form-group">';
+        html += '<label class="col-md-2 control-label">内容名称</label>';
+        html += '<div class="col-md-5">';
+        html += '<input name="fieldLabel_' + id + '" type="text" class="form-control" value="">';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label class="col-md-2 control-label">';
+        html += '是否必填';
+        html += '</label>';
+        html += '<div class="radio radio-info radio-inline">';
+        html += '&nbsp;&nbsp;<input type="radio" id="isRequired_' + id + '_1" value="1" name="isRequired_' + id + '" checked="checked">';
+        html += '<label for="isRequired_' + id + '_1"> 必填 </label>';
+        html += '</div>';
+        html += '<div class="radio radio-inline">';
+        html += '<input type="radio" id="isRequired_' + id + '_2" value="0" name="isRequired_' + id + '">';
+        html += '<label for="isRequired_' + id + '_2"> 选填 </label>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label class="col-sm-2 control-label">字段类型</label>';
+        html += '<div class="col-sm-5">';
+        html += '<select name="fieldType_' + id + '" class="form-control" onchange="changeSubConFieldType(' + id + ')">';
+        html += '<option value="varchar">文本</option>';
+        html += '<option value="datetime">时间</option>';
+        html += '<option value="checkbox">复选框</option>';
+        html += '<option value="select">下拉框</option>';
+        html += '<option value="multiple">多选框</option>';
+        html += '</select>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group" id="pick_list_' + id + '" style="display: none;">';
+        html += '<label class="col-md-2 control-label">选项值（每个选项通过换行区分）</label>';
+        html += '<div class="col-md-5">';
+        html += '<textarea name="pickVal_' + id + '" class="form-control" rows="5"></textarea>';
+        html += '</div>';
+        html += '</div>';
+        html += '<hr>';
+        html += '</div>';
+
+        return html;
+    }
+
+    function changeSubConFieldType(id) {
+        var type = $('select[name="fieldType_' + id + '"]').val();
+        var pickListShow = 'none';
+
+        if (type === 'select' || type === 'multiple') {
+            pickListShow = 'block';
+        }
+
+        $('#pick_list_' + id).css('display', pickListShow);
+    }
+
+    function form_serialize (form) {
+        if (!form || form.nodeName !== "FORM") {
+            return;
+        }
+        var i, j, q = [];
+        for (i = form.elements.length - 1; i >= 0; i = i - 1) {
+            if (form.elements[i].name === "") {
+                continue;
+            }
+            switch (form.elements[i].nodeName) {
+                case 'INPUT':
+                    switch (form.elements[i].type) {
+                        case 'text':
+                        case 'tel':
+                        case 'email':
+                        case 'hidden':
+                        case 'password':
+                        case 'button':
+                        case 'reset':
+                        case 'submit':
+                            q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                            break;
+                        case 'checkbox':
+                        case 'radio':
+                            if (form.elements[i].checked) {
+                                q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                            }
+                            break;
+                    }
+                    break;
+                case 'file':
+                    break;
+                case 'TEXTAREA':
+                    q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                    break;
+                case 'SELECT':
+                    switch (form.elements[i].type) {
+                        case 'select-one':
+                            q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                            break;
+                        case 'select-multiple':
+                            var options = [];
+                            for (j = form.elements[i].options.length - 1; j >= 0; j = j - 1) {
+                                if (form.elements[i].options[j].selected) {
+                                    options.push(encodeURIComponent(form.elements[i].options[j].value));
+                                }
+                            }
+                            q.push(form.elements[i].name + "=" + options);
+                            break;
+                    }
+                    break;
+                case 'BUTTON':
+                    switch (form.elements[i].type) {
+                        case 'reset':
+                        case 'submit':
+                        case 'button':
+                            q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                            break;
+                    }
+                    break;
+            }
+        }
+        return q.join("&");
+    }
+
+    //删除后可能导致编号错乱，这里重新排序
+    function resortOptionAsc() {
+        $('.optionDesc').each(function (index) {
+            $(this).text('选项' + (index + 1));
+        })
+    }
 
 </script>
 {/block}

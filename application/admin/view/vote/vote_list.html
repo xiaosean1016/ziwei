@@ -7,7 +7,9 @@
 
 {block name="content"}
 <style>
-
+    #voteListBody td {
+        line-height: 34px;
+    }
 </style>
 
 <!-- ============================================================== -->
@@ -27,11 +29,16 @@
                         </div>
 
                         <div class="panel-body">
-
                             <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-inline">
+                                        <input id="voteNameSearch" type="text" class="form-control input-sm" placeholder="查询活动名称">
+                                        <button id="searchBtn" class="btn btn-primary waves-effect waves-light">查询</button>
+                                    </div>
+                                </div>
                                 <div class="col-md-12 col-sm-12 col-xs-12">
-                                    <div class="table-responsive">
-                                        <table class="table" id="template-list-table">
+                                    <div class="m-t-10">
+                                        <table class="table table-bordered table-striped">
                                             <thead>
                                             <tr>
                                                 <th>#</th>
@@ -41,13 +48,19 @@
                                                 <th>操作</th>
                                             </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody id="voteListBody">
 
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- paginate start -->
+                            <div class="panel-body text-center" id="PageTab">
+                            </div>
+                            <!-- paginate end -->
+
                         </div>
                     </div>
                 </div>
@@ -75,11 +88,58 @@
 {load file="__admin__/plugins/jquery-multi-select/jquery.multi-select.js"}
 
 <script>
+    var searchContent = '';
+    var listPage = 1;
+
     $(function () {
         $('#addVoteBtn').on('click', function () {
             window.location.href = '/admin/vote/publishView';
+        });
+
+        $('#searchBtn').on('click', function () {
+           searchContent = $('#voteNameSearch').val();
+           renderList();
+        });
+
+        renderList();
+    });
+
+    function renderList() {
+        $.ajax({
+            type: 'POST',
+            url: 'getVoteList',
+            data: {search: searchContent, page: listPage},
+            dataType: 'json',
+            success: function (res) {
+                var data = res.data;
+                var table = '';
+
+                for (var i = 0; i < data.table.length; i ++) {
+                    table += '<tr data-id="' + data.table[i]['id'] + '">';
+                    table += '<td>' + (i + 1) + '</td>';
+                    table += '<td>' + data.table[i]['votename'] + '</td>';
+                    table += '<td>' + data.table[i]['createdatetime'] + '</td>';
+                    table += '<td>' + data.table[i]['status'] + '</td>';
+                    table += '<td>';
+                    table += '<button onclick="editVote(this)" type="button" class="m-l-10 btn btn-primary waves-effect waves-light m-b-5">编辑</button>';
+                    table += '<button onclick="deleteVote(this)" type="button" class="m-l-10 btn btn-primary waves-effect waves-light m-b-5">删除</button>';
+                    table += '</td>';
+                    table += '</tr>';
+                }
+
+                $('#voteListBody').html(table);
+                $('#PageTab').html(data.page);
+            }
         })
-    })
+    }
+
+    function editVote() {
+
+    }
+    
+    function deleteVote() {
+        
+    }
 
 </script>
 {/block}
