@@ -1,102 +1,62 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <meta name="description" content="紫薇幼儿园登录">
-        <meta name="author" content="Coderthemes">
+{extend name="../application/home/view/common/base.html"}
 
-        <link rel="shortcut icon" href="assets/images/favicon_1.ico">
+{block name="title_content"}
+紫薇幼儿园-登录
+{/block}
 
-        <title>紫薇幼儿园-登录</title>
-
-        {load file="__admin__/plugins/sweetalert/dist/sweetalert.css"}
-        {load file="__admin__/plugins/notifications/notification.css"}
-
-        {load file="__admin__/css/bootstrap.min.css"}
-        {load file="__admin__/css/core.css"}
-        {load file="__admin__/css/icons.css"}
-        {load file="__admin__/css/components.css"}
-        {load file="__admin__/css/pages.css"}
-        {load file="__admin__/css/menu.css"}
-        {load file="__admin__/css/responsive.css"}
-
-        {load file="__admin__/js/modernizr.min.js"}
+{block name="style_css"}
+<style>
+    .notifyjs-corner {
+        left: calc(50% - 131px) !important;
+    }
+</style>
+{/block}
 
 
-        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-        <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-        <![endif]-->
-
-        
-    </head>
-    <body>
-    <style>
-        .notifyjs-corner {
-            left: calc(50% - 131px) !important;
-        }
-    </style>
-
-        <div class="wrapper-page">
-            <div class="panel panel-color panel-primary panel-pages">
-                <div class="panel-heading bg-img"> 
-                    <div class="bg-overlay"></div>
-                    <h3 class="text-center m-t-10 text-white">  <strong>紫薇幼儿园</strong> </h3>
-                </div> 
-
-
-                <div class="panel-body">
-                <form class="form-horizontal m-t-20" action="index.html">
-                    
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <input class="form-control input-lg" type="text" name="username" value="{$Think.get.phone}" required="" placeholder="用户名">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <input class="form-control input-lg" type="password" name="password" required="" placeholder="密码">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group text-center m-t-40">
-                        <div class="col-xs-12">
-                            <button id="submitFormBtn" class="btn btn-purple btn-lg w-lg waves-effect waves-light" type="button">登录</button>
-                        </div>
-                    </div>
-
-                    <div class="form-group m-t-30">
-                        <div class="col-sm-7">
-                            <a href="retrievepassword"><i class="fa fa-lock m-r-5"></i> 忘记密码?</a>
-                        </div>
-                        <div class="col-sm-5 text-right">
-                            <a href="register">创建新账号</a>
-                        </div>
-                    </div>
-                </form> 
-                </div>                                 
-                
-            </div>
+{block name="container"}
+<div class="wrapper-page">
+    <div class="panel panel-color panel-primary panel-pages">
+        <div class="panel-heading bg-img">
+            <div class="bg-overlay"></div>
+            <h3 class="text-center m-t-10 text-white">  <strong>紫薇幼儿园</strong> </h3>
         </div>
 
-        
-    	<script>
-            var resizefunc = [];
-        </script>
+        <div class="panel-body">
+            <form class="form-horizontal m-t-20" action="index.html">
 
-        <!-- Main  -->
-        {load file="__admin__/js/jquery.min.js"}
-        {load file="__admin__/js/bootstrap.min.js"}
-        {load file="__admin__/plugins/sweetalert/dist/sweetalert.min.js"}
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <input class="form-control input-lg" type="text" name="username" value="{$Think.get.phone}" required="" placeholder="用户名">
+                    </div>
+                </div>
 
-        {load file="__admin__/plugins/notifyjs/dist/notify.min.js"}
-        {load file="__admin__/plugins/notifications/notify-metro.js"}
-        {load file="__admin__/plugins/notifications/notifications.js"}
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <input class="form-control input-lg" type="password" name="password" required="" placeholder="密码">
+                    </div>
+                </div>
 
+                <div class="form-group text-center m-t-40">
+                    <div class="col-xs-12">
+                        <button id="submitFormBtn" class="btn btn-purple btn-lg w-lg waves-effect waves-light" type="button">登录</button>
+                    </div>
+                </div>
+
+                <div class="form-group m-t-30">
+                    <div class="col-sm-7">
+                        <a href="retrievepassword"><i class="fa fa-lock m-r-5"></i> 忘记密码?</a>
+                    </div>
+                    <div class="col-sm-5 text-right">
+                        <a href="register">创建新账号</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="lead_js"}
     <script>
         $(function () {
             $('#submitFormBtn').on('click', function () {
@@ -121,5 +81,4 @@
 
 
     </script>
-	</body>
-</html>
+{/block}
