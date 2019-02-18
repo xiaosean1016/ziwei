@@ -554,7 +554,8 @@
                 $('input[name="maxBallot_' + i + '"]').prop('disabled', false).val(data.option[i-1].maxusers);
             }
             if (data.option[i-1].optionimg) {
-                fillImg($('#thelist_' + i), 'fileId_' + i, i, '__upload__/' + data.option[i-1].optionimg);
+                fillImg($('#thelist_' + i), 'fileId_' + i, i, '__uploads__/' + data.option[i-1].optionimg);
+                $('input[name="uploadImg_' + i + '"]').val(data.option[i-1].optionimg);
                 $('#picker_' + i).hide();
             }
         }
@@ -571,7 +572,7 @@
                         $('input[name="isRequired_' + j + '"]').eq(1).prop('checked', true);
                     }
                     $('select[name="fieldType_' + j + '"]').val(subConObj[j-1].type).change();
-                    $('textarea[name="pickVal_' + j + '"]').val(subConObj[j-1].options);
+                    $('textarea[name="pickVal_' + j + '"]').val(subConObj[j-1].options.replace(new RegExp( ',' , "g" ), '\n'));
                 }
             }
         }

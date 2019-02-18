@@ -18,9 +18,33 @@ class Vote extends Model
         $voteInfo = Db::name('vote')->where('id', $id)->find();
 
         $optionInfo = Db::name('vote_option')->where('voteid', $id)->select();
+//        $optionNum = Db::name('vote_user_option')->field('count(*) as num,optionid')->where('voteid', $id)->group('optionid')->select();
+
+        foreach ($optionInfo as &$val) {
+            $val['full'] = $val['optionnum'] > $val['maxusers'];
+        }
 
         $info = $voteInfo;
         $info['option'] = $optionInfo;
         return $info;
+    }
+
+    public function getActiveVoteInfo()
+    {
+        $voteInfo = '';
+        $now = date('Y-m-d H:i:s', time());
+
+        $cond = [];
+        $cond['status'] = 'progressing';
+        $cond['startdatetime'] = ['<=', $now];
+        $cond['stopdatetime'] = ['>=', $now];
+
+        $id = Db::name('vote')->where($cond)->order('createdatetime desc')->value('id');
+
+        if ($id) {
+            $voteInfo = $this->getVoteInfo($id);
+        }
+//        dump($voteInfo);exit;
+        return $voteInfo;
     }
 }

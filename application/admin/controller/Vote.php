@@ -147,7 +147,7 @@ class Vote extends Base
                     if (isset($param['fieldLabel_' . $k])) {
                         $temp['name'] = $param['fieldLabel_' . $k];
                         $temp['type'] = $param['fieldType_' . $k];
-                        $temp['options'] = implode(',', explode('\n', $param['pickVal_' . $k]));
+                        $temp['options'] = implode(',', explode("\n", $param['pickVal_' . $k]));
                         $temp['required'] = $param['isRequired_' . $k];
                         $fieldData[] = $temp;
                     }

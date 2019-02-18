@@ -28,4 +28,20 @@ class Vote extends Controller
     {
 
     }
+
+    public function create()
+    {
+        $voteInfo = model('Vote')->getActiveVoteInfo();
+
+//        dump($voteInfo);
+
+        $this->assign('DATA', $voteInfo);
+        return $this->fetch();
+    }
+
+    //投票提交
+    public function submit()
+    {
+
+    }
 }

@@ -40,6 +40,28 @@
 
 
 
+.item-checked::before, .vote-item::before {
+    content: '';
+    display: block;
+    position: relative;
+    width: 25px;
+    height: 25px;
+    top: 30px;
+    left: 12%;
+}
+
+.vote-item::before {
+    background: url("../svg/unchecked.svg");
+    -webkit-background-size: cover;
+    background-size: cover;
+}
+
+.item-checked::before {
+    background: url("../svg/checked.svg") !important;
+    -webkit-background-size: cover !important;
+    background-size: cover !important;
+}
+
 
 
 

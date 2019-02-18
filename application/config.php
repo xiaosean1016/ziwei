@@ -147,7 +147,7 @@ return [
         '__static__' => think\Url::build('/').'static',
         '__admin__' => think\Url::build('/').'static/admin',
         '__home__' => think\Url::build('/').'static/home',
-        '__upload__' => think\Url::build('/').'uploads',
+        '__uploads__' => think\Url::build('/').'uploads',
     ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',
