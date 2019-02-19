@@ -1,7 +1,7 @@
 {extend name="../application/home/view/common/base.html"}
 
 {block name="title_content"}
-紫薇幼儿园-填写报名表
+紫薇幼儿园-投票
 {/block}
 
 {block name="style_css"}
@@ -171,6 +171,10 @@
         modalInit();
 
         $('#submitBtn').on('click', function () {
+            if (!subConBool && localStorage.getItem('vote_' + voteId) === 'voted') {
+                $.Notification.autoHideNotify('error','top center', '提交失败', '感谢参与，请勿重复提交');
+                return false;
+            }
             //投票内容为空处理
             if (!getCheckedNum()) {
                 $.Notification.autoHideNotify('error','top center', '提交失败', '请选择内容');
@@ -246,24 +250,37 @@
         return isValid;
     }
 
+    //表单提交
     function submitForm() {
         var checkIds = [];
+        var jsonData = [];
 
         $('.item-checked').each(function () {
             checkIds.push($(this).attr('data-id'));
         });
 
+        jsonData.push('id=' + voteId);
+        jsonData.push('checkIds=' + checkIds);
+
         if (subConBool) {
             if (!checkModalFields()) return false;
+            jsonData.push(form_serialize(document.getElementById('subConModalForm')));
         }
 
         $.ajax({
             type: 'POST',
             url: 'submit',
-            data: {'id': voteId, 'checkIds': checkIds, },
+            data: jsonData.join("&"),
             dataType: 'json',
             success: function (data) {
-                console.log(data);
+                if (data.code === 'SUCCESS') {
+                    localStorage.setItem('vote_' + voteId, 'voted');
+                    $('#subConInfo').modal('hide');
+                    $.Notification.autoHideNotify('success','top center', '提交成功', '');
+                } else {
+
+                    $.Notification.autoHideNotify('error','top center', '提交失败', data.msg);
+                }
             }
         })
     }

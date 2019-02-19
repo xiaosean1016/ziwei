@@ -11,14 +11,14 @@ namespace app\home\controller;
 use think\Controller;
 use think\Session;
 
-class base extends Controller
+class voteBase extends Controller
 {
     protected function _initialize()
     {
-        $user = Session::get('user_name');
+        $user = Session::get('vote_login');
 
-        if (!$user) {
-            $this->redirect('/home/login');
+        if (request()->action() != 'login' && !$user) {
+            $this->redirect('/home/vote/login');
         }
     }
 }

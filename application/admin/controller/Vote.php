@@ -66,18 +66,6 @@ class Vote extends Base
         return $items;
     }
 
-    //选项列表
-    public function optionList()
-    {
-
-    }
-
-    //选项数据
-    public function getOptionData()
-    {
-
-    }
-
     //新增投票活动
     public function publishView()
     {
@@ -158,6 +146,7 @@ class Vote extends Base
                 $voteId = Db::name('vote')->insertGetId($voteData);
             } else {
                 $voteId = $param['voteid'];
+                unset($voteData['createdatetime']);
                 Db::name('vote')->where('id', $voteId)->update($voteData);
             }
 
@@ -209,6 +198,71 @@ class Vote extends Base
     public function voteStats()
     {
 
+        return $this->fetch();
+    }
+
+    public function getVoteStatsList()
+    {
+        $searchContent = request()->param('search');
+
+        $cond = [];
+        if ($searchContent) {
+            $cond['votename'] = ['like', "%$searchContent%"];
+        } else {
+            $cond = 1;
+        }
+
+        $listFields = ['a.id', 'votename', 'startdatetime', 'stopdatetime', 'status', 'ifnull(sum(b.optionnum), 0) votenum'];
+        $tableData = Db::name('vote')->alias('a')->join('zw_vote_option b', 'a.id = b.voteid', 'LEFT')
+            ->field(implode(',', $listFields))->where($cond)->group('b.voteid,a.id')
+            ->order('createdatetime desc,id desc')->paginate(10);
+
+        $listData = $this->getShowValues($tableData->items());
+        $data = ['table' => $listData, 'page' => $tableData->render()];
+        return json(['code' => 'SUCCESS', 'data' => $data]);
+    }
+
+    //结束活动
+    public function endVote()
+    {
+        $id = request()->param('id');
+
+        if (Db::name('vote')->where('id', $id)->update(['status' => 'ending'])) {
+            return json(['code' => 'SUCCESS', 'msg' => '更新成功']);
+        } else {
+            return json(['code' => 'ERROR', 'msg' => '更新失败']);
+        }
+    }
+
+    //选项列表
+    public function optionList()
+    {
+        $id = request()->param('id');
+
+        $optionData = Db::name('vote_option')->where('voteid', $id)->order('optionnum desc,id desc')->select();
+//dump($optionData);exit;
+        $this->assign('DATA', $optionData);
+        return $this->fetch();
+    }
+
+    //选项投票结果数据
+    public function getOptionResultData()
+    {
+        $optionId = request()->param('id');
+        $voteId = Db::name('vote_option')->where('id', $optionId)->value('voteid');
+        $submitFieldJson = Db::name('vote')->where('id', $voteId)->value('submitfield');
+        $submitFields = json_decode($submitFieldJson, true);
+        $headers = ['时间', 'ip'];
+        $headers = array_merge($headers, array_column($submitFields, 'name'));
+
+        $voteUserIds = Db::name('vote_user_option')->where('optionid', $optionId)->column('voteuserid');
+//        dump($voteUserIds);exit;
+        $optionRes = [];
+        if ($voteUserIds) {
+            $optionRes = Db::name('vote_user')->field('voteip,createdatetime,submitjson')->where('id', 'IN', $voteUserIds)->select();
+        }
+
+        return json(['code' => 'SUCCESS', 'headers' => $headers, 'table' => $optionRes]);
     }
 
     public function fileUpload()
@@ -227,5 +281,28 @@ class Vote extends Base
                 return json(['code' => 'ERROR', 'msg' => $info->getError()]);
             }
         }
+    }
+
+    //投票密码配置
+    public function voteSecret()
+    {
+        $secretInfo = Db::name('vote_login_identity')->find();
+
+        $this->assign('DATA', $secretInfo);
+        return $this->fetch();
+    }
+
+    public function setVoteSecret()
+    {
+        $username = request()->param('username');
+        $password = request()->param('password');
+
+        if ($username && $password) {
+            if (Db::name('vote_login_identity')->where('1=1')->update(['username' => $username, 'password' => $password])) {
+                return json(['code' => 'SUCCESS', 'msg' => '修改成功']);
+            }
+        }
+
+        return json(['code' => 'ERROR', 'msg' => '修改失败']);
     }
 }

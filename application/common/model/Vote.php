@@ -21,7 +21,7 @@ class Vote extends Model
 //        $optionNum = Db::name('vote_user_option')->field('count(*) as num,optionid')->where('voteid', $id)->group('optionid')->select();
 
         foreach ($optionInfo as &$val) {
-            $val['full'] = $val['optionnum'] > $val['maxusers'];
+            $val['full'] = $val['optionnum'] >= $val['maxusers'] && $val['maxusers'];
         }
 
         $info = $voteInfo;

@@ -37,7 +37,7 @@
             <div class="panel panel-color panel-primary panel-pages">
 
                 <div class="panel-body">
-                    <form class="form-horizontal m-t-20" action="/admin/login/index.html" method="post">
+                    <form class="form-horizontal m-t-20" action="/admin/vote/login" method="post">
                         <div class="form-group">
                             <div class="col-xs-12">
                                 <input name="username" class="form-control input-lg" type="text" required="" placeholder="用户名">
@@ -75,7 +75,7 @@
         <script>
             var error_msg = '{$ERROR_MESSAGE}';
             if (error_msg) {
-                swal(error_msg);
+                $.Notification.autoHideNotify('success','top center', '登录失败', error_msg);
             }
         </script>
 	</body>
