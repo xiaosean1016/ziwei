@@ -102,7 +102,7 @@
     <div class="row m-t-30 m-b-30">
         {volist name="$DATA.option" id="vo"}
         <div class="col-lg-4">
-            <div data-id="{vo.id}" class="vote-item text-center {eq name="vo.full" value="true"}item-full{/eq}" style="position:relative;">
+            <div data-id="{$vo.id}" class="vote-item text-center {eq name="vo.full" value="true"}item-full{/eq}" style="position:relative;">
                 <div class="item-heading">
                     <p class="item-title">{$vo.optionname}</p>
                     <span class="item-desc">{$vo.description}</span>
@@ -152,6 +152,7 @@
 <script>
     var maxCheckNum = {$DATA.votemaxballot};
     var subConBool = false;
+    var voteId = {$DATA.id};
 
     $(function () {
         $('.vote-item').on('click', function () {
@@ -170,6 +171,12 @@
         modalInit();
 
         $('#submitBtn').on('click', function () {
+            //投票内容为空处理
+            if (!getCheckedNum()) {
+                $.Notification.autoHideNotify('error','top center', '提交失败', '请选择内容');
+                return false;
+            }
+
             if (subConBool) {
                 $('#subConInfo').modal('show');
             } else {
@@ -228,20 +235,32 @@
 
     //提交内容信息验证
     function checkModalFields() {
-        $.Notification.autoHideNotify('error','top center', '操作失败', '不能为空');
+        var isValid = true;
+        $('#subConModalForm').find('input,select').each(function () {
+            if ($(this).parent().parent().hasClass('required') && !$(this).val()) {
+                $.Notification.autoHideNotify('error','top center', '提交失败', $(this).parent().parent().find('.control-label').text() + '不能为空');
+                isValid = false;
+                return false;
+            }
+        });
+        return isValid;
     }
 
     function submitForm() {
-        var jsonData = {};
+        var checkIds = [];
+
+        $('.item-checked').each(function () {
+            checkIds.push($(this).attr('data-id'));
+        });
 
         if (subConBool) {
-            checkModalFields();
+            if (!checkModalFields()) return false;
         }
 
         $.ajax({
             type: 'POST',
             url: 'submit',
-            data: jsonData,
+            data: {'id': voteId, 'checkIds': checkIds, },
             dataType: 'json',
             success: function (data) {
                 console.log(data);
