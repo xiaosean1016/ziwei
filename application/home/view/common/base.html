@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {block name="title_content"}
+        紫薇幼儿园
+        {/block}
+    </title>
+
+    {load file="__admin__/plugins/sweetalert/dist/sweetalert.css"}
+    {load file="__admin__/plugins/notifications/notification.css"}
+
+    {load file="__admin__/css/bootstrap.min.css"}
+    {load file="__admin__/css/core.css"}
+    {load file="__admin__/css/icons.css"}
+    {load file="__admin__/css/components.css"}
+    {load file="__admin__/css/pages.css"}
+    {load file="__admin__/css/menu.css"}
+    {load file="__admin__/css/responsive.css"}
+    {load file="__home__/css/style.css"}
+
+    {load file="__admin__/js/modernizr.min.js"}
+
+    {block name="lead_css"}
+    {/block}
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+{block name="style_css"}
+{/block}
+
+
+<div class="row-fluid" id="header">
+    <div class="header_content">
+        <p class="header_name">
+            上海市紫薇实验幼儿园
+        </p>
+        <p class="header_comment">
+            Shanghai Ziwei Experimental Kindergarten
+        </p>
+    </div>
+</div>
+{block name="container"}
+{/block}
+<div class="row-fluid" id="footer">
+    <div class="span8 offset2">
+        <p>©2006 - 2019 紫薇幼儿园</p>
+    </div>
+</div>
+
+
+<script>
+    var resizefunc = [];
+</script>
+
+<!-- Main  -->
+{load file="__admin__/js/jquery.min.js"}
+{load file="__admin__/js/bootstrap.min.js"}
+{load file="__admin__/plugins/sweetalert/dist/sweetalert.min.js"}
+
+{load file="__admin__/plugins/notifyjs/dist/notify.min.js"}
+{load file="__admin__/plugins/notifications/notify-metro.js"}
+{load file="__admin__/plugins/notifications/notifications.js"}
+
+{load file="__admin__/js/common.js"}
+
+{block name="lead_js"}
+{/block}
+</body>
+</html>

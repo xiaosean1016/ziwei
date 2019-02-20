@@ -1,0 +1,94 @@
+{extend name="../application/home/view/common/base.html"}
+
+{block name="title_content"}
+紫薇幼儿园-反馈
+{/block}
+
+{block name="style_css"}
+<style>
+    .feedback-input {
+        font-family: PingFangSC-Regular, 'sans-serif';
+        font-size: 16px;
+        color: #333333;
+        letter-spacing: 0.26px;
+        padding-left: 20px;
+    }
+
+    .require-label {
+        font-size: 16px;
+        color: #D0021B;
+    }
+</style>
+{/block}
+
+{block name="container"}
+<div class="container m-t-10">
+    <div class="row m-t-15">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12 m-t-10">
+                            <div class="text-center">
+                                <h3>意见反馈</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row col-md-10 m-t-20">
+                        <form class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label require-label">*</label>
+                                <div class="col-md-10">
+                                    <textarea name="content" class="form-control feedback-input" id="" rows="10" placeholder="说说你对紫薇实验幼儿园宝贵的改进建议吧…"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label"></label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control feedback-input" name="contact" value="" placeholder="填写您的手机号或邮箱">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row col-md-12 text-center m-t-30 m-b-30">
+                        <button id="submitBtn" class="submit-btn btn btn-purple">提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{/block}
+
+{block name="lead_js"}
+<script>
+    $(function () {
+        $('#submitBtn').on('click', function () {
+            var content = $('textarea[name="content"]').val();
+            var contact = $('input[name="contact"]').val();
+
+            if (!content) {
+                $.Notification.autoHideNotify('error','top center', '提交失败', '反馈内容不能为空');
+                return false;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: 'save',
+                data: {content: content, contact: contact},
+                dataType: 'json',
+                success: function (data) {
+                    if (data.code === 'SUCCESS') {
+                        $.Notification.autoHideNotify('success','top center', '提交成功', '');
+                    } else {
+                        $.Notification.autoHideNotify('error','top center', '提交失败', '');
+                    }
+                }
+            })
+        })
+    });
+
+</script>
+{/block}
