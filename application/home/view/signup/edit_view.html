@@ -1,0 +1,91 @@
+{extend name="../application/home/view/common/base.html"}
+
+{block name="title_content"}
+紫薇幼儿园-填写报名表
+{/block}
+
+{block name="lead_css"}
+{load file="__admin__/plugins/bootstrap-inputmask/bootstrap-inputmask.min.js"}
+{/block}
+
+{block name="style_css"}
+<style>
+    .error_input {
+        border-color: #ef5350;
+    }
+</style>
+{/block}
+
+{block name="container"}
+<div class="row-fluid" id="main">
+    <div class="span8 offset2">
+        <form id="signForm" class="form-horizontal ">
+            <input type="hidden" name="id" value="{$SIGNID}">
+
+            {$TEMPLATEHTML}
+
+        </form>
+        <div class="text-center">
+            <button id="submitForm" class="btn btn-info waves-effect waves-light m-l-10">保存</button>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="lead_js"}
+<script>
+    $(function () {
+        editValues({$SIGNID});
+
+        $('#submitForm').on('click', function () {
+            if (!checkSubmitForm()) return false;
+            $.ajax({
+                type: 'POST',
+                url: '/home/SignUp/editSave',
+                data: form_serialize(document.getElementById('signForm')),
+                dateType: 'json',
+                success: function (data) {
+                    if (data.code === 'SUCCESS') {
+                        window.location.href = '/home/signup/submitResult';
+                    } else {
+                        $.Notification.autoHideNotify('error','top center', '提交失败', '');
+                    }
+                }
+            });
+        });
+
+        $('input').on('focus', function () {
+            $(this).removeClass('error_input');
+        })
+    });
+
+    function editValues(id) {
+        $.ajax({
+            type: 'POST',
+            url: 'getEditValue',
+            data: {id: id},
+            dataType: 'json',
+            success: function (res) {
+                var data = res.data;
+                for (key in data) {
+                    $('#signForm input[name="' + key + '"]').val(data[key]);
+                }
+            }
+        })
+    }
+
+    function checkSubmitForm() {
+        var isValid = true;
+        $('input').each(function () {
+            if (!$(this).val()) {
+                $.Notification.autoHideNotify('error','top center', '提交失败', '请填写字段信息');
+                $(this).addClass('error_input');
+                isValid = false;
+                return false;
+            }
+        });
+        return isValid;
+    }
+
+</script>
+{/block}

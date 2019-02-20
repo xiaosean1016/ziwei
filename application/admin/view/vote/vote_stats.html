@@ -1,0 +1,166 @@
+{extend name="../application/admin/view/common/base.html" /}
+
+{block name="lead_css"}
+{load file="__admin__/js/modernizr.min.js"}
+{load file="__admin__/plugins/jquery-multi-select/multi-select.css"}
+{/block}
+
+{block name="content"}
+<style>
+    #voteStatsListBody td {
+        line-height: 34px;
+    }
+</style>
+
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-inline">
+                                        <input id="voteNameSearch" type="text" class="form-control input-sm" placeholder="查询活动名称">
+                                        <button id="searchBtn" class="btn btn-primary waves-effect waves-light">查询</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="m-t-10">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>名称</th>
+                                                <th>开始时间</th>
+                                                <th>结束时间</th>
+                                                <th>状态</th>
+                                                <th>投票人数</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="voteStatsListBody">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- paginate start -->
+                            <div class="panel-body text-center" id="PageTab">
+                            </div>
+                            <!-- paginate end -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end row -->
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}
+
+{block name="lead_js"}
+{load file="__admin__/plugins/magnific-popup/dist/jquery.magnific-popup.min.js"}
+{load file="__admin__/plugins/jquery-datatables-editable/jquery.dataTables.js"}
+{load file="__admin__/plugins/datatables/dataTables.bootstrap.js"}
+{load file="__admin__/pages/datatables.editable.init.js"}
+{load file="__admin__/plugins/jquery-multi-select/jquery.multi-select.js"}
+
+<script>
+    var searchContent = '';
+    var listPage = 1;
+
+    $(function () {
+        $('#searchBtn').on('click', function () {
+           searchContent = $('#voteNameSearch').val();
+           renderList();
+        });
+
+        renderList();
+    });
+
+    function renderList() {
+        $.ajax({
+            type: 'POST',
+            url: 'getVoteStatsList',
+            data: {search: searchContent, page: listPage},
+            dataType: 'json',
+            success: function (res) {
+                var data = res.data;
+                var table = '';
+
+                for (var i = 0; i < data.table.length; i ++) {
+                    table += '<tr data-id="' + data.table[i]['id'] + '">';
+                    table += '<td>' + (i + 1) + '</td>';
+                    table += '<td><a href="/admin/vote/detailView?id=' + data.table[i]['id'] + '">' + data.table[i]['votename'] + '</a></td>';
+                    table += '<td>' + data.table[i]['startdatetime'] + '</td>';
+                    table += '<td>' + data.table[i]['stopdatetime'] + '</td>';
+                    table += '<td>' + data.table[i]['status'] + '</td>';
+                    table += '<td>' + data.table[i]['votenum'] + '</td>';
+                    table += '<td width="180">';
+                    table += '<button onclick="endVote(this)" type="button" class="m-l-10 btn btn-danger waves-effect waves-light m-b-5">结束</button>';
+                    table += '<button onclick="optionList(this)" type="button" class="m-l-10 btn btn-primary waves-effect waves-light m-b-5">详情</button>';
+                    table += '</td>';
+                    table += '</tr>';
+                }
+
+                $('#voteStatsListBody').html(table);
+                $('#PageTab').html(data.page);
+            }
+        })
+    }
+
+    //分页跳转
+    function pageTo(page) {
+        listPage = page;
+        renderList();
+    }
+
+    function endVote(obj) {
+        var id = $(obj).parent().parent().attr('data-id');
+        if (!id) return false;
+
+        $.ajax({
+            type: 'POST',
+            url: 'endVote',
+            data: {id: id},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code === 'SUCCESS') {
+                    renderList();
+                } else {
+                    swal(data.msg);
+                }
+            }
+        })
+    }
+
+    //选项内容
+    function optionList(obj) {
+        var id = $(obj).parent().parent().attr('data-id');
+        if (!id) return false;
+
+        window.location.href = 'optionList?id=' + id;
+    }
+
+</script>
+{/block}
