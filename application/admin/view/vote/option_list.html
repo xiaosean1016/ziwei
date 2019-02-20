@@ -1,0 +1,155 @@
+{extend name="../application/admin/view/common/base.html" /}
+
+{block name="lead_css"}
+{load file="__admin__/js/modernizr.min.js"}
+{load file="__admin__/plugins/jquery-multi-select/multi-select.css"}
+{/block}
+
+{block name="content"}
+<style>
+    #voteStatsListBody td {
+        line-height: 34px;
+    }
+</style>
+
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-inline">
+                                        <input id="voteNameSearch" type="text" class="form-control input-sm" placeholder="查询活动名称">
+                                        <button id="searchBtn" class="btn btn-primary waves-effect waves-light">查询</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="m-t-10">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th width="80px">图片缩略图</th>
+                                                <th>投票项</th>
+                                                <th>得票数</th>
+                                                <th width="6%">操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="optionListBody">
+                                            {volist name="DATA" id="vo"}
+                                            <tr data-id="{$vo.id}">
+                                                <td>{$key + 1}</td>
+                                                <td><img width="80px" src="__uploads__/{$vo.optionimg}" alt=""></td>
+                                                <td>{$vo.optionname}</td>
+                                                <td>{$vo.optionnum}</td>
+                                                <td><button onclick="optionResult(this)" type="button" class="m-l-10 btn btn-primary waves-effect waves-light m-b-5">详情</button></td>
+                                            </tr>
+                                            {/volist}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- paginate start -->
+                            <div class="panel-body text-center" id="PageTab">
+                            </div>
+                            <!-- paginate end -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end row -->
+
+            <!-- 投票详情模态框 -->
+            <div id="optionResultInfo" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="optionResultModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" id="optionResultModalLabel">投票结果</h4>
+                        </div>
+                        <div class="modal-body">
+                            <table id="optionResultTable" class="table table-hover">
+
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary waves-effect" data-dismiss="modal">确认</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div>
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}
+
+{block name="lead_js"}
+{load file="__admin__/plugins/magnific-popup/dist/jquery.magnific-popup.min.js"}
+{load file="__admin__/plugins/jquery-datatables-editable/jquery.dataTables.js"}
+{load file="__admin__/plugins/datatables/dataTables.bootstrap.js"}
+{load file="__admin__/pages/datatables.editable.init.js"}
+{load file="__admin__/plugins/jquery-multi-select/jquery.multi-select.js"}
+
+<script>
+    function optionResult(obj) {
+        var id = $(obj).parent().parent().attr('data-id');
+
+        $.ajax({
+            type: 'POST',
+            url: 'getOptionResultData',
+            data: {id: id},
+            dataType: 'json',
+            success: function (res) {
+                console.log(res);
+                if (res.code === 'SUCCESS') {
+                    var data = res.table;
+                    var html = '';
+
+                    html += '<tr>';
+                    for (var i = 0; i < res.headers.length; i ++) {
+                        html += '<td>';
+                        html += res.headers[i];
+                        html += '</td>';
+                    }
+                    html += '</tr>';
+
+                    for (var j = 0; j < data.length; j ++) {
+                        html += '<tr>';
+                        html += '<td>' + data[j].createdatetime + '</td>';
+                        html += '<td>' + data[j].voteip + '</td>';
+                        var submitJson = JSON.parse(data[j].submitjson);
+                        for (var k = 0; k < submitJson.length; k ++) {
+                            html += '<td>' + submitJson[k].value + '</td>';
+                        }
+                        html += '</tr>';
+                    }
+
+                    $('#optionResultTable').html(html);
+                    $('#optionResultInfo').modal('show');
+                }
+            }
+        });
+    }
+</script>
+{/block}
