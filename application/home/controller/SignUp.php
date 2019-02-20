@@ -10,12 +10,12 @@ namespace app\home\controller;
 
 use think\Db;
 use think\Exception;
-use think\Model;
 use think\Request;
 use think\Session;
 
 class Signup extends Base
 {
+    //选择户籍所在地页面方法
     public function selectProcess()
     {
         $list = Db::name('template')->where('isshow', 1)->column('id', 'type');
@@ -24,6 +24,7 @@ class Signup extends Base
         return $this->fetch();
     }
 
+    //新增报名表方法
     public function createView()
     {
         $id = Request::instance()->get('id');
@@ -37,6 +38,7 @@ class Signup extends Base
         return $this->fetch();
     }
 
+    //报名表新增保存
     public function save()
     {
         $id = Request::instance()->param('id');
@@ -45,7 +47,7 @@ class Signup extends Base
         $param['createdatetime'] = date('Y-m-d H:i:s', time());
         $param['status'] = 'waiting';
         $param['templateid'] = $id;
-        $param['userid'] = 1;
+        $param['userid'] = Session::get('user_id');
 
         try {
             $signId = Db::name('signup')->insertGetId($param);
@@ -60,22 +62,7 @@ class Signup extends Base
         }
     }
 
-    public function editSave() {
-        $id = Request::instance()->param('id');
-
-        //todo 判断id是否为用户所属
-        $templateId = Db::name('signup')->where('id', $id)->value('templateid');
-        $fields = model('Template')->getTemplateFields($templateId);
-        $param = Request::instance()->only($fields);
-
-        try {
-            Db::name('signup')->where('id', $id)->update($param);
-            return json(['code' => 'SUCCESS', 'msg' => '修改成功']);
-        } catch (\Exception $e) {
-            return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
-        }
-    }
-
+    //提交结果列表
     public function submitResult()
     {
         $userId = Session::get('user_id');
@@ -127,19 +114,28 @@ class Signup extends Base
         return $templateHtml;
     }
 
+    //编辑页
     public function editView()
     {
         $id = Request::instance()->param('id');
 
-        $templateId = Db::name('signup')->where('id', $id)->value('templateid');
+        $signRes = Db::name('signup')->field('templateid,status,userid')->where('id', $id)->find();
 
-        $templateHtml = $this->getTemplateHtml($templateId);
+        if ($signRes) {
+            if ($signRes['userid'] == $this->userId) {
+                $templateId = $signRes['templateid'];
+                $templateHtml = $this->getTemplateHtml($templateId);
 
-        $this->assign('SIGNID', $id);
-        $this->assign('TEMPLATEHTML', $templateHtml);
-        return $this->fetch();
+                $this->assign('SIGNID', $id);
+                $this->assign('STATUS', $signRes['status']);
+                $this->assign('TEMPLATEHTML', $templateHtml);
+                return $this->fetch();
+            }
+        }
+        return 'error';
     }
 
+    //获取编辑报名表的字段值
     public function getEditValue()
     {
         $id = Request::instance()->param('id');
@@ -150,5 +146,42 @@ class Signup extends Base
         $list = Db::name('signup')->field($templateFields)->where('id', $id)->find();
 
         return json(['code' => 'SUCCESS', 'data' => $list]);
+    }
+
+    //报名表编辑保存
+    public function editSave() {
+        $id = Request::instance()->param('id');
+
+        $signRes = Db::name('signup')->field('templateid,status,userid')->where('id', $id)->find();
+
+        if ($signRes) {
+            if ($signRes['userid'] == $this->userId && $signRes['status'] == 'waiting') {
+                $templateId = $signRes['templateid'];
+                $fields = model('Template')->getTemplateFields($templateId);
+                $param = Request::instance()->only($fields);
+
+                try {
+                    Db::name('signup')->where('id', $id)->update($param);
+                    return json(['code' => 'SUCCESS', 'msg' => '修改成功']);
+                } catch (\Exception $e) {
+                    return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
+                }
+            }
+        }
+
+        return json(['code' => 'ERROR', 'msg' => '保存失败']);
+    }
+    
+    //获取该用户报名次数
+    public function getSignTimes()
+    {
+        $userId = Session::get('user_id');
+        $count = 0;
+
+        if ($userId) {
+            $count = Db::name('signup')->where('userid', $userId)->count();
+        }
+
+        return $count;
     }
 }

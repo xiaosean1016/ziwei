@@ -8,24 +8,61 @@
 {load file="__admin__/plugins/bootstrap-inputmask/bootstrap-inputmask.min.js"}
 {/block}
 
+{block name="style_css"}
+<style>
+    .bg-overlay {
+        background: #77628F;
+        border-radius: 4px 4px 0px 0px;
+    }
+    .panel-heading h3 {
+        font-family: PingFangSC-Regular, 'sans-serif';
+        font-size: 21px;
+        color: #FFFFFF;
+        letter-spacing: 0.47px;
+        text-align: center;
+    }
+
+    .progress-span{
+        font-size: 16px;
+        color: #333333;
+        line-height: 30px;
+        position: relative;
+        top: -6px;
+    }
+</style>
+{/block}
+
 {block name="container"}
-<div class="row-fluid" id="main">
-    <div class="span8 offset2">
-        <form id="selectProcess" class="form-horizontal ">
-            <div class="" style="margin: 0 auto;width: 300px;height: 200px;border: 1px solid #333333">
-                <div class="form-group" style="margin: 30px;">
-                    <input type="radio" name="process" value="{$LIST.nonlocal}">
-                    上海以外省市区
+<div class="wrapper-page">
+    <div class="panel panel-color panel-primary panel-pages">
+        <div class="panel-heading">
+            <div class="bg-overlay"></div>
+            <h3 class="text-center m-t-10 ">开始报名前，请选择幼儿户籍所在地</h3>
+        </div>
+
+        <div class="panel-body">
+            <form id="selectProcess" class="form-horizontal m-t-20" action="index.html">
+
+                <div class="form-group">
+                    <div class="col-sm-6" style="margin-left: 30%;">
+                        <div class="radio progress-radio">
+                            <input type="radio" name="process" id="radio2" value="{$LIST.local}">
+                            <label for="radio2"><span class="progress-span">本区</span></label>
+                        </div>
+                        <div class="radio progress-radio">
+                            <input type="radio" name="process" id="radio1" value="{$LIST.nonlocal}">
+                            <label for="radio1"><span class="progress-span">上海以外省市区</span></label>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group" style="margin: 30px;">
-                    <input type="radio" name="process" value="{$LIST.local}">
-                    本区
+
+            </form>
+
+            <div class="form-group text-center m-t-40">
+                <div class="col-xs-12">
+                    <button id="submitProcess" disabled class="btn btn-purple disabled waves-effect waves-light m-l-10">下一步</button>
                 </div>
             </div>
-
-        </form>
-        <div class="text-center">
-            <button id="submitProcess" disabled class="btn btn-info disabled waves-effect waves-light m-l-10">下一步</button>
         </div>
     </div>
 </div>
@@ -33,12 +70,19 @@
 
 {block name="lead_js"}
 <script>
-    $('#selectProcess :radio').on('click', function () {
-        $('#submitProcess').removeClass('disabled').prop('disabled', false);
+    $(function () {
+        if ($('input[name="process"]:checked').val()) {
+            $('#submitProcess').removeClass('disabled').prop('disabled', false);
+        }
+
+        $('#selectProcess :radio').on('click', function () {
+            $('#submitProcess').removeClass('disabled').prop('disabled', false);
+        });
     });
 
+
     $('#submitProcess').on('click', function () {
-        var id = $('input[name="process"]').val();
+        var id = $('input[name="process"]:checked').val();
         window.location.href = 'createView?id=' + id;
     })
 

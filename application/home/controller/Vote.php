@@ -134,9 +134,4 @@ class Vote extends VoteBase
             return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
         }
     }
-
-    protected function checkSubmitForm($param)
-    {
-
-    }
 }

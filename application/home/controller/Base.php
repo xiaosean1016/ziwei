@@ -13,6 +13,8 @@ use think\Session;
 
 class base extends Controller
 {
+    public $userId;
+
     protected function _initialize()
     {
         $user = Session::get('user_name');
@@ -20,5 +22,6 @@ class base extends Controller
         if (!$user) {
             $this->redirect('/home/login');
         }
+        $this->userId = Session::get('user_id');
     }
 }

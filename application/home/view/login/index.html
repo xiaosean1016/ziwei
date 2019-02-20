@@ -72,7 +72,19 @@
                         if (data.code === 'ERROR') {
                             $.Notification.autoHideNotify('error','top center', '登录失败', data.msg);
                         } else {
-                            window.location.href = '/home/signup/selectprocess'
+                            $.ajax({
+                                type: 'POST',
+                                url: '/home/signup/getSignTimes',
+                                data: {},
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data > 0) {
+                                        window.location.href = '/home/signup/submitResult';
+                                    } else {
+                                        window.location.href = '/home/signup/selectprocess';
+                                    }
+                                }
+                            });
                         }
                     }
                 });

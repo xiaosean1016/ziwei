@@ -8,27 +8,77 @@
 {load file="__admin__/plugins/bootstrap-inputmask/bootstrap-inputmask.min.js"}
 {/block}
 
-{block name="container"}
-<div class="row-fluid" id="main">
-    <div class="span8 offset2" >
-        <table width="600px">
-            <tr>
-                <th>内容</th>
-                <th>提交时间</th>
-                <th>状态</th>
-                <th>操作</th>
-            </tr>
-            {volist name="LIST" id="vo"}
-            <tr>
-                <td>报名入学</td>
-                <td>{$vo.createdatetime}</td>
-                <td>{if $vo.status eq 'waiting'}提交成功{elseif $vo.status eq 'passed'}已通过{elseif $vo.status eq 'refused'}已拒绝{/if}</td>
-                <td><a href="editView?id={$vo.id}">查看报名表</a></td>
-            </tr>
-            {/volist}
-        </table>
+{block name="style_css"}
+<style>
+    .table tr th {
+        background: #E4E4E4;
+    }
+    .table td, .table th {
+        border: 1px solid #CCCCCC;
+        text-align: center;
+    }
+</style>
+{/block}
 
+{block name="container"}
+<div class="container m-t-8">
+    <div class="row m-t-30">
+        <div class="col-md-10 m-t-30" style="margin-left: 8.333%">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-10 m-t-30" style="margin-left: 8.333%">
+                            <table class="table">
+                                <tr>
+                                    <th>内容</th>
+                                    <th>提交时间</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                                {volist name="LIST" id="vo"}
+                                <tr>
+                                    <td>入学报名</td>
+                                    <td>{$vo.createdatetime}</td>
+                                    <td>{if $vo.status eq 'waiting'}提交成功{elseif $vo.status eq 'passed'}已通过{elseif $vo.status eq 'refused'}已拒绝{/if}</td>
+                                    <td><a href="editView?id={$vo.id}">查看报名表</a></td>
+                                </tr>
+                                {/volist}
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row m-t-30 text-center">
+                        <button id="ResignBtn" class="btn btn-purple">继续报名</button>
+                    </div>
+                    <div class="row col-md-6 m-t-30" style="margin-left: 25%">
+                        <pre>
+                        递交所需材料：
+                        1、本区-人户一致幼儿
+                        1）户口簿；2）房屋产权证；3）公有居住房屋租赁合同；4）幼儿出生凭证
+
+
+                        2、外省市随迁子女
+                        1）幼儿居住证/凭证；2）监护人居住证；3）房屋产权证；4）租赁合同；5）幼儿出生证
+
+                        请携带以下材料于2019年5月16日 11:00来我园现场登记报名
+
+                        递交所需材料：
+
+                        1、本区-人户一致幼儿
+                        1）户口簿；2）房屋产权证；3）公有居住房屋租赁合同；4）幼儿出生凭证
+
+                        2、外省市随迁子女
+                        1）幼儿居住证/凭证；2）监护人居住证；3）房屋产权证；4）租赁合同；5）幼儿出生证
+
+                        地址：上海市徐汇区桂平路129号
+
+                        电话：021-54217515
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
 </div>
 {/block}
 
@@ -36,12 +86,16 @@
 <script>
     $('#selectProcess :radio').on('click', function () {
         $('#submitProcess').removeClass('disabled');
-    })
+    });
 
     $('#submitProcess').on('click', function () {
         var id = $('input[name="process"]').val();
         window.location.href = 'createView?id=' + id;
-    })
+    });
+
+    $('#ResignBtn').on('click', function () {
+        window.location.href = 'selectProcess';
+    });
 
 </script>
 {/block}
