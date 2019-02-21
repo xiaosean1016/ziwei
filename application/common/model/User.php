@@ -31,9 +31,9 @@ class User extends Model
         return false;
     }
 
-    public function updateLastLoginTime($phone, $data)
+    public function updateLastLoginTime($userId, $data)
     {
-        Db::name('user')->where('phone', $phone)->update($data);
+        Db::name('user')->where('id', $userId)->update($data);
     }
 
     public function updatePassword($data)

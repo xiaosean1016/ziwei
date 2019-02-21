@@ -5,7 +5,6 @@
 {/block}
 
 {block name="lead_css"}
-{load file="__admin__/plugins/bootstrap-inputmask/bootstrap-inputmask.min.js"}
 {/block}
 
 {block name="style_css"}
@@ -33,6 +32,8 @@
 {/block}
 
 {block name="lead_js"}
+{load file="__admin__/plugins/bootstrap-inputmask/bootstrap-inputmask.min.js"}
+
 <script>
     $(function () {
         editValues({$SIGNID});
