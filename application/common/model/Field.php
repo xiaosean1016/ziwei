@@ -23,7 +23,7 @@ class Field extends Model
 
     public function getCfgFields($tablename)
     {
-        $list = Db::table('zw_field')->where('tablename', $tablename)->select();
+        $list = Db::name('field')->where('tablename', $tablename)->select();
 
         foreach ($list as &$val) {
             $val['signarea'] = $this->signArea[$val['signarea']];
@@ -82,7 +82,7 @@ class Field extends Model
         if ($param) {
             $id = $param['id'];
             unset($param['id']);
-            return Db::table('zw_field')->where('id', $id)->update($param);
+            return Db::name('field')->where('id', $id)->update($param);
         }
 
         return false;
@@ -116,4 +116,45 @@ class Field extends Model
 
         return $pickList;
     }
+
+    /**
+     * @param $fields
+     * @return array
+     */
+    public function getFieldsShowValues($fields)
+    {
+        //判断是一维数组
+        if (count($fields) == count($fields, 1)) {
+            $fieldsVal[] = $fields;
+            $singleD = true;
+        } else {
+            $fieldsVal = $fields;
+            $singleD = false;
+        }
+
+        $fieldsTypes = Db::name('field')->where('tablename', 'zw_signup')->column('fieldtype', 'fieldname');
+
+        foreach ($fieldsVal as &$val) {
+            foreach ($val as $k => &$v) {
+                if (isset($fieldsTypes[$k])) {
+                    $fieldType = $fieldsTypes[$k];
+
+                    if ($fieldType == 'checkbox') {
+                        $v = $v ? '是' : '否';
+                    }
+                    $v = $v ? $v : '';
+                }
+                if ($k == 'issentmsg') {
+                    $v = $v ? '已通知' : '未通知';
+                }
+//                if ($k == 'status') {
+//                    $statusView = ['waiting' => '审核中', 'passed' => '已通过', 'refused' => '已拒绝'];
+//                }
+            }
+        }
+        $fieldsVal = $singleD ? $fieldsVal[0] : $fieldsVal;
+
+        return $fieldsVal;
+    }
+
 }

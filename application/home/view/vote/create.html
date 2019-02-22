@@ -1,0 +1,289 @@
+{extend name="../application/home/view/common/base.html"}
+
+{block name="title_content"}
+紫薇幼儿园-投票
+{/block}
+
+{block name="style_css"}
+<style>
+    .notifyjs-corner {
+        left: calc(50% - 131px) !important;
+    }
+
+    .container {
+        max-width: 1680px;
+        background: #FFFFFF;
+    }
+
+    .vote-item {
+        border: 2px solid #DFDFDF;
+        margin-top: 20px;
+        margin-left: 8%;
+        margin-right: 8%;
+    }
+
+    .vote-item:hover {
+        box-shadow: 0 9px 13px 0 rgba(0,0,0,0.20);
+        cursor: pointer;
+    }
+
+    .item-checked {
+        border: 2px solid #33B86C;
+    }
+
+    .item-full {
+        background: rgba(0,0,0,0.30) !important;
+    }
+
+    .item-full:hover {
+        box-shadow: none !important;
+        cursor: default !important;
+    }
+
+    .item-full-desc {
+        position: absolute;
+        width: 100%;
+        height: 68px;
+        line-height: 68px;
+        font-size: 20px;
+        color: #FFFFFF;
+        letter-spacing: 0.3px;
+        bottom: 0;
+        background-color: rgba(00,00,00,0.51);
+    }
+
+    .vote-item .item-heading .item-title {
+        font-family: PingFangSC-Regular, 'sans-serif';
+        font-size: 15px;
+        color: #333333;
+        letter-spacing: 0.3px;
+        text-align: center;
+    }
+
+    .vote-item .item-heading .item-desc {
+        font-family: PingFangSC-Regular, 'sans-serif';
+        font-size: 14px;
+        color: #666666;
+        letter-spacing: 0.28px;
+        text-align: center;
+    }
+
+    .item-body img {
+        margin-bottom: 20px;
+    }
+
+    .submit-btn {
+        width: 200px;
+        height: 43px;
+        line-height: 43px;
+        background: #77628F;
+        border: none;
+        border-radius: 4px;
+        font-family: PingFangSC-Regular, 'sans-serif';
+        font-size: 16px;
+        color: #FFFFFF;
+        letter-spacing: 0.36px;
+    }
+
+</style>
+{/block}
+
+{block name="container"}
+<div class="container m-t-20">
+    <div class="row">
+        <div class="col-lg-12 m-t-10">
+            <div class="text-center">
+                <h3>{$DATA.votename}</h3>
+                <span>{$DATA.description}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row m-t-30 m-b-30">
+        {volist name="$DATA.option" id="vo"}
+        <div class="col-lg-4">
+            <div data-id="{$vo.id}" class="vote-item text-center {eq name="vo.full" value="true"}item-full{/eq}" style="position:relative;">
+                <div class="item-heading">
+                    <p class="item-title">{$vo.optionname}</p>
+                    <span class="item-desc">{$vo.description}</span>
+                </div>
+                <div class="item-body m-t-10">
+                    <img width="80%" height="auto" src="__uploads__/{$vo.optionimg}" alt="">
+                </div>
+                {eq name="vo.full" value="true"}
+                <div class="item-full-desc">
+                    <span>名额已满</span>
+                </div>
+                {/eq}
+            </div>
+        </div>
+        {/volist}
+    </div>
+
+    <div class="row text-center m-t-30 m-b-30">
+        <button id="submitBtn" class="submit-btn">提交</button>
+    </div>
+
+    <!-- 填写提交信息模态框 -->
+    <div id="subConInfo" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="subConInfoModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="subConInfoModalLabel">信息填写</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="#" class="form-horizontal" id="subConModalForm">
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">取消</button>
+                    <button type="button" onclick="submitForm()" class="btn btn-purple waves-effect waves-light">发送</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+</div>
+{/block}
+
+{block name="lead_js"}
+<script>
+    var maxCheckNum = {$DATA.votemaxballot};
+    var subConBool = false;
+    var voteId = {$DATA.id};
+
+    $(function () {
+        $('.vote-item').on('click', function () {
+            //满员状态
+            if ($(this).hasClass('item-full')) return false;
+
+            //选择数量过多
+            if (getCheckedNum() >= maxCheckNum && !$(this).hasClass('item-checked')) {
+                $.Notification.autoHideNotify('error','top center', '操作失败', '最多选择' + maxCheckNum + '项');
+                return false;
+            }
+
+            $(this).toggleClass('item-checked')
+        });
+
+        modalInit();
+
+        $('#submitBtn').on('click', function () {
+            if (!subConBool && localStorage.getItem('vote_' + voteId) === 'voted') {
+                $.Notification.autoHideNotify('error','top center', '提交失败', '感谢参与，请勿重复提交');
+                return false;
+            }
+            //投票内容为空处理
+            if (!getCheckedNum()) {
+                $.Notification.autoHideNotify('error','top center', '提交失败', '请选择内容');
+                return false;
+            }
+
+            if (subConBool) {
+                $('#subConInfo').modal('show');
+            } else {
+                submitForm();
+            }
+
+        })
+    });
+
+    //模态框渲染
+    function modalInit() {
+        var subConObj = '{$DATA.submitfield}';
+        if (!subConObj) return false;
+
+        subConObj = JSON.parse(subConObj);
+        // console.log(subConObj);
+        var subConNum = subConObj.length;
+        var html = '';
+
+        if (subConNum) {
+            for (var i = 0; i < subConNum; i ++) {
+                var type = subConObj[i].type;
+                html += '<div class="form-group ' + (subConObj[i].required ? 'required' : '') + '">';
+                html += '<label class="control-label col-md-3">' + subConObj[i].name + '</label>';
+                html += '<div class="col-md-9">';
+                if (type === 'varchar') {
+                    html += '<input class="form-control" type="text" name="form_' + i + '">';
+                } else if (type === 'date') {
+                    html += '<input class="form-control" type="text" name="form_'+i+'" placeholder="yyyy-mm-dd" data-mask="9999-99-99">';
+                } else if (type === 'datetime') {
+                    html += '<input class="form-control" type="text" name="form_'+i+'" placeholder="yyyy-mm-dd HH:ii:ss" data-mask="9999-99-99 99:99:99">';
+                } else if (type === 'checkbox') {
+                    html += '<input class="checkbox form-control" type="checkbox" style="width: 16px" value="1" name="form_' + i + '">';
+                } else if (type === 'select' || type === 'multiple') {
+                    html += '<select class="form-control" name="form_' + i + '" ' + (type === 'multiple' ? 'multiple' : '') + '>';
+                    var options = subConObj[i].options.split(',');
+                    for (key in options) {
+                        html += '<option value="' + options[key] + '">' + options[key] + '</option>';
+                    }
+                    html += '</select>';
+                }
+                html += '</div>';
+                html += '</div>';
+            }
+            subConBool = true;
+            $('#subConModalForm').html(html);
+        }
+
+    }
+
+    //获取选中的个数
+    function getCheckedNum() {
+
+        return $('.item-checked').length;
+    }
+
+    //提交内容信息验证
+    function checkModalFields() {
+        var isValid = true;
+        $('#subConModalForm').find('input,select').each(function () {
+            if ($(this).parent().parent().hasClass('required') && !$(this).val()) {
+                $.Notification.autoHideNotify('error','top center', '提交失败', $(this).parent().parent().find('.control-label').text() + '不能为空');
+                isValid = false;
+                return false;
+            }
+        });
+        return isValid;
+    }
+
+    //表单提交
+    function submitForm() {
+        var checkIds = [];
+        var jsonData = [];
+
+        $('.item-checked').each(function () {
+            checkIds.push($(this).attr('data-id'));
+        });
+
+        jsonData.push('id=' + voteId);
+        jsonData.push('checkIds=' + checkIds);
+
+        if (subConBool) {
+            if (!checkModalFields()) return false;
+            jsonData.push(form_serialize(document.getElementById('subConModalForm')));
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: 'submit',
+            data: jsonData.join("&"),
+            dataType: 'json',
+            success: function (data) {
+                if (data.code === 'SUCCESS') {
+                    localStorage.setItem('vote_' + voteId, 'voted');
+                    $('#subConInfo').modal('hide');
+                    $.Notification.autoHideNotify('success','top center', '提交成功', '');
+                } else {
+
+                    $.Notification.autoHideNotify('error','top center', '提交失败', data.msg);
+                }
+            }
+        })
+    }
+
+</script>
+{/block}

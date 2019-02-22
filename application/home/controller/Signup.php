@@ -10,17 +10,71 @@ namespace app\home\controller;
 
 use think\Db;
 use think\Exception;
-use think\Model;
 use think\Request;
+use think\Session;
 
 class Signup extends Base
 {
+    //选择户籍所在地页面方法
+    public function selectProcess()
+    {
+        $list = Db::name('template')->where('isshow', 1)->column('id', 'type');
+
+        $this->assign('LIST', $list);
+        return $this->fetch();
+    }
+
+    //新增报名表方法
     public function createView()
     {
         $id = Request::instance()->get('id');
 
 //        $templateName = Db::name('template')->where('id', $id)->value('name');
 
+        $templateHtml = $this->getTemplateHtml($id);
+
+        $this->assign('TEMPLATEID', $id);
+        $this->assign('TEMPLATEHTML', $templateHtml);
+        return $this->fetch();
+    }
+
+    //报名表新增保存
+    public function save()
+    {
+        $id = Request::instance()->param('id');
+        $fields = model('Template')->getTemplateFields($id);
+        $param = Request::instance()->only($fields);
+        $param['createdatetime'] = date('Y-m-d H:i:s', time());
+        $param['status'] = 'waiting';
+        $param['templateid'] = $id;
+        $param['userid'] = Session::get('user_id');
+
+        try {
+            $signId = Db::name('signup')->insertGetId($param);
+
+            if ($signId) {
+                return json(['code' => 'SUCCESS', 'msg' => '提交成功']);
+            } else {
+                return json(['code' => 'ERROR', 'msg' => '提交失败']);
+            }
+        } catch (\Exception $e) {
+            return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
+        }
+    }
+
+    //提交结果列表
+    public function submitResult()
+    {
+        $userId = Session::get('user_id');
+
+        $list = Db::name('signup')->field('id,createdatetime,status')->where('userid', $userId)->select();
+
+        $this->assign('LIST', $list);
+        return $this->fetch();
+    }
+
+    public function getTemplateHtml($id)
+    {
         $templatePath = __DIR__ . '/../../config/signup_' . $id . '.html';
 
         $templateHtml = '';
@@ -37,13 +91,13 @@ class Signup extends Base
             if ($val == 'varchar') {
                 $html = '<input class="form-control" type="text" name="' . $key . '" id="' . $key . '" value="">';
             } elseif ($val == 'date') {
-                $html = '<input type="text" placeholder="yyyy-mm-dd" data-mask="9999-99-99" class="form-control">';
+                $html = '<input type="text" name="' . $key . '" id="' . $key . '" placeholder="yyyy-mm-dd" data-mask="9999-99-99" class="form-control">';
             } elseif ($val == 'datetime') {
-                $html = '<input type="text" placeholder="yyyy-mm-dd HH:ii:ss" data-mask="9999-99-99 99:99:99" class="form-control">';
+                $html = '<input type="text" name="' . $key . '" id="' . $key . '" placeholder="yyyy-mm-dd HH:ii:ss" data-mask="9999-99-99 99:99:99" class="form-control">';
             } elseif ($val == 'checkbox') {
                 $html = '<input type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="' . $key . '" name="' . $key . '">';
             } elseif ($val == 'select' || $val == 'multiple') {
-                $pickList = model('Field')->getPickListVal('sourcearea');
+                $pickList = model('Field')->getPickListVal($key);
                 $html = '<select id=' . $key . ' name=' . $key . ' ' . ($val == 'multiple' ? 'multiple="multiple"' : '') . ' class="form-control">';
                 foreach ($pickList as $v) {
                     $html .= '<option value="' . $v . '">' . $v . '</option>';
@@ -57,34 +111,77 @@ class Signup extends Base
 //        $templateHtml = preg_replace('/\[var\.(.*)\]/i', $replaceInput, $templateHtml);
         $templateHtml = strtr($templateHtml, $replaceData);
 
-        $this->assign('TEMPLATEID', $id);
-        $this->assign('TEMPLATEHTML', $templateHtml);
-        return $this->fetch();
+        return $templateHtml;
     }
 
-    public function save()
+    //编辑页
+    public function editView()
     {
         $id = Request::instance()->param('id');
-        $fields = model('Template')->getTemplateFields($id);
-        $param = Request::instance()->only($fields);
-        $param['createdatetime'] = date('Y-m-d H:i:s', time());
-        $param['status'] = 'wait';
-        $param['templateid'] = $id;
-        $param['userid'] = 1;
 
-        try {
-            $signId = Db::name('signup')->insertGetId($param);
+        $signRes = Db::name('signup')->field('templateid,status,userid')->where('id', $id)->find();
 
-            if ($signId) {
-                return json(['code' => 'SUCCESS', 'msg' => '提交成功']);
-            } else {
-                return json(['code' => 'ERROR', 'msg' => '提交失败']);
+        if ($signRes) {
+            if ($signRes['userid'] == $this->userId) {
+                $templateId = $signRes['templateid'];
+                $templateHtml = $this->getTemplateHtml($templateId);
+
+                $this->assign('SIGNID', $id);
+                $this->assign('STATUS', $signRes['status']);
+                $this->assign('TEMPLATEHTML', $templateHtml);
+                return $this->fetch();
             }
-        } catch (\Exception $e) {
-            return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
+        }
+        return 'error';
+    }
+
+    //获取编辑报名表的字段值
+    public function getEditValue()
+    {
+        $id = Request::instance()->param('id');
+
+        $templateId = Db::name('signup')->where('id', $id)->value('templateid');
+        $templateFields = model('Template')->getTemplateFields($templateId);
+
+        $list = Db::name('signup')->field($templateFields)->where('id', $id)->find();
+
+        return json(['code' => 'SUCCESS', 'data' => $list]);
+    }
+
+    //报名表编辑保存
+    public function editSave() {
+        $id = Request::instance()->param('id');
+
+        $signRes = Db::name('signup')->field('templateid,status,userid')->where('id', $id)->find();
+
+        if ($signRes) {
+            if ($signRes['userid'] == $this->userId && $signRes['status'] == 'waiting') {
+                $templateId = $signRes['templateid'];
+                $fields = model('Template')->getTemplateFields($templateId);
+                $param = Request::instance()->only($fields);
+
+                try {
+                    Db::name('signup')->where('id', $id)->update($param);
+                    return json(['code' => 'SUCCESS', 'msg' => '修改成功']);
+                } catch (\Exception $e) {
+                    return json(['code' => 'ERROR', 'msg' => $e->getMessage()]);
+                }
+            }
         }
 
+        return json(['code' => 'ERROR', 'msg' => '保存失败']);
+    }
+    
+    //获取该用户报名次数
+    public function getSignTimes()
+    {
+        $userId = Session::get('user_id');
+        $count = 0;
 
+        if ($userId) {
+            $count = Db::name('signup')->where('userid', $userId)->count();
+        }
 
+        return $count;
     }
 }

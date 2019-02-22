@@ -1,0 +1,139 @@
+{extend name="../application/admin/view/common/base.html" /}
+
+{block name="lead_css"}
+{load file="__admin__/js/modernizr.min.js"}
+{load file="__admin__/plugins/jquery-multi-select/multi-select.css"}
+{/block}
+
+{block name="content"}
+<style>
+    #feedbackListBody td {
+        line-height: 34px;
+    }
+</style>
+
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-inline">
+                                        <input id="feedbackSearch" type="text" class="form-control input-sm" placeholder="查询活动名称">
+                                        <button id="searchBtn" class="btn btn-primary waves-effect waves-light">查询</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="m-t-10">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th width="5%">#</th>
+                                                <th width="15%">时间</th>
+                                                <th width="60%">反馈内容</th>
+                                                <th width="20%">联系人</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="feedbackListBody">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- paginate start -->
+                            <div class="panel-body text-center" id="PageTab">
+                            </div>
+                            <!-- paginate end -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end row -->
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2015 © Moltran.
+    </footer>
+</div>
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+{/block}
+
+{block name="lead_js"}
+{load file="__admin__/plugins/magnific-popup/dist/jquery.magnific-popup.min.js"}
+{load file="__admin__/plugins/jquery-datatables-editable/jquery.dataTables.js"}
+{load file="__admin__/plugins/datatables/dataTables.bootstrap.js"}
+{load file="__admin__/pages/datatables.editable.init.js"}
+{load file="__admin__/plugins/jquery-multi-select/jquery.multi-select.js"}
+
+<script>
+    var searchContent = '';
+    var listPage = 1;
+
+    $(function () {
+        $('#searchBtn').on('click', function () {
+            searchContent = $('#feedbackSearch').val();
+            listPage = 1;
+            renderList();
+        });
+
+        $(document).keydown(function(event){
+            if(event.keyCode === 13){
+                $('#searchBtn').click();
+            }
+        });
+
+        renderList();
+    });
+
+    function renderList() {
+        $.ajax({
+            type: 'POST',
+            url: 'getFeedbackList',
+            data: {search: searchContent, page: listPage},
+            dataType: 'json',
+            success: function (res) {
+                if (res.code === 'SUCCESS') {
+                    var table = '',
+                        data = res.data.table;
+
+                    for (var i = 0; i < data.length; i ++) {
+                        table += '<tr>';
+                        table += '<td>' + ( i + 1 ) + '</td>';
+                        table += '<td>' + data[i]['createdatetime'] + '</td>';
+                        table += '<td>' + data[i]['content'] + '</td>';
+                        table += '<td>' + data[i]['contact'] + '</td>';
+                        table += '</tr>';
+                    }
+
+                    $('#feedbackListBody').html(table);
+                    $('#PageTab').html(res.data.page);
+                }
+            }
+        })
+    }
+
+    //分页跳转
+    function pageTo(page) {
+        listPage = page;
+        renderList();
+    }
+
+</script>
+{/block}
