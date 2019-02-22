@@ -14,6 +14,8 @@ use think\Model;
 
 class Signup extends Model
 {
+    protected $table = 'zw_signup';
+
     //判断报名表数据权限
     public function checkSignPermit($signId, $userId)
     {
@@ -23,7 +25,7 @@ class Signup extends Model
         $cond['id'] = $signId;
         $cond['userid'] = $userId;
 
-        if (Db::name('signup')->where($cond)->find()) {
+        if ($this->where($cond)->find()) {
             $permit = true;
         }
 

@@ -13,6 +13,8 @@ use think\Model;
 
 class User extends Model
 {
+    protected $table = 'zw_user';
+
     public function insertUser($data)
     {
         $filterData = ['phone', 'password', 'email'];
@@ -33,7 +35,7 @@ class User extends Model
 
     public function updateLastLoginTime($userId, $data)
     {
-        Db::name('user')->where('id', $userId)->update($data);
+        $this->where('id', $userId)->update($data);
     }
 
     public function updatePassword($data)
@@ -41,6 +43,6 @@ class User extends Model
         $phone = $data['phone'];
         $password = password_hash($data['password'], PASSWORD_DEFAULT);;
 
-        return Db::name('user')->where('phone', $phone)->update(['password' => $password]);
+        return $this->where('phone', $phone)->update(['password' => $password]);
     }
 }

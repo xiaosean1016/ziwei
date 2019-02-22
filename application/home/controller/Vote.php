@@ -51,7 +51,12 @@ class Vote extends VoteBase
 //        dump($voteInfo);
 
         $this->assign('DATA', $voteInfo);
-        return $this->fetch();
+        if ($voteInfo) {
+            return $this->fetch();
+        } else {
+            return $this->fetch('nothing');
+        }
+
     }
 
     //投票提交
