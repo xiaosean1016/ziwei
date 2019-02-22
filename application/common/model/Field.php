@@ -22,15 +22,15 @@ class Field extends Model
         'nonlocal' => '外省'
     ];
 
-    public function getSignAreaAttr($value)
-    {
-        $signArea = [
-            '' => '通用',
-            'local' => '本区',
-            'nonlocal' => '外省'
-        ];
-        return $signArea[$value];
-    }
+//    public function getSignAreaAttr($value)
+//    {
+//        $signArea = [
+//            '' => '通用',
+//            'local' => '本区',
+//            'nonlocal' => '外省'
+//        ];
+//        return $signArea[$value];
+//    }
 
 
     public function getCfgFields($tablename)
