@@ -1,5 +1,13 @@
 {extend name="../application/admin/view/common/base.html" /}
 
+{block name="lead_css"}
+<style>
+    #field-list-table td {
+        line-height: 36px;
+    }
+</style>
+{/block}
+
 {block name="content"}
 
 <!-- ============================================================== -->
@@ -121,10 +129,7 @@
         </div> <!-- container -->
 
     </div> <!-- content -->
-
-    <footer class="footer text-right">
-        2015 © Moltran.
-    </footer>
+    
 </div>
 <!-- ============================================================== -->
 <!-- End Right content here -->
@@ -156,7 +161,7 @@
         $('#saveFieldBtn').on('click', function () {
             ajaxSaveField();
         });
-    })
+    });
     
     function changeFieldType(obj) {
         var type = $(obj).val();

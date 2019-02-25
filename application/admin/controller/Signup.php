@@ -387,4 +387,28 @@ class Signup extends Base
         }
         return json(['code' => 'ERROR', 'msg' => '无数据']);
     }
+
+    //报名开启页面
+    public function signActive()
+    {
+        return $this->fetch();
+    }
+
+    //获取报名状态
+    public function getSignActive()
+    {
+        return Model('Config')->getValue('sign_active');
+    }
+
+    //修改报名状态
+    public function setSignActive()
+    {
+        $active = \request()->param('active') == 'true' ? 1 : 0;
+
+        if(Model('Config')->setValue('sign_active', $active)) {
+            return json(['code' => 'SUCCESS', 'msg' => '修改成功']);
+        } else {
+            return json(['code' => 'ERROR', 'msg' => '修改失败']);
+        }
+    }
 }

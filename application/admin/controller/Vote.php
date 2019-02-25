@@ -286,7 +286,9 @@ class Vote extends Base
     //投票密码配置
     public function voteSecret()
     {
-        $secretInfo = Db::name('vote_login_identity')->find();
+        $configModel = Model('Config');
+        $secretInfo['username'] = $configModel->getValue('vote_username');
+        $secretInfo['password'] = $configModel->getValue('vote_password');
 
         $this->assign('DATA', $secretInfo);
         return $this->fetch();
@@ -297,8 +299,10 @@ class Vote extends Base
         $username = request()->param('username');
         $password = request()->param('password');
 
+        $configModel = Model('Config');
+
         if ($username && $password) {
-            if (Db::name('vote_login_identity')->where('1=1')->update(['username' => $username, 'password' => $password])) {
+            if ($configModel->setValue('vote_username', $username) && $configModel->setValue('vote_password', $password)) {
                 return json(['code' => 'SUCCESS', 'msg' => '修改成功']);
             }
         }

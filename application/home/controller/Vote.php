@@ -9,6 +9,7 @@
 namespace app\home\controller;
 
 use think\Db;
+use think\Model;
 use think\Session;
 use think\Exception;
 
@@ -23,12 +24,13 @@ class Vote extends VoteBase
                 $username = request()->param('username');
                 $password = request()->param('password');
 
+                $configModel = Model('Config');
+
                 if (empty($username) || empty($password)) {
                     throw new Exception('用户名密码不能为空');
                 }
 
-                $userRes = Db::name('vote_login_identity')->where('username', $username)->where('password', $password)->find();
-                if (!$userRes) {
+                if ($configModel->getValue('vote_username') != $username || $configModel->getValue('vote_password') != $password) {
                     throw new Exception('用户名或密码错误');
                 }
 

@@ -56,4 +56,10 @@ class Template extends Model
 
         return $fields;
     }
+
+    public function getActiveTemplates()
+    {
+        $ids = $this->where('isshow', 1)->column('id');
+        return $ids;
+    }
 }
