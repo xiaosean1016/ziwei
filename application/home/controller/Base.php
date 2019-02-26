@@ -11,7 +11,7 @@ namespace app\home\controller;
 use think\Controller;
 use think\Session;
 
-class base extends Controller
+class Base extends Controller
 {
     public $userId;
 
