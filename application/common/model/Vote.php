@@ -13,9 +13,11 @@ use think\Model;
 
 class Vote extends Model
 {
+    protected $table = 'zw_vote';
+
     public function getVoteInfo($id)
     {
-        $voteInfo = Db::name('vote')->where('id', $id)->find();
+        $voteInfo = $this->where('id', $id)->find();
 
         $optionInfo = Db::name('vote_option')->where('voteid', $id)->select();
 //        $optionNum = Db::name('vote_user_option')->field('count(*) as num,optionid')->where('voteid', $id)->group('optionid')->select();
@@ -31,7 +33,7 @@ class Vote extends Model
 
     public function getActiveVoteInfo()
     {
-        $voteInfo = '';
+        $voteInfo = [];
         $now = date('Y-m-d H:i:s', time());
 
         $cond = [];
@@ -39,7 +41,7 @@ class Vote extends Model
         $cond['startdatetime'] = ['<=', $now];
         $cond['stopdatetime'] = ['>=', $now];
 
-        $id = Db::name('vote')->where($cond)->order('createdatetime desc')->value('id');
+        $id = $this->where($cond)->order('createdatetime desc')->value('id');
 
         if ($id) {
             $voteInfo = $this->getVoteInfo($id);

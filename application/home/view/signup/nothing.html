@@ -1,0 +1,43 @@
+{extend name="../application/home/view/common/base.html"}
+
+{block name="title_content"}
+紫薇幼儿园-报名
+{/block}
+
+{block name="style_css"}
+<style>
+    .vote-none {
+        font-family: PingFangSC-Regular, 'sans-serif';
+        font-size: 15px;
+        color: #999999;
+        letter-spacing: -0.36px;
+        height: 60vh;
+        padding-top: 30vh;
+    }
+</style>
+{/block}
+
+{block name="container"}
+<div class="container m-t-20">
+    <div class="row">
+        <div class="col-lg-12 m-t-10">
+            <div class="text-center">
+                <p class="vote-none">
+                    {if $MESSAGE_TYPE eq 'end'}
+                    报名已结束
+                    {elseif $MESSAGE_TYPE eq 'none'}
+                    报名信息不存在
+                    {elseif $MESSAGE_TYPE eq 'readonly'}
+                    报名信息不可编辑
+                    {/if}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{/block}
+
+{block name="lead_js"}
+{/block}

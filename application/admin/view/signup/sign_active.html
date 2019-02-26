@@ -3,6 +3,7 @@
 {block name="lead_css"}
 {load file="__admin__/js/modernizr.min.js"}
 {load file="__admin__/plugins/jquery-multi-select/multi-select.css"}
+{load file="__admin__/plugins/toggles/toggles.css"}
 {/block}
 
 {block name="content"}
@@ -27,22 +28,15 @@
                         <div class="panel-body">
                             <div class="row col-md-3">
                                 <form class="form-horizontal" role="form">
-                                <div class="form-group">
-                                    <label class="col-md-2 control-label">用户名</label>
-                                    <div class="col-md-10">
-                                        <input name="username" type="text" class="form-control" value="{$DATA.username}">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="col-sm-6 control-label">是否开启</label>
+                                            <div class="col-sm-6 control-label">
+                                                <div class="toggle toggle-primary"></div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-2 control-label">密码</label>
-                                    <div class="col-md-10">
-                                        <input name="password" type="text" class="form-control" value="{$DATA.password}">
-                                    </div>
-                                </div>
                                 </form>
-                                <div class="text-center">
-                                    <button type="button" id="saveSecretBtn" class="btn btn-primary waves-effect waves-light">保存</button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -66,26 +60,43 @@
 {load file="__admin__/plugins/datatables/dataTables.bootstrap.js"}
 {load file="__admin__/pages/datatables.editable.init.js"}
 {load file="__admin__/plugins/jquery-multi-select/jquery.multi-select.js"}
+{load file="__admin__/plugins/toggles/toggles.min.js"}
 
 <script>
     $(function () {
-        $('#saveSecretBtn').on('click', function () {
-            var username = $('input[name="username"]').val();
-            var password = $('input[name="password"]').val();
+        renderActiveInfo();
+
+        $('.toggle').on('toggle', function (e, active) {
             $.ajax({
                 type: 'POST',
-                url: 'setVoteSecret',
-                data: {username: username, password: password},
+                url: 'setSignActive',
+                data: {active: active},
                 dataType: 'json',
                 success: function (data) {
                     if (data.code === 'SUCCESS') {
                         swal('修改成功');
-                    } else {
-                        swal(data.msg);
                     }
                 }
             })
         })
     })
+
+    function renderActiveInfo() {
+        $.ajax({
+            type: 'POST',
+            url: 'getSignActive',
+            data: {},
+            dataType: 'json',
+            success: function (res) {
+                var isActive = false;
+                if (res == 1) {
+                    isActive = true;
+                }
+                $('.toggle').toggles({
+                    on: isActive
+                });
+            }
+        })
+    }
 </script>
 {/block}

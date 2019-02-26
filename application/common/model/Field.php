@@ -13,6 +13,7 @@ use think\db;
 
 class Field extends Model
 {
+    protected $table = 'zw_field';
     protected $pk = 'id';
 
     public $signArea = [
@@ -21,9 +22,20 @@ class Field extends Model
         'nonlocal' => '外省'
     ];
 
+//    public function getSignAreaAttr($value)
+//    {
+//        $signArea = [
+//            '' => '通用',
+//            'local' => '本区',
+//            'nonlocal' => '外省'
+//        ];
+//        return $signArea[$value];
+//    }
+
+
     public function getCfgFields($tablename)
     {
-        $list = Db::name('field')->where('tablename', $tablename)->select();
+        $list = $this->where('tablename', $tablename)->select();
 
         foreach ($list as &$val) {
             $val['signarea'] = $this->signArea[$val['signarea']];
@@ -36,9 +48,9 @@ class Field extends Model
     {
         Db::startTrans();
         try {
-            $indexId = Db::table('zw_cfg_index')->value('id');
+            $indexId = model('Config')->getValue('cfg_index');
             $newIndexId = $indexId + 1;
-            Db::execute("update zw_cfg_index set id = ?", [$newIndexId]);
+            model('Config')->setValue('cfg_index', $newIndexId);
 
             $tablename = $param['tablename'];
             $fieldname = 'cfg_' . $newIndexId;
@@ -61,7 +73,7 @@ class Field extends Model
                 $dataFieldType = 'tinyint(4)';
             }
 
-            $id = Db::table('zw_field')->insertGetId($data);
+            $id = $this->insertGetId($data);
             Db::execute("alter table {$tablename} add column {$fieldname} {$dataFieldType} COMMENT '{$fieldLabel}'");
 
             if ($param['fieldtype'] == 'select' || $param['fieldtype'] == 'multiple') {
@@ -82,7 +94,7 @@ class Field extends Model
         if ($param) {
             $id = $param['id'];
             unset($param['id']);
-            return Db::name('field')->where('id', $id)->update($param);
+            return $this->where('id', $id)->update($param);
         }
 
         return false;

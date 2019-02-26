@@ -39,8 +39,8 @@
                                 <tr>
                                     <td>入学报名</td>
                                     <td>{$vo.createdatetime}</td>
-                                    <td>{if $vo.status eq 'waiting'}提交成功{elseif $vo.status eq 'passed'}已通过{elseif $vo.status eq 'refused'}已拒绝{/if}</td>
-                                    <td><a href="editView?id={$vo.id}">查看报名表</a></td>
+                                    <td>{if $vo.status eq 'waiting'}提交成功{elseif $vo.status eq 'passed'}已通过{elseif $vo.status eq 'refused'}未通过{/if}</td>
+                                    <td><a style="cursor: pointer" onclick="showDetail({$vo.id})">查看报名表</a></td>
                                 </tr>
                                 {/volist}
                             </table>
@@ -49,32 +49,33 @@
                     <div class="row m-t-30 text-center">
                         <button id="ResignBtn" class="btn btn-purple">继续报名</button>
                     </div>
-                    <div class="row col-md-6 m-t-30" style="margin-left: 25%">
-                        <pre>
-                        递交所需材料：
-                        1、本区-人户一致幼儿
-                        1）户口簿；2）房屋产权证；3）公有居住房屋租赁合同；4）幼儿出生凭证
+                    <div class="col-md-12">
+                        <div class="row col-md-8 col-sm-12 m-t-30" style="margin: 0 auto">
 
-
-                        2、外省市随迁子女
-                        1）幼儿居住证/凭证；2）监护人居住证；3）房屋产权证；4）租赁合同；5）幼儿出生证
-
-                        请携带以下材料于2019年5月16日 11:00来我园现场登记报名
-
-                        递交所需材料：
-
-                        1、本区-人户一致幼儿
-                        1）户口簿；2）房屋产权证；3）公有居住房屋租赁合同；4）幼儿出生凭证
-
-                        2、外省市随迁子女
-                        1）幼儿居住证/凭证；2）监护人居住证；3）房屋产权证；4）租赁合同；5）幼儿出生证
-
-                        地址：上海市徐汇区桂平路129号
-
-                        电话：021-54217515
-                        </pre>
+                        </div>
                     </div>
+
                 </div>
+            </div>
+
+            <!-- 显示详情模态框 -->
+            <div id="signDetailInfo" class="modal fade in bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="signDetailInfoModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" id="signDetailInfoModalLabel"></h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="signDetailContent" style="width: 820px">
+
+                            </div>
+                        </div>
+                        <div class="modal-footer" id="modalFooterBtn">
+
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
             </div>
         </div>
     </div>
@@ -83,6 +84,7 @@
 {/block}
 
 {block name="lead_js"}
+
 <script>
     $('#selectProcess :radio').on('click', function () {
         $('#submitProcess').removeClass('disabled');
@@ -96,6 +98,49 @@
     $('#ResignBtn').on('click', function () {
         window.location.href = 'selectProcess';
     });
+
+    //查看详情
+    function showDetail(id) {
+
+        $.ajax({
+            type: 'POST',
+            url: 'showSignDetail',
+            data: {id: id},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code === 'SUCCESS') {
+                    $('#signDetailInfoModalLabel').text(data.title + '报名表');
+
+                    var footerBtn = '';
+                    var content = data.html;
+                    if (data.message) {
+                        content += '<strong>' + data.message + '</strong><br>';
+                    }
+                    if (data.status === 'waiting') {
+                        footerBtn += '<button type="button" onclick="editSign(' + id + ')" data-type="edit" class="btn btn-purple waves-effect">编辑</button>';
+                    } else if (data.status === 'passed') {
+                        footerBtn += '<button type="button" onclick="printSign()" data-type="print" class="btn btn-purple waves-effect">打印</button>';
+                        content += data.description;
+                    }
+                    footerBtn += '<button type="button" class="btn btn-default waves-effect" data-dismiss="modal">取消</button>';
+                    $('#signDetailContent').html(content);
+                    $('#modalFooterBtn').html(footerBtn);
+
+                    $('#signDetailInfo').modal('show');
+                }
+            }
+        })
+    }
+
+    function editSign(id) {
+        window.location.href = '/home/signUp/editView?id=' + id;
+    }
+
+    function printSign() {
+        $("#signDetailContent").jqprint({
+            printContainer: true,
+        });
+    }
 
 </script>
 {/block}

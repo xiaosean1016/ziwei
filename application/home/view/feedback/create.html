@@ -18,6 +18,10 @@
         font-size: 16px;
         color: #D0021B;
     }
+
+    .error_input {
+        border-color: #ef5350;
+    }
 </style>
 {/block}
 
@@ -69,9 +73,20 @@
             var content = $('textarea[name="content"]').val();
             var contact = $('input[name="contact"]').val();
 
+            var phoneReg = /^[1][0-9]{10}$/;
+            var emailReg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/;
+
             if (!content) {
                 $.Notification.autoHideNotify('error','top center', '提交失败', '反馈内容不能为空');
                 return false;
+            }
+
+            if (contact) {
+                if (!phoneReg.test(contact.toString()) && !emailReg.test(contact.toString())) {
+                    $('input[name="contact"]').addClass('error_input');
+                    $.Notification.autoHideNotify('error','top center', '提交失败', '请输入正确的手机号或者邮箱');
+                    return false;
+                }
             }
 
             $.ajax({
@@ -81,13 +96,19 @@
                 dataType: 'json',
                 success: function (data) {
                     if (data.code === 'SUCCESS') {
-                        $.Notification.autoHideNotify('success','top center', '提交成功', '');
+                        $('textarea[name="content"]').val('');
+                        $('input[name="contact"]').val('');
+                        $.Notification.autoHideNotify('success','top center', '提交成功', '感谢您的反馈');
                     } else {
                         $.Notification.autoHideNotify('error','top center', '提交失败', '');
                     }
                 }
             })
-        })
+        });
+
+        $('input,textarea').on('focus', function () {
+            $(this).removeClass('error_input');
+        });
     });
 
 </script>

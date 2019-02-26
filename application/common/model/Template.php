@@ -13,13 +13,14 @@ use think\db;
 
 class Template extends Model
 {
+    protected $table = 'zw_template';
     protected $pk = 'id';
 
     public function insertTemplate($param)
     {
         //先将同类型其他模板不显示
         if ($param['isshow']) {
-            Db::name('template')->where('type', $param['type'])->update(['isshow' => 0]);
+            $this->where('type', $param['type'])->update(['isshow' => 0]);
         }
         $id = Db::name('template')->insertGetId($param);
 
@@ -33,9 +34,9 @@ class Template extends Model
             unset($param['id']);
             //先将同类型其他模板不显示
             if ($param['isshow']) {
-                Db::name('template')->where('type', $param['type'])->update(['isshow' => 0]);
+                $this->where('type', $param['type'])->update(['isshow' => 0]);
             }
-            return Db::name('template')->where('id', $id)->update($param);
+            return $this->where('id', $id)->update($param);
         }
 
         return false;
@@ -54,5 +55,11 @@ class Template extends Model
         $fields = $match[1];
 
         return $fields;
+    }
+
+    public function getActiveTemplates()
+    {
+        $ids = $this->where('isshow', 1)->column('id');
+        return $ids;
     }
 }

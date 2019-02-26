@@ -10,9 +10,12 @@ namespace app\common\model;
 
 
 use think\Db;
+use think\Model;
 
-class VerifyCode
+class VerifyCode extends Model
 {
+    protected $table = 'verify_code';
+
     public function insertVerifyCode($usage, $receiver, $code, $ip)
     {
         $data = [];
@@ -24,7 +27,7 @@ class VerifyCode
         $data['status'] = 'New';
         $data['clientip'] = $ip;
 
-        return Db::name('verify_code')->insertGetId($data);
+        return $this->insertGetId($data);
     }
 
     public function checkSendTimes($usage, $receiver, $date = '')
@@ -35,14 +38,14 @@ class VerifyCode
         $cond['receiver'] = $receiver;
         $cond['senddatetime'] = ['>', $date];
 
-        $count = Db::name('verify_code')->where($cond)->count();
+        $count = $this->where($cond)->count();
 
         return $count > 3;
     }
 
     public function updateData($id, $data)
     {
-        Db::name('verify_code')->where('id', $id)->update($data);
+        $this->where('id', $id)->update($data);
     }
 
     public function checkNewVerifyCode($usage, $receiver, $postCode)
