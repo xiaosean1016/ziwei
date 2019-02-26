@@ -31,4 +31,10 @@ class Signup extends Model
 
         return $permit;
     }
+
+    public function showSignDetail($id)
+    {
+
+    }
+
 }

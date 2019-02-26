@@ -145,6 +145,10 @@ class Signup extends Base
 
         if ($signRes) {
             if ($signRes['userid'] == $this->userId) {
+                if ($signRes['status'] != 'waiting') {
+                    return $this->fetch('nothing', ['MESSAGE_TYPE' => 'readonly']);
+                }
+
                 $templateId = $signRes['templateid'];
                 $templateHtml = $this->getTemplateHtml($templateId);
 
@@ -208,5 +212,51 @@ class Signup extends Base
         }
 
         return $count;
+    }
+
+    //报名表单详情
+    public function showSignDetail()
+    {
+        $signId = Request::instance()->param('id');
+
+        $signRes = Db::name('signup')->field('templateid,status,userid')->where('id', $signId)->find();
+
+        if (!$signRes) return json(['code' => 'ERROR', 'msg' => '数据不存在']);
+        if ($signRes['userid'] != $this->userId) return json(['code' => 'ERROR', 'msg' => '数据不存在']);
+
+        $templateId = Db::name('signup')->where('id', $signId)->value('templateid');
+
+        $templatePath = __DIR__ . '/../../config/signup_' . $templateId . '.html';
+
+        $templateHtml = '';
+        if (file_exists($templatePath)) {
+            $templateHtml = file_get_contents($templatePath);
+        }
+        $templateFields = model('Template')->getTemplateFields($templateId);
+        $templateFields[] = 'issentmsg';
+        $templateFields[] = 'msgcontent';
+
+        $fieldsValue = Db::name('signup')->field($templateFields)->find($signId);
+        $fieldsValue = model('Field')->getFieldsShowValues($fieldsValue);
+        $replaceData = [];
+        foreach ($templateFields as $key => $val) {
+            $from = "[var.{$val}]";
+
+            $replaceData[$from] = $fieldsValue[$val];
+        }
+
+        $templateHtml = strtr($templateHtml, $replaceData);
+
+        $templateDesc = Db::name('template')->where('id', $templateId)->value('description');
+        $msgContent = ($fieldsValue['issentmsg'] && $fieldsValue['msgcontent']) ? $fieldsValue['msgcontent'] : '';
+
+        return json([
+            'code' => 'SUCCESS',
+            'title' => $fieldsValue['name'],
+            'html' => $templateHtml,
+            'status' => $signRes['status'],
+            'description' => $templateDesc,
+            'message' => $msgContent
+        ]);
     }
 }

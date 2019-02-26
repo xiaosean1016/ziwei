@@ -27,6 +27,8 @@
                     报名已结束
                     {elseif $MESSAGE_TYPE eq 'none'}
                     报名信息不存在
+                    {elseif $MESSAGE_TYPE eq 'readonly'}
+                    报名信息不可编辑
                     {/if}
                 </p>
             </div>

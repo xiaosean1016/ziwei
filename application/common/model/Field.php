@@ -48,9 +48,9 @@ class Field extends Model
     {
         Db::startTrans();
         try {
-            $indexId = Db::table('zw_cfg_index')->value('id');
+            $indexId = model('Config')->getValue('cfg_index');
             $newIndexId = $indexId + 1;
-            Db::execute("update zw_cfg_index set id = ?", [$newIndexId]);
+            model('Config')->setValue('cfg_index', $newIndexId);
 
             $tablename = $param['tablename'];
             $fieldname = 'cfg_' . $newIndexId;
