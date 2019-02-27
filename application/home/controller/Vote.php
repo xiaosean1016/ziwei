@@ -15,6 +15,11 @@ use think\Exception;
 
 class Vote extends VoteBase
 {
+    public function index()
+    {
+        $this->redirect('create');
+    }
+
     public function login()
     {
         $errorMsg = '';
