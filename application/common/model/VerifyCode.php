@@ -14,7 +14,7 @@ use think\Model;
 
 class VerifyCode extends Model
 {
-    protected $table = 'verify_code';
+    protected $table = 'zw_verify_code';
 
     public function insertVerifyCode($usage, $receiver, $code, $ip)
     {
