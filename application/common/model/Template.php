@@ -36,7 +36,8 @@ class Template extends Model
             if ($param['isshow']) {
                 $this->where('type', $param['type'])->update(['isshow' => 0]);
             }
-            return $this->where('id', $id)->update($param);
+            $this->where('id', $id)->update($param);
+            return true;
         }
 
         return false;

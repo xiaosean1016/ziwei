@@ -278,7 +278,8 @@
                         table += '<td><input type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="sign_' + signId + '"></td>';
                     }
                     for (key2 in data.headers) {
-                        table += '<td>' + data.table[i][key2] + '</td>';
+                        var xssStr = data.table[i][key2] ? (data.table[i][key2]).toString() : '';
+                        table += '<td>' + xssStr.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</td>';
                     }
 
                     table += '<td>';

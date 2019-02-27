@@ -114,7 +114,7 @@
                         table += '<tr>';
                         table += '<td>' + ( i + 1 ) + '</td>';
                         table += '<td>' + data[i]['createdatetime'] + '</td>';
-                        table += '<td>' + data[i]['content'] + '</td>';
+                        table += '<td>' + data[i]['content'].replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</td>';
                         table += '<td>' + data[i]['contact'] + '</td>';
                         table += '</tr>';
                     }
