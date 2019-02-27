@@ -15,7 +15,6 @@ use think\Paginator;
 
 class Ziwei extends Paginator
 {
-
     /**
      * 上一页按钮
      * @param string $text
