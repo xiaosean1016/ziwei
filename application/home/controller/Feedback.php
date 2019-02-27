@@ -15,6 +15,14 @@ use think\Exception;
 
 class Feedback extends Controller
 {
+<<<<<<< HEAD
+=======
+    public function index()
+    {
+        $this->redirect('create');
+    }
+
+>>>>>>> testmaster
     public function create()
     {
         return $this->fetch();
