@@ -28,17 +28,11 @@ class Bootstrap extends Paginator
             return $this->getDisabledTextWrapper($text);
         }
 
-<<<<<<< HEAD
-        $page = $this->currentPage() - 1;
-
-        return $this->getPageLinkWrapper($page, $text);
-=======
         $url = $this->url(
             $this->currentPage() - 1
         );
 
         return $this->getPageLinkWrapper($url, $text);
->>>>>>> testmaster
     }
 
     /**
@@ -52,15 +46,9 @@ class Bootstrap extends Paginator
             return $this->getDisabledTextWrapper($text);
         }
 
-<<<<<<< HEAD
-        $page = $this->currentPage() + 1;
-
-        return $this->getPageLinkWrapper($page, $text);
-=======
         $url = $this->url($this->currentPage() + 1);
 
         return $this->getPageLinkWrapper($url, $text);
->>>>>>> testmaster
     }
 
     /**
@@ -129,11 +117,7 @@ class Bootstrap extends Paginator
                 );
             } else {
                 return sprintf(
-<<<<<<< HEAD
-                    '<ul class="pagination m-b-5">%s %s %s</ul>',
-=======
                     '<ul class="pagination">%s %s %s</ul>',
->>>>>>> testmaster
                     $this->getPreviousButton(),
                     $this->getLinks(),
                     $this->getNextButton()
@@ -145,15 +129,6 @@ class Bootstrap extends Paginator
     /**
      * 生成一个可点击的按钮
      *
-<<<<<<< HEAD
-     * @param  int $page
-     * @param  string $text
-     * @return string
-     */
-    protected function getAvailablePageWrapper($page, $text)
-    {
-        return '<li><a onclick="pageTo(' . $page . ')">' . $text . '</a></li>';
-=======
      * @param  string $url
      * @param  int    $page
      * @return string
@@ -161,7 +136,6 @@ class Bootstrap extends Paginator
     protected function getAvailablePageWrapper($url, $page)
     {
         return '<li><a href="' . htmlentities($url) . '">' . $page . '</a></li>';
->>>>>>> testmaster
     }
 
     /**
@@ -207,11 +181,7 @@ class Bootstrap extends Paginator
         $html = '';
 
         foreach ($urls as $page => $url) {
-<<<<<<< HEAD
-            $html .= $this->getPageLinkWrapper($page, $page);
-=======
             $html .= $this->getPageLinkWrapper($url, $page);
->>>>>>> testmaster
         }
 
         return $html;
@@ -220,28 +190,16 @@ class Bootstrap extends Paginator
     /**
      * 生成普通页码按钮
      *
-<<<<<<< HEAD
-     * @param  int $page
-     * @param  string $text
-     * @return string
-     */
-    protected function getPageLinkWrapper($page, $text)
-=======
      * @param  string $url
      * @param  int    $page
      * @return string
      */
     protected function getPageLinkWrapper($url, $page)
->>>>>>> testmaster
     {
         if ($page == $this->currentPage()) {
             return $this->getActivePageWrapper($page);
         }
 
-<<<<<<< HEAD
-        return $this->getAvailablePageWrapper($page, $text);
-=======
         return $this->getAvailablePageWrapper($url, $page);
->>>>>>> testmaster
     }
 }
