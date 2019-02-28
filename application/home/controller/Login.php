@@ -18,6 +18,7 @@ class Login extends Controller
 {
     public function index()
     {
+        $this->assign('EMAIL', config('admin_email'));
         return $this->fetch();
     }
 

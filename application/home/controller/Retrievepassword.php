@@ -105,7 +105,7 @@ class RetrievePassword extends Controller
 
         try {
             $this->checkForm($param);
-            if (model('User')->updatePassword($param)) {
+            if (model('User')->updatePassword($param['phone'], $param['password'])) {
                 return json(['code' => 'SUCCESS', 'msg' => '修改成功']);
             }
             return json(['code' => 'ERROR', 'msg' => '修改失败']);
