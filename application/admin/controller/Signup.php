@@ -411,4 +411,27 @@ class Signup extends Base
             return json(['code' => 'ERROR', 'msg' => '修改失败']);
         }
     }
+
+    public function userConfig()
+    {
+        return $this->fetch();
+    }
+
+    public function setUserPassword()
+    {
+        $username = request()->param('username');
+        $password = request()->param('password');
+
+        $userModel = model('User');
+        $userId = $userModel->getUserId($username);
+        if (!$userId) {
+            return json(['code' => 'ERROR', 'msg' => '用户名不存在']);
+        }
+
+        if ($userModel->updatePassword($username, $password)) {
+            return json(['code' => 'SUCCESS', 'msg' => '修改成功']);
+        }
+
+        return json(['code' => 'ERROR', 'msg' => '修改失败']);
+    }
 }

@@ -38,11 +38,17 @@ class User extends Model
         $this->where('id', $userId)->update($data);
     }
 
-    public function updatePassword($data)
+    public function updatePassword($username, $password)
     {
-        $phone = $data['phone'];
-        $password = password_hash($data['password'], PASSWORD_DEFAULT);;
+        $phone = $username;
+        $password = password_hash($password, PASSWORD_DEFAULT);;
 
-        return $this->where('phone', $phone)->update(['password' => $password]);
+        return $this->where('username', $phone)->update(['password' => $password]);
+    }
+
+    public function getUserId($username)
+    {
+        $id = $this->where('username', $username)->value('id');
+        return $id;
     }
 }
