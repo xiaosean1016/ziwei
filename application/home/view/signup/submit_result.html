@@ -114,7 +114,7 @@
                     var footerBtn = '';
                     var content = data.html;
                     if (data.message) {
-                        content += '<strong>' + data.message + '</strong><br>';
+                        content += '<strong>' + data.message + '</strong><br><br>';
                     }
                     if (data.status === 'waiting') {
                         footerBtn += '<button type="button" onclick="editSign(' + id + ')" data-type="edit" class="btn btn-purple waves-effect">编辑</button>';
