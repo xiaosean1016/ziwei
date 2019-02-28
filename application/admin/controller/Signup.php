@@ -308,7 +308,7 @@ class Signup extends Base
         $listFields[] = 'createdatetime';
         $listFields[] = 'id';
         $tableHeaders['createdatetime'] = '创建时间';
-        $tableHeaders['id'] = 'ID';
+//        $tableHeaders['id'] = 'ID';
         if ($approveStatus != 'waiting') {
             $listFields[] = 'issentmsg';
             $listFields[] = 'msgcontent';

@@ -47,10 +47,14 @@ class Register extends Controller
 
         if (isset($param['password'])) {
             $this->passwordCheck($param['password']);
+
+            if (isset($param['confirmPassword'])) {
+                $this->confirmPasswordCheck($param['password'], $param['confirmPassword']);
+            }
         }
 
-        if (isset($param['captcha_code'])) {
-            $this->captchaCodeCheck($param['captcha_code']);
+        if (isset($param['captchaCode'])) {
+            $this->captchaCodeCheck($param['captchaCode']);
         }
 
         if (isset($param['verifyCode'])) {
@@ -82,6 +86,14 @@ class Register extends Controller
         }
     }
 
+    //验证重复密码
+    public function confirmPasswordCheck($password, $confirmPassword)
+    {
+        if ($password != $confirmPassword) {
+            throw new Exception('两次输入密码不一致$$confirm_password');
+        }
+    }
+
     //验证图片验证码
     public function captchaCodeCheck($captcha)
     {
@@ -103,7 +115,7 @@ class Register extends Controller
     //注册
     public function submitRegister()
     {
-        $param = Request::instance()->only(['phone', 'password', 'verifyCode']);
+        $param = Request::instance()->only(['phone', 'password', 'confirmPassword', 'captchaCode']);
 
         try {
             $this->checkForm($param);

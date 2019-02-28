@@ -35,7 +35,13 @@
 
                 <div class="form-group">
                     <div class="col-xs-12">
-                        <input class="form-control input-lg" type="password" name="password" required="" placeholder="密码">
+                        <input class="form-control input-lg" type="password" name="password" required="" placeholder="密码，8-20位">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <input class="form-control input-lg" type="password" name="confirm_password" required="" placeholder="再次输入，确认密码">
                     </div>
                 </div>
 
@@ -46,12 +52,12 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="input-group col-xs-12" style="padding: 0 10px">
-                        <input class="form-control input-lg" type="text" name="verify_code" required="" placeholder="短信验证码">
-                        <span class="input-group-btn"> <button id="sendVerifyCodeBtn" type="button" style="width: 120px;height: 46px;font-size: 13px;line-height: 24px" class="btn btn-lg btn-purple waves-effect waves-light">获取验证码</button> </span>
-                    </div>
-                </div>
+                <!--<div class="form-group">-->
+                    <!--<div class="input-group col-xs-12" style="padding: 0 10px">-->
+                        <!--<input class="form-control input-lg" type="text" name="verify_code" required="" placeholder="短信验证码">-->
+                        <!--<span class="input-group-btn"> <button id="sendVerifyCodeBtn" type="button" style="width: 120px;height: 46px;font-size: 13px;line-height: 24px" class="btn btn-lg btn-purple waves-effect waves-light">获取验证码</button> </span>-->
+                    <!--</div>-->
+                <!--</div>-->
 
 
                 <!--<div class="form-group">-->
@@ -93,12 +99,14 @@
         $('#submitForm').on('click', function () {
             var phone = $('input[name="phone"]').val();
             var password = $('input[name="password"]').val();
-            var verify_code = $('input[name="verify_code"]').val();
+            var confirm_password = $('input[name="confirm_password"]').val();
+            var captcha_code = $('input[name="captcha_code"]').val();
+            // var verify_code = $('input[name="verify_code"]').val();
 
             $.ajax({
                 type: 'POST',
                 url: 'register/submitRegister',
-                data: {phone: phone, password: password, verifyCode: verify_code},
+                data: {phone: phone, password: password, confirmPassword: confirm_password, captchaCode: captcha_code},
                 dataType: 'json',
                 success: function (data) {
                     if (data.code === 'ERROR') {
@@ -108,7 +116,7 @@
                             showError(msgObj[0], msgObj[1]);
                         }
                     } else {
-                        window.location.href = '/home/login?phone=' + phone;
+                        autoLogin(phone, password);
                     }
                 }
             })
@@ -184,6 +192,18 @@
             $('#sendVerifyCodeBtn').text('发送验证码').prop('disabled',false).removeClass('btn_disabled');
             timeCount = 90;
         }
+    }
+
+    function autoLogin(username, password) {
+        $.ajax({
+            type: 'POST',
+            url: 'login/submitLogin',
+            data: {username: username, password: password},
+            dataType: 'json',
+            success: function (data) {
+                window.location.href = '/home/signup/selectprocess';
+            }
+        });
     }
 
 
