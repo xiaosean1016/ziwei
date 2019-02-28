@@ -245,4 +245,7 @@ return [
         'var_page'  => 'page',
         'list_rows' => 10,
     ],
+
+    //管理员邮箱
+    'admin_email' => 'admin@zw.com'
 ];

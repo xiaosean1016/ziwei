@@ -39,13 +39,17 @@
 
                 <div class="form-group m-t-30">
                     <div class="col-sm-7">
-                        <a href="retrievepassword"><i class="fa fa-lock m-r-5"></i> 忘记密码?</a>
+                        <a style="cursor: pointer" id="forgetPasswordBtn"><i class="fa fa-lock m-r-5"></i> 忘记密码?</a>
                     </div>
                     <div class="col-sm-5 text-right">
                         <a href="register">创建新账号</a>
                     </div>
                 </div>
             </form>
+
+            <div class="alert alert-info hidden" id="alertMsg">
+                请将登录手机号发送至邮箱： {$EMAIL}，我们将尽快处理！
+            </div>
         </div>
     </div>
 </div>
@@ -53,6 +57,7 @@
 
 {block name="lead_js"}
     <script>
+
         $(function () {
             $('#submitFormBtn').on('click', function () {
                 var username = $('input[name="username"]').val();
@@ -84,8 +89,11 @@
                     }
                 });
             })
-        });
 
+            $('#forgetPasswordBtn').on('click', function () {
+                $('#alertMsg').toggleClass('hidden');
+            })
+        });
 
     </script>
 {/block}
