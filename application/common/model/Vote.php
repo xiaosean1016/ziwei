@@ -17,9 +17,9 @@ class Vote extends Model
 
     public function getVoteInfo($id)
     {
-        $voteInfo = $this->where('id', $id)->find();
+        $voteInfo = $this->where('id', $id)->cache(true, 0, 'vote')->find();
 
-        $optionInfo = Db::name('vote_option')->where('voteid', $id)->select();
+        $optionInfo = Db::name('vote_option')->where('voteid', $id)->cache(true, 0, 'vote')->select();
 //        $optionNum = Db::name('vote_user_option')->field('count(*) as num,optionid')->where('voteid', $id)->group('optionid')->select();
 
         foreach ($optionInfo as &$val) {

@@ -35,7 +35,7 @@ class Field extends Model
 
     public function getCfgFields($tablename)
     {
-        $list = $this->where('tablename', $tablename)->select();
+        $list = $this->where('tablename', $tablename)->cache(true)->select();
 
         foreach ($list as &$val) {
             $val['signarea'] = $this->signArea[$val['signarea']];

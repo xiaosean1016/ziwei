@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller;
 
+use think\Cache;
 use think\Controller;
 use think\Db;
 use think\Exception;
@@ -53,5 +54,14 @@ class Login extends Controller
         Session::delete('admin_name');
         Session::delete('real_name');
         $this->redirect('/admin/login');
+    }
+
+    public function clearCache()
+    {
+        if (Cache::clear()) {
+            return json(['code' => 'SUCCESS', 'msg' => '清除成功']);
+        } else {
+            return json(['code' => 'ERROR', 'msg' => '清除失败']);
+        }
     }
 }

@@ -9,6 +9,7 @@
 namespace app\admin\controller;
 
 
+use think\Cache;
 use think\Db;
 use think\Exception;
 
@@ -94,6 +95,7 @@ class Vote extends Base
         $id = request()->param('id');
         $voteInfo = model('vote')->getVoteInfo($id);
 
+
         $this->assign('DATA', $voteInfo);
         $this->assign('VOTEID', $id);
         $this->assign('MODE', 'edit');
@@ -158,7 +160,7 @@ class Vote extends Base
                     $tempData['voteid'] = $voteId;
                     $tempData['optionname'] = $param['optionName_' . $i];
                     $tempData['description'] = $param['optionDescription_' . $i];
-                    $tempData['maxusers'] = $param['maxBallot_' . $i];
+                    $tempData['maxusers'] = $param['maxBallot_' . $i] ?: 0;
                     $tempData['optionimg'] = $param['uploadImg_' . $i];
                     $optionData[] = $tempData;
                 }
@@ -168,6 +170,7 @@ class Vote extends Base
             }
             Db::name('vote_option')->insertAll($optionData);
             Db::commit();
+            Cache::clear('vote');
 
             return json(['code' => 'SUCCESS', 'msg' => '保存成功']);
         } catch (Exception $e) {

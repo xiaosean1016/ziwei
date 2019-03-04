@@ -119,6 +119,11 @@
                             </li>
 
                             <li>
+                                <a onclick="clearCache()" class="waves-effect"><i class="md md-layers-clear"></i><span> 清除缓存 </span></a>
+                            </li>
+
+                            <li>
+                                answer
                                 <a href="/admin/login/logout.html" class="waves-effect"><i class="md md-cancel"></i><span> 退出登录 </span></a>
                             </li>
                         </ul>
@@ -211,6 +216,18 @@
                 $('#sidebar-menu ul li').each(function () {
                     if (action_name === $(this).attr('data-action')) {
                         $(this).addClass('active');
+                    }
+                })
+            }
+            
+            function clearCache() {
+                $.ajax({
+                    type: 'POST',
+                    url: '/admin/login/clearCache',
+                    data: {},
+                    dataType: 'json',
+                    success: function (data) {
+                        swal(data.msg);
                     }
                 })
             }
