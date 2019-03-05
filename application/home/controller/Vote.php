@@ -90,7 +90,7 @@ class Vote extends VoteBase
             }
             //投票项数量验证
             foreach ($voteInfo['option'] as $val) {
-                if ($val['full']) {
+                if ($val['full'] && in_array($val['id'], explode(',', $param['checkIds']))) {
                     throw new Exception($val['optionname'] . '投票项已经满员');
                 }
             }

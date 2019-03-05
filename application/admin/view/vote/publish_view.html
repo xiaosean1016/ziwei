@@ -467,7 +467,7 @@
 
         $('#voteTitle').text(data.votename + '-' + (mode === 'edit' ? '编辑' : '详情'));
         $('input[name="voteName"]').val(data.votename);
-        $('input[name="voteDescription"]').val(data.description);
+        $('textarea[name="voteDescription"]').val(data.description);
         $('input[name="startTime"]').val(data.startdatetime);
         $('input[name="stopTime"]').val(data.stopdatetime);
         
