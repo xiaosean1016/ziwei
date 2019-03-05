@@ -101,24 +101,24 @@ class Signup extends Base
             $templateHtml = file_get_contents($templatePath);
         }
 
-        $fieldList = Db::name('field')->field('fieldname,fieldtype,required')->where('tablename', 'zw_signup')->cache(true, 0 , 'field')->select();
-
+        $fieldList = Db::name('field')->field('fieldname,fieldtype,required,length')->where('tablename', 'zw_signup')->cache(true, 0 , 'field')->select();
         $replaceData = [];
         foreach ($fieldList as $key => $val) {
             $fieldName = $val['fieldname'];
             $from = "[var.{$fieldName}]";
             $html = $from;
             $type = $val['fieldtype'];
-            $requiredHtml = 'data-required="' . $val['required'] . '"';
+            $requiredHtml = ' data-required="' . $val['required'] . '" ';
+            $lengthHtml = $val['length'] ? ' data-length="' . $val['length'] . '" ' : '';
 
             if ($type == 'varchar') {
-                $html = '<input ' . $requiredHtml . ' class="form-control" type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="">';
+                $html = '<input ' . $requiredHtml . $lengthHtml . ' class="form-control" type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="">';
             } elseif ($type == 'date') {
-                $html = '<input ' . $requiredHtml . ' type="text" name="' . $fieldName . '" id="' . $fieldName . '" placeholder="yyyy-mm-dd" data-mask="9999-99-99" class="form-control">';
+                $html = '<input ' . $requiredHtml . $lengthHtml . ' type="text" name="' . $fieldName . '" id="' . $fieldName . '" placeholder="yyyy-mm-dd" data-mask="9999-99-99" class="form-control">';
             } elseif ($type == 'datetime') {
-                $html = '<input ' . $requiredHtml . ' type="text" name="' . $fieldName . '" id="' . $fieldName . '" placeholder="yyyy-mm-dd HH:ii:ss" data-mask="9999-99-99 99:99:99" class="form-control">';
+                $html = '<input ' . $requiredHtml . $lengthHtml . ' type="text" name="' . $fieldName . '" id="' . $fieldName . '" placeholder="yyyy-mm-dd HH:ii:ss" data-mask="9999-99-99 99:99:99" class="form-control">';
             } elseif ($type == 'checkbox') {
-                $html = '<input ' . $requiredHtml . ' type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="' . $fieldName . '" name="' . $fieldName . '">';
+                $html = '<input ' . $requiredHtml . $lengthHtml . ' type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="' . $fieldName . '" name="' . $fieldName . '">';
             } elseif ($type == 'select' || $type == 'multiple') {
                 $pickList = model('Field')->getPickListVal($fieldName);
                 $html = '<select ' . $requiredHtml . ' id=' . $fieldName . ' name=' . $fieldName . ' ' . ($type == 'multiple' ? 'multiple="multiple"' : '') . ' class="form-control">';

@@ -256,7 +256,9 @@ class Vote extends Base
         $submitFieldJson = Db::name('vote')->where('id', $voteId)->value('submitfield');
         $submitFields = json_decode($submitFieldJson, true);
         $headers = ['时间', 'ip'];
-        $headers = array_merge($headers, array_column($submitFields, 'name'));
+        if ($submitFields) {
+            $headers = array_merge($headers, array_column($submitFields, 'name'));
+        }
 
         $voteUserIds = Db::name('vote_user_option')->where('optionid', $optionId)->column('voteuserid');
 //        dump($voteUserIds);exit;
