@@ -35,10 +35,11 @@ class Field extends Model
 
     public function getCfgFields($tablename)
     {
-        $list = $this->where('tablename', $tablename)->cache(true)->select();
+        $list = $this->where('tablename', $tablename)->cache(true, 0, 'field')->select();
 
         foreach ($list as &$val) {
             $val['signarea'] = $this->signArea[$val['signarea']];
+            $val['required'] = $val['required'] ? '是' : '否';
         }
 
         return $list;
@@ -122,9 +123,9 @@ class Field extends Model
 
     public function getPickListVal($fieldname, $tablename = 'zw_signup')
     {
-        $fieldId = Db::name('field')->where('tablename', $tablename)->where('fieldname', $fieldname)->value('id');
+        $fieldId = Db::name('field')->where('tablename', $tablename)->where('fieldname', $fieldname)->cache(true, 0, 'field')->value('id');
 
-        $pickList = Db::name('picklist')->where('fieldid', $fieldId)->column('pickval');
+        $pickList = Db::name('picklist')->where('fieldid', $fieldId)->cache(true, 0, 'field')->column('pickval');
 
         return $pickList;
     }

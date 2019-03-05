@@ -62,7 +62,7 @@
     function checkSubmitForm() {
         var isValid = true;
         $('input').each(function () {
-            if (!$(this).val()) {
+            if ($(this).attr('data-required') == 1 && !$(this).val()) {
                 $.Notification.autoHideNotify('error','top center', '提交失败', '请填写字段信息');
                 $(this).addClass('error_input');
                 isValid = false;

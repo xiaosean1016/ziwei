@@ -60,7 +60,7 @@ class Template extends Model
 
     public function getActiveTemplates()
     {
-        $ids = $this->where('isshow', 1)->column('id');
+        $ids = $this->where('isshow', 1)->cache(true, 0, 'template')->column('id');
         return $ids;
     }
 }

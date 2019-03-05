@@ -8,6 +8,7 @@
 
 namespace app\admin\controller;
 
+use think\Cache;
 use think\Db;
 use think\Exception;
 use think\Request;
@@ -107,6 +108,7 @@ class Signup extends Base
                 $table .= '<td>' . $templateInfo['isshow'] . '</td>';
                 $table .= '<td>' . $templateInfo['description'] . '</td>';
 
+                Cache::clear('template');
                 return json(['code' => 'SUCCESS', 'msg' => $table, 'id' => $templateId]);
             }
 
@@ -193,8 +195,10 @@ class Signup extends Base
             $table .= '<td>' . $fieldInfo['id'] . '</td>';
             $table .= '<td>' . $fieldInfo['fieldname'] . '</td>';
             $table .= '<td>' . $fieldInfo['fieldlabel'] . '</td>';
+            $table .= '<td>' . ($fieldInfo['required'] ? '是' : '否') . '</td>';
             $table .= '<td>' . $areaInfo[$fieldInfo['signarea']] . '</td>';
 
+            Cache::clear('field');
             return json(['code' => 'SUCCESS', 'msg' => $table, 'id' => $fieldId]);
         } else {
             return json(['code' => 'ERROR', 'msg' => '保存失败']);
@@ -205,7 +209,7 @@ class Signup extends Base
     //可更新字段控制
     public function getUpdateField($params)
     {
-        $updateFields = ['id', 'fieldlabel', 'signarea'];
+        $updateFields = ['id', 'fieldlabel', 'signarea', 'required'];
 
         $fields = [];
         foreach ($params as $key => $param) {
