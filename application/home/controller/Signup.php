@@ -63,6 +63,9 @@ class Signup extends Base
         $id = Request::instance()->param('id');
         $fields = model('Template')->getTemplateFields($id);
         $param = Request::instance()->only($fields);
+        foreach ($param as $key => $val) {
+            if (empty($val) && $val !== 0 && $val !== '0') unset($param[$key]);
+        }
         $param['createdatetime'] = date('Y-m-d H:i:s', time());
         $param['status'] = 'waiting';
         $param['templateid'] = $id;

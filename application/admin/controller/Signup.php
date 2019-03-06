@@ -186,7 +186,7 @@ class Signup extends Base
                 model('Field')->updatePickList($pickVal, $params['id']);
             }
             $updateRes = model('Field')->updateCfgField($this->getUpdateField($params));
-            $fieldId = $updateRes ? $params['id'] : 0;
+            $fieldId = ($updateRes || $updateRes === 0) ? $params['id'] : 0;
         }
 
         $fieldInfo = Db::name('field')->find($fieldId);

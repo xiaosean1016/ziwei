@@ -194,14 +194,14 @@
         if (!subConObj) return false;
 
         subConObj = JSON.parse(subConObj);
-        // console.log(subConObj);
+        console.log(subConObj);
         var subConNum = subConObj.length;
         var html = '';
 
         if (subConNum) {
             for (var i = 0; i < subConNum; i ++) {
                 var type = subConObj[i].type;
-                html += '<div class="form-group ' + (subConObj[i].required ? 'required' : '') + '">';
+                html += '<div class="form-group ' + (subConObj[i].required == 1 ? 'required' : '') + '">';
                 html += '<label class="control-label col-md-3">' + subConObj[i].name + '</label>';
                 html += '<div class="col-md-9">';
                 if (type === 'varchar') {
@@ -209,7 +209,7 @@
                 } else if (type === 'date') {
                     html += '<input class="form-control" type="text" name="form_'+i+'" placeholder="yyyy-mm-dd" data-mask="9999-99-99">';
                 } else if (type === 'datetime') {
-                    html += '<input class="form-control" type="text" name="form_'+i+'" placeholder="yyyy-mm-dd HH:ii:ss" data-mask="9999-99-99 99:99:99">';
+                    html += '<input class="form-control" type="text" name="form_'+i+'" placeholder="yyyy-mm-dd HH:ii" data-mask="9999-99-99 99:99">';
                 } else if (type === 'checkbox') {
                     html += '<input class="checkbox form-control" type="checkbox" style="width: 16px" value="1" name="form_' + i + '">';
                 } else if (type === 'select' || type === 'multiple') {
