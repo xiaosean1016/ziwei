@@ -135,9 +135,11 @@
                         html += '<tr>';
                         html += '<td>' + data[j].createdatetime + '</td>';
                         html += '<td>' + data[j].voteip + '</td>';
-                        var submitJson = JSON.parse(data[j].submitjson);
-                        for (var k = 0; k < submitJson.length; k ++) {
-                            html += '<td>' + submitJson[k].value + '</td>';
+                        if (data[j].submitjson) {
+                            var submitJson = JSON.parse(data[j].submitjson);
+                            for (var k = 0; k < submitJson.length; k ++) {
+                                html += '<td>' + submitJson[k].value + '</td>';
+                            }
                         }
                         html += '</tr>';
                     }
