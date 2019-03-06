@@ -271,29 +271,34 @@
                     table += '<th width="140px">操作</th>';
                 }
                 table += '</tr>';
-                for (var i = 0; i < data.table.length; i ++) {
-                    var signId = data.table[i]['id'];
-                    table += '<tr data-id="' + signId + '">';
-                    if (approveStatus !== 'waiting') {
-                        table += '<td><input type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="sign_' + signId + '"></td>';
-                    }
-                    for (key2 in data.headers) {
-                        var xssStr = data.table[i][key2] ? (data.table[i][key2]).toString() : '';
-                        table += '<td>' + xssStr.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</td>';
-                    }
+                if (data.table.length) {
+                    for (var i = 0; i < data.table.length; i ++) {
+                        var signId = data.table[i]['id'];
+                        table += '<tr data-id="' + signId + '">';
+                        if (approveStatus !== 'waiting') {
+                            table += '<td><input type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="sign_' + signId + '"></td>';
+                        }
+                        for (key2 in data.headers) {
+                            var xssStr = data.table[i][key2] ? (data.table[i][key2]).toString() : '';
+                            table += '<td>' + xssStr.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</td>';
+                        }
 
-                    table += '<td>';
-                    table += '<button onclick="showDetail(this)" type="button" class="btn btn-info waves-effect waves-light m-b-5">详情</button>';
-                    if (approveStatus === 'waiting') {
-                        table += '<button onclick="approveSign(this,\'passed\')" type="button" class="m-l-10 btn btn-primary waves-effect waves-light m-b-5">通过</button>';
-                        table += '<button onclick="approveSign(this,\'refused\')" type="button" class="m-l-10 btn btn-danger waves-effect waves-light m-b-5">拒绝</button>';
-                    } else {
-                        table += '<button onclick="approveSign(this,\'waiting\')" type="button" class="m-l-10 btn btn-success waves-effect waves-light m-b-5">移出</button>';
-                    }
-                    table += '</td>';
+                        table += '<td>';
+                        table += '<button onclick="showDetail(this)" type="button" class="btn btn-info waves-effect waves-light m-b-5">详情</button>';
+                        if (approveStatus === 'waiting') {
+                            table += '<button onclick="approveSign(this,\'passed\')" type="button" class="m-l-10 btn btn-primary waves-effect waves-light m-b-5">通过</button>';
+                            table += '<button onclick="approveSign(this,\'refused\')" type="button" class="m-l-10 btn btn-danger waves-effect waves-light m-b-5">拒绝</button>';
+                        } else {
+                            table += '<button onclick="approveSign(this,\'waiting\')" type="button" class="m-l-10 btn btn-success waves-effect waves-light m-b-5">移出</button>';
+                        }
+                        table += '</td>';
 
-                    table += '</tr>';
+                        table += '</tr>';
+                    }
+                } else {
+                    table += '<tr><td colspan="100%" style="text-align: center">无相关信息</td></tr>';
                 }
+
 
                 $('#signListTable').html(table);
                 $('#PageTab').html(data.page);

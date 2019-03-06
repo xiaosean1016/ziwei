@@ -110,13 +110,17 @@
                     var table = '',
                         data = res.data.table;
 
-                    for (var i = 0; i < data.length; i ++) {
-                        table += '<tr>';
-                        table += '<td>' + ( i + 1 ) + '</td>';
-                        table += '<td>' + data[i]['createdatetime'] + '</td>';
-                        table += '<td>' + data[i]['content'].replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</td>';
-                        table += '<td>' + data[i]['contact'] + '</td>';
-                        table += '</tr>';
+                    if (data.length) {
+                        for (var i = 0; i < data.length; i ++) {
+                            table += '<tr>';
+                            table += '<td>' + ( i + 1 ) + '</td>';
+                            table += '<td>' + data[i]['createdatetime'] + '</td>';
+                            table += '<td>' + data[i]['content'].replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</td>';
+                            table += '<td>' + data[i]['contact'] + '</td>';
+                            table += '</tr>';
+                        }
+                    } else {
+                        table += '<tr><td colspan="100%" style="text-align: center">无相关信息</td></tr>';
                     }
 
                     $('#feedbackListBody').html(table);

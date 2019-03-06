@@ -117,17 +117,21 @@
                 var data = res.data;
                 var table = '';
 
-                for (var i = 0; i < data.table.length; i ++) {
-                    table += '<tr data-id="' + data.table[i]['id'] + '">';
-                    table += '<td>' + (i + 1) + '</td>';
-                    table += '<td><a href="/admin/vote/detailView?id=' + data.table[i]['id'] + '">' + data.table[i]['votename'] + '</a></td>';
-                    table += '<td>' + data.table[i]['createdatetime'] + '</td>';
-                    table += '<td>' + data.table[i]['status'] + '</td>';
-                    table += '<td width="180">';
-                    table += '<button onclick="editVote(this)" type="button" class="m-l-10 btn btn-primary waves-effect waves-light m-b-5">编辑</button>';
-                    table += '<button onclick="deleteVote(this)" type="button" class="m-l-10 btn btn-danger waves-effect waves-light m-b-5">删除</button>';
-                    table += '</td>';
-                    table += '</tr>';
+                if (data.table.length) {
+                    for (var i = 0; i < data.table.length; i ++) {
+                        table += '<tr data-id="' + data.table[i]['id'] + '">';
+                        table += '<td>' + (i + 1) + '</td>';
+                        table += '<td><a href="/admin/vote/detailView?id=' + data.table[i]['id'] + '">' + data.table[i]['votename'] + '</a></td>';
+                        table += '<td>' + data.table[i]['createdatetime'] + '</td>';
+                        table += '<td>' + data.table[i]['status'] + '</td>';
+                        table += '<td width="180">';
+                        table += '<button onclick="editVote(this)" type="button" class="m-l-10 btn btn-primary waves-effect waves-light m-b-5">编辑</button>';
+                        table += '<button onclick="deleteVote(this)" type="button" class="m-l-10 btn btn-danger waves-effect waves-light m-b-5">删除</button>';
+                        table += '</td>';
+                        table += '</tr>';
+                    }
+                } else {
+                    table += '<tr><td colspan="100%" style="text-align: center">无相关信息</td></tr>';
                 }
 
                 $('#voteListBody').html(table);
