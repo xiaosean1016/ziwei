@@ -202,7 +202,7 @@
             for (var i = 0; i < subConNum; i ++) {
                 var type = subConObj[i].type;
                 html += '<div class="form-group ' + (subConObj[i].required == 1 ? 'required' : '') + '">';
-                html += '<label class="control-label col-md-3">' + subConObj[i].name + '</label>';
+                html += '<label class="control-label col-md-2">' + subConObj[i].name + '</label>';
                 html += '<div class="col-md-9">';
                 if (type === 'varchar') {
                     html += '<input class="form-control" type="text" name="form_' + i + '">';

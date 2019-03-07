@@ -81,6 +81,9 @@ body {
     left: calc(50% - 131px) !important;
 }
 
+.table td {
+    height: 37px;
+}
 
 
 

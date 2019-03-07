@@ -113,15 +113,16 @@ class Signup extends Base
             $type = $val['fieldtype'];
             $requiredHtml = ' data-required="' . $val['required'] . '" ';
             $lengthHtml = $val['length'] ? ' data-length="' . $val['length'] . '" ' : '';
+            $typeHtml = ' data-type="' . $type . '" ';
 
             if ($type == 'varchar') {
-                $html = '<input ' . $requiredHtml . $lengthHtml . ' class="form-control" type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="">';
+                $html = '<input ' . $typeHtml . $requiredHtml . $lengthHtml . ' class="form-control" type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="">';
             } elseif ($type == 'date') {
-                $html = '<input ' . $requiredHtml . $lengthHtml . ' type="text" name="' . $fieldName . '" id="' . $fieldName . '" placeholder="yyyy-mm-dd" data-mask="9999-99-99" class="form-control">';
+                $html = '<input ' . $typeHtml . $requiredHtml . $lengthHtml . ' type="text" name="' . $fieldName . '" id="' . $fieldName . '" placeholder="yyyy-mm-dd" data-mask="9999-99-99" class="form-control">';
             } elseif ($type == 'datetime') {
-                $html = '<input ' . $requiredHtml . $lengthHtml . ' type="text" name="' . $fieldName . '" id="' . $fieldName . '" placeholder="yyyy-mm-dd HH:ii:ss" data-mask="9999-99-99 99:99:99" class="form-control">';
+                $html = '<input ' . $typeHtml . $requiredHtml . $lengthHtml . ' type="text" name="' . $fieldName . '" id="' . $fieldName . '" placeholder="yyyy-mm-dd HH:ii:ss" data-mask="9999-99-99 99:99:99" class="form-control">';
             } elseif ($type == 'checkbox') {
-                $html = '<input ' . $requiredHtml . $lengthHtml . ' type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="' . $fieldName . '" name="' . $fieldName . '">';
+                $html = '<input ' . $typeHtml . $requiredHtml . $lengthHtml . ' type="checkbox" style="width: 16px" class="checkbox form-control" value="1" id="' . $fieldName . '" name="' . $fieldName . '">';
             } elseif ($type == 'select' || $type == 'multiple') {
                 $pickList = model('Field')->getPickListVal($fieldName);
                 $html = '<select ' . $requiredHtml . ' id=' . $fieldName . ' name=' . $fieldName . ' ' . ($type == 'multiple' ? 'multiple="multiple"' : '') . ' class="form-control">';

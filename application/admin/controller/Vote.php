@@ -165,10 +165,23 @@ class Vote extends Base
                     $optionData[] = $tempData;
                 }
             }
+            $optionNumRes = [];
             if ($mode == 'edit') {
+                $optionNumRes = Db::name('vote_option')->where('voteid', $voteId)->column('optionnum,id', 'optionname');
                 Db::name('vote_option')->where('voteid', $voteId)->delete();
             }
             Db::name('vote_option')->insertAll($optionData);
+
+            //原有投票信息数据恢复
+            if ($optionNumRes) {
+                foreach ($optionNumRes as $nk => $nv) {
+                    if ($nv['optionnum']) {
+                        Db::name('vote_option')->where(['optionname' => $nk, 'voteid' => $voteId])->update(['optionnum' => $nv['optionnum']]);
+                        $newOptionId = Db::name('vote_option')->where(['optionname' => $nk, 'voteid' => $voteId])->value('id');
+                        Db::name('vote_user_option')->where(['optionid' => $nv['id']])->update(['optionid' => $newOptionId]);
+                    }
+                }
+            }
             Db::commit();
             Cache::clear('vote');
 

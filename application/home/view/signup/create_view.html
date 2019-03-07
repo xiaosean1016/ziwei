@@ -78,6 +78,16 @@
                     return false;
                 }
             }
+
+            if (($(this).attr('data-type') === 'date' || $(this).attr('data-type') === 'datetime') && $(this).val()) {
+                var temp_date = $(this).val().toString();
+                if (isNaN(Date.parse(temp_date))) {
+                    $.Notification.autoHideNotify('error','top center', '提交失败', '字段格式错误，请填写有效日期');
+                    $(this).addClass('error_input');
+                    isValid = false;
+                    return false;
+                }
+            }
         });
         return isValid;
     }
