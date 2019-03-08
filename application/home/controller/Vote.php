@@ -101,6 +101,7 @@ class Vote extends VoteBase
             if ($submitField) {
                 $fields = json_decode($submitField, true);
                 foreach ($fields as $k => $v) {
+                    if (!isset($param['form_' . $k])) continue;
                     if ($v['required'] && !$param['form_' . $k]) {
                         throw new Exception('表单' . $v['name'] . '字段不能为空');
                     }
