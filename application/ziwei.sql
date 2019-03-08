@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `zw_field`(
 	`fieldtype` VARCHAR(50) NOT NULL DEFAULT '' COMMENT '字段类型',
 	`defaultvalue` varchar(200) DEFAULT NULL COMMENT '字段默认值',
 	`length` varchar(200) COMMENT '字段长度',
+	`required` TINYINT(4) NOT NULL DEFAULT 1 COMMENT '是否必填',
 	`signarea` varchar(20) DEFAULT NULL COMMENT '学生来源 local本区 nonlocal外省',
 	`description` varchar(200) COMMENT '备注',
 	PRIMARY KEY (`id`)
@@ -69,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `zw_signup` (
 	`sourcearea` varchar(200) COMMENT '来源地区（外省 香港 澳门 台湾）',
 	`IDtype` varchar(200) COMMENT '证件类型（身份证 来往大陆通行证 护照）',
 	`residence_expiration_date` date COMMENT '居住证到期日',
-	`is_integral_reach` tinyint(4) COMMENT '积分是否达标',
+	`is_integral_reach` varchar(20) COMMENT '积分是否达标',
 	`social_security_total` varchar(10) COMMENT '社保累计月份',
 	`createdatetime` datetime COMMENT '创建时间',
 	`status` varchar(10) COMMENT '登记状态 wait pass refused',
@@ -194,140 +195,140 @@ CREATE TABLE IF NOT EXISTS `zw_list_fields` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '列表字段表';
 
 -- add_fields
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','name','姓名','1','varchar','','20' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','name','姓名','1','varchar','','20',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='name');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','sex','性别','1','varchar','','4' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','sex','性别','1','varchar','','4',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='sex');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','nation','民族','1','varchar','','20' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','nation','民族','1','varchar','','20',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='nation');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','nativeplace','籍贯','1','varchar','','20' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','nativeplace','籍贯','1','varchar','','20',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='nativeplace');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','dateofbirth','出生日期','1','date','','' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','dateofbirth','出生日期','1','date','','',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='dateofbirth');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','IDnumber','幼儿证件号','1','varchar','','50','local' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','IDnumber','幼儿证件号','1','varchar','','50','local',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='IDnumber');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','residence_type','户口类型','1','select','','','local' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','residence_type','户口类型','1','select','','','local',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='residence_type');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','homeplace_street','户籍地-街道','1','varchar','','50','local' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','homeplace_street','户籍地-街道','1','varchar','','50','local',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='homeplace_street');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','homeplace_committee','户籍地-居委','1','varchar','','50','local' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','homeplace_committee','户籍地-居委','1','varchar','','50','local',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='homeplace_committee');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','homeplace_relation_owner','户籍地-户主关系','1','select','','','local' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','homeplace_relation_owner','户籍地-户主关系','1','select','','','local',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='homeplace_relation_owner');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','homeplace_settle_date','户籍地-迁入日期','1','date','','','local' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','homeplace_settle_date','户籍地-迁入日期','1','date','','','local',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='homeplace_settle_date');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','homeplace_address','户籍地-户籍地址','1','varchar','','250' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','homeplace_address','户籍地-户籍地址','1','varchar','','250',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='homeplace_address');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','liveplace_street','居住地-街道','1','varchar','','50','local' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','liveplace_street','居住地-街道','1','varchar','','50','local',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='liveplace_street');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','liveplace_committee','居住地-居委','1','varchar','','50','local' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','liveplace_committee','居住地-居委','1','varchar','','50','local',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='liveplace_committee');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','liveplace_relation_owner','居住地-户主关系','1','select','','','local' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','liveplace_relation_owner','居住地-户主关系','1','select','','','local',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='liveplace_relation_owner');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','liveplace_telephone','居住地-固定电话','1','varchar','','20','local' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','liveplace_telephone','居住地-固定电话','1','varchar','','20','local',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='liveplace_telephone');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','liveplace_address','居住地-现住地址','1','varchar','','250' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','liveplace_address','居住地-现住地址','1','varchar','','250',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='liveplace_address');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_pri_appellation','监护人1-称谓','1','varchar','','20' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_pri_appellation','监护人1-称谓','1','varchar','','20',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_pri_appellation');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_pri_name','监护人1-姓名','1','varchar','','20' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_pri_name','监护人1-姓名','1','varchar','','20',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_pri_name');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_pri_age','监护人1-年龄','1','varchar','','10' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_pri_age','监护人1-年龄','1','varchar','','10',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_pri_age');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_pri_education','监护人1-学历','1','varchar','','20' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_pri_education','监护人1-学历','1','varchar','','20',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_pri_education');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_pri_workunit','监护人1-工作单位','1','varchar','','50' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_pri_workunit','监护人1-工作单位','1','varchar','','50',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_pri_workunit');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_pri_phonenumber','监护人1-手机号码','1','varchar','','20' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_pri_phonenumber','监护人1-手机号码','1','varchar','','20',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_pri_phonenumber');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_sec_appellation','监护人2-称谓','1','varchar','','20' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_sec_appellation','监护人2-称谓','1','varchar','','20',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_sec_appellation');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_sec_name','监护人2-姓名','1','varchar','','20' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_sec_name','监护人2-姓名','1','varchar','','20',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_sec_name');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_sec_age','监护人2-年龄','1','varchar','','10' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_sec_age','监护人2-年龄','1','varchar','','10',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_sec_age');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_sec_education','监护人2-学历','1','varchar','','20' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_sec_education','监护人2-学历','1','varchar','','20',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_sec_education');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_sec_workunit','监护人2-工作单位','1','varchar','','50' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_sec_workunit','监护人2-工作单位','1','varchar','','50',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_sec_workunit');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`)
-select 'zw_signup','guardian_sec_phonenumber','监护人2-手机号码','1','varchar','','20' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`required`)
+select 'zw_signup','guardian_sec_phonenumber','监护人2-手机号码','1','varchar','','20',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='guardian_sec_phonenumber');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','sourcearea','来源地区','1','select','','','nonlocal' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','sourcearea','来源地区','1','select','','','nonlocal',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='sourcearea');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','IDtype','证件类型','1','select','','','nonlocal' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','IDtype','证件类型','1','select','','','nonlocal',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='IDtype');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','residence_expiration_date','居住证有效期至','1','date','','','nonlocal' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','residence_expiration_date','居住证有效期至','1','date','','','nonlocal',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='residence_expiration_date');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','is_integral_reach','积分是否达标','1','checkbox','','','nonlocal' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','is_integral_reach','积分是否达标','1','select','','','nonlocal',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='is_integral_reach');
 
-insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`)
-select 'zw_signup','social_security_total','社保累计月份','1','varchar','','4','nonlocal' from dual where not exists
+insert into zw_field(`tablename`,`fieldname`,`fieldlabel`,`presence`,`fieldtype`,`defaultvalue`,`length`,`signarea`,`required`)
+select 'zw_signup','social_security_total','社保累计月份','1','varchar','','4','nonlocal',1 from dual where not exists
 (select 1 from zw_field where tablename='zw_signup' and fieldname='social_security_total');
 
 -- default template
@@ -420,3 +421,11 @@ select @fieldid,'来往大陆通行证','来往大陆通行证' from dual where 
 insert into zw_picklist(`fieldid`,`pickval`,`picktext`)
 select @fieldid,'护照','护照' from dual where not exists
 (select 1 from zw_picklist where fieldid=@fieldid and pickval='护照');
+
+select id into @fieldid from zw_field where fieldname='is_integral_reach' and tablename='zw_signup';
+insert into zw_picklist(`fieldid`,`pickval`,`picktext`)
+select @fieldid,'是','是' from dual where not exists
+(select 1 from zw_picklist where fieldid=@fieldid and pickval='是');
+insert into zw_picklist(`fieldid`,`pickval`,`picktext`)
+select @fieldid,'否','否' from dual where not exists
+(select 1 from zw_picklist where fieldid=@fieldid and pickval='否');

@@ -1200,3 +1200,7 @@ a:focus {
   }
   
 }
+
+.table td {
+  height: 37px;
+}

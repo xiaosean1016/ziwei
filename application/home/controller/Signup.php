@@ -196,6 +196,9 @@ class Signup extends Base
                 $templateId = $signRes['templateid'];
                 $fields = model('Template')->getTemplateFields($templateId);
                 $param = Request::instance()->only($fields);
+                foreach ($param as $key => $val) {
+                    if (empty($val) && $val !== 0 && $val !== '0') unset($param[$key]);
+                }
 
                 try {
                     Db::name('signup')->where('id', $id)->update($param);
